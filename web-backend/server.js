@@ -1,11 +1,11 @@
-﻿const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000;
+﻿require('dotenv').config();
+const http = require('http');
+const app = require('./app');
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Web Backend API is running' });
-});
+const port = Number(process.env.PORT || 4000);
+const server = http.createServer(app);
 
-app.listen(port, () => {
-  console.log(Web Backend server running on port );
+server.listen(port, () => {
+  // eslint-disable-next-line no-console
+  console.log(`Web Backend server running on port ${port}`);
 });
