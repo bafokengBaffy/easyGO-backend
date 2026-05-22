@@ -19,3 +19,12 @@ exports.list = async (req, res, next) => {
     return next(error);
   }
 };
+
+exports.update = async (req, res, next) => {
+  try {
+    const user = await userService.updateUser(req.params.id, req.body);
+    return ok(res, user, 'User updated.');
+  } catch (error) {
+    return next(error);
+  }
+};

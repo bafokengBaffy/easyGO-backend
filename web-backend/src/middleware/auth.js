@@ -1,5 +1,6 @@
 const { verifyAccessToken } = require('../utils/jwt');
 const { admin, isFirebaseEnabled } = require('../config/firebase');
+const { User } = require('../models');
 
 module.exports = async (req, res, next) => {
   try {
@@ -18,10 +19,12 @@ module.exports = async (req, res, next) => {
     }
 
     const decoded = await admin.auth().verifyIdToken(token);
+    const localUser = decoded?.uid ? await User.findOne({ where: { firebase_uid: decoded.uid } }) : null;
     req.user = {
-      id: decoded.uid,
+      id: localUser?.id || decoded.uid,
       email: decoded.email,
-      role: decoded.role || 'rider',
+      role: decoded.role || localUser?.role || 'rider',
+      firebase_uid: decoded.uid,
       authProvider: 'firebase',
     };
     return next();

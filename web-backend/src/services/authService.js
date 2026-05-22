@@ -3,6 +3,7 @@ const { hashPassword, comparePassword } = require('../utils/password');
 const { signAccessToken } = require('../utils/jwt');
 const { admin, isFirebaseEnabled } = require('../config/firebase');
 const ApiError = require('../utils/apiError');
+const { syncUserToFirestore, syncFirebaseRoleClaims } = require('./firestoreUserService');
 
 const sanitizeUser = (user) => ({
   id: user.id,
@@ -48,6 +49,7 @@ const register = async ({ name, email, password, role }) => {
   }
 
   const user = await createLocalUser({ name, email: normalizedEmail, password, role, firebase_uid: firebaseUid });
+  await Promise.all([syncUserToFirestore(user), syncFirebaseRoleClaims(user)]);
   const token = signAccessToken({ id: user.id, email: user.email, role: user.role, firebase_uid: user.firebase_uid });
 
   return { user: sanitizeUser(user), token };
@@ -74,7 +76,9 @@ const login = async ({ email, password, firebaseToken }) => {
       }
     }
 
+    await Promise.all([syncUserToFirestore(user), syncFirebaseRoleClaims(user)]);
     await user.update({ last_login: new Date() });
+    await syncUserToFirestore(user);
     return { user: sanitizeUser(user), token: signAccessToken({ id: user.id, email: user.email, role: user.role, firebase_uid: user.firebase_uid }) };
   }
 
@@ -85,6 +89,7 @@ const login = async ({ email, password, firebaseToken }) => {
   }
 
   await user.update({ last_login: new Date() });
+  await syncUserToFirestore(user);
   return { user: sanitizeUser(user), token: signAccessToken({ id: user.id, email: user.email, role: user.role, firebase_uid: user.firebase_uid }) };
 };
 
