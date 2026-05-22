@@ -1,11 +1,21 @@
-const users = require('../data/mockUsers');
+const userService = require('../services/userService');
+const { ok } = require('../utils/apiResponse');
 
-exports.getProfile = (req, res) => {
-  const profile = users[0];
-
-  if (!profile) {
-    return res.status(404).json({ success: false, message: 'Profile not found.' });
+exports.getProfile = async (req, res, next) => {
+  try {
+    const id = req.user?.id || req.query.userId;
+    const profile = await userService.getUserById(id);
+    return ok(res, profile, 'Profile fetched.');
+  } catch (error) {
+    return next(error);
   }
+};
 
-  return res.json({ success: true, profile });
+exports.list = async (req, res, next) => {
+  try {
+    const users = await userService.listUsers();
+    return ok(res, users, 'Users fetched.');
+  } catch (error) {
+    return next(error);
+  }
 };

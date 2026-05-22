@@ -6,9 +6,11 @@ module.exports = (err, req, res, next) => {
     return next(err);
   }
 
-  const status = err.status || 500;
+  const status = err.statusCode || err.status || 500;
   return res.status(status).json({
-    error: 'Internal Server Error',
+    success: false,
+    error: status >= 500 ? 'Internal Server Error' : 'Request Error',
     message: err.message || 'An unexpected error occurred',
+    details: err.details || undefined,
   });
 };
