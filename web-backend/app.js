@@ -16,6 +16,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    service: 'easygo-web-backend',
+    message: 'EasyGo backend is running.',
+    docs: '/api/v1',
+    health: '/api/v1/health',
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    status: 'ok',
+    service: 'easygo-web-backend',
+    time: new Date().toISOString(),
+  });
+});
+
 app.use('/api/v1', routes);
 app.use(notFound);
 app.use(errorHandler);
