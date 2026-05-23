@@ -16,6 +16,9 @@ const webhookRoutes = require('./v1/webhookRoutes');
 const analyticsRoutes = require('./v1/analyticsRoutes');
 const fleetRoutes = require('./v1/fleetRoutes');
 const uploadRoutes = require('./v1/uploadRoutes');
+const opsRoutes = require('../modules/ops');
+const auth = require('../middleware/auth');
+const authorizeRoles = require('../middleware/authorizeRoles');
 
 const router = express.Router();
 
@@ -44,5 +47,6 @@ router.use('/webhooks', webhookRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/fleet', fleetRoutes);
 router.use('/uploads', uploadRoutes);
+router.use('/ops', auth, authorizeRoles('admin', 'support', 'ops_manager'), opsRoutes);
 
 module.exports = router;
