@@ -6,6 +6,8 @@
   "scripts": {
     "build": "node -e \"console.log('No build step required for web-backend')\"",
     "start": "node server.js",
+    "env:check": "node scripts/validate-env.js",
+    "firebase:check": "node scripts/test-firebase-adc.js",
     "dev": "nodemon server.js",
     "test": "jest",
     "test:watch": "jest --watch",

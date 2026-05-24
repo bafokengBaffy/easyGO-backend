@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: easygo-backend
+    runtime: docker
+    plan: starter
+    rootDir: web-backend
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: DB_SYNC
+        value: "false"
+      - key: DB_SYNC_ALTER
+        value: "false"
+      - key: FIREBASE_USE_ADC
+        value: "false"

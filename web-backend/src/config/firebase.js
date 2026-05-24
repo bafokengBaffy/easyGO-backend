@@ -64,14 +64,15 @@ const initializeFirebaseAdmin = () => {
 
   const credential = getCredential();
   const databaseURL = process.env.FIREBASE_DATABASE_URL || undefined;
+  const projectId = process.env.FIREBASE_PROJECT_ID || undefined;
 
   if (credential) {
-    return admin.initializeApp({ credential, databaseURL });
+    return admin.initializeApp({ credential, databaseURL, projectId });
   }
 
   // Keyless mode: uses ADC (gcloud login locally, or attached service account in Cloud Run/GCE/GKE).
   if (process.env.FIREBASE_USE_ADC === 'true') {
-    return admin.initializeApp({ databaseURL });
+    return admin.initializeApp({ databaseURL, projectId });
   }
 
   return null;
