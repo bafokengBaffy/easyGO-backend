@@ -1,7 +1,7 @@
 services:
   - type: web
     name: easygo-backend
-    runtime: docker
+    env: docker
     plan: starter
     dockerfilePath: ./Dockerfile
     autoDeploy: true
