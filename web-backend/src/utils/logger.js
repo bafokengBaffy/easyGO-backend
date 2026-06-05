@@ -3,9 +3,17 @@ const path = require('path');
 
 const logFilePath = process.env.LOG_FILE_PATH || path.join(__dirname, '../../logs/app.log');
 const logLevel = process.env.LOG_LEVEL || 'info';
+const logDir = path.dirname(logFilePath);
+
+function ensureLogDirectory() {
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+  }
+}
 
 function log(message, level = 'info') {
   if (shouldLog(level)) {
+    ensureLogDirectory();
     const logEntry = `[${new Date().toISOString()}] [${level.toUpperCase()}] ${message}\n`;
     fs.appendFileSync(logFilePath, logEntry);
     if (process.env.NODE_ENV !== 'production') {
