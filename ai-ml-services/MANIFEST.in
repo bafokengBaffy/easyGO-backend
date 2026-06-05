@@ -1,7 +1,0 @@
-include README.md
-include requirements*.txt
-include *.yml
-include *.yaml
-recursive-include src *.py
-recursive-include config *.py
-recursive-include config/model_configs *.yaml

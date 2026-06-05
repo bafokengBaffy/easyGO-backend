@@ -1,2 +1,0 @@
-class EasyGoAIException(Exception):
-    pass

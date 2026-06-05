@@ -1,3 +1,0 @@
-mkdocs==1.7.0
-mkdocstrings==0.18.0
-pyyaml==6.0.2
