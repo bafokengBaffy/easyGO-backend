@@ -30,4 +30,8 @@ function shouldLog(level) {
 
 module.exports = {
   log,
+  error: message => log(message, 'error'),
+  warn: message => log(message, 'warn'),
+  info: message => log(message, 'info'),
+  debug: message => log(message, 'debug'),
 };

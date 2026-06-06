@@ -7,6 +7,8 @@ const Payment = require('./Payment')(sequelize);
 const Promotion = require('./Promotion')(sequelize);
 const Zone = require('./Zone')(sequelize);
 const SupportTicket = require('./SupportTicket')(sequelize);
+const MobileMoneyTransaction = require('./MobileMoneyTransaction');
+const PaymentWebhookLog = require('./PaymentWebhookLog')(sequelize);
 
 User.hasOne(Driver, { foreignKey: 'user_id', as: 'driverProfile' });
 Driver.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
@@ -41,4 +43,6 @@ module.exports = {
   Promotion,
   Zone,
   SupportTicket,
+  MobileMoneyTransaction,
+  PaymentWebhookLog,
 };
