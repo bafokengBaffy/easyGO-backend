@@ -1,11 +1,21 @@
-const { Driver } = require('../models');
+const BaseService = require('./base.service');
+const driverRepository = require('../repositories/driver.repository');
 
-const listDrivers = async () => Driver.findAll({ order: [['created_at', 'DESC']] });
-const updateOnlineStatus = async (id, isOnline) => {
-  const driver = await Driver.findByPk(id);
-  if (!driver) return null;
-  await driver.update({ is_online: Boolean(isOnline) });
-  return driver;
-};
+class DriverService extends BaseService {
+  constructor() {
+    super(driverRepository);
+  }
 
-module.exports = { listDrivers, updateOnlineStatus };
+  async listDrivers() {
+    return await this.repository.findAll({ order: [['created_at', 'DESC']] });
+  }
+
+  async updateOnlineStatus(id, isOnline) {
+    return await this.update(id, { 
+      is_online: Boolean(isOnline),
+      last_location_update: new Date()
+    });
+  }
+}
+
+module.exports = new DriverService();

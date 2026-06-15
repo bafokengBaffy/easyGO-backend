@@ -7,6 +7,8 @@
 const crypto = require('crypto');
 const logger = require('../utils/logger');
 
+const isConfiguredValue = value => Boolean(value && value.trim() && value !== 'UPDATE_ME');
+
 class MpesaConfig {
   constructor() {
     this.requiredEnvVars = [
@@ -32,7 +34,7 @@ class MpesaConfig {
   }
 
   getMissingEnvVars() {
-    return this.requiredEnvVars.filter(varName => !process.env[varName]);
+    return this.requiredEnvVars.filter(varName => !isConfiguredValue(process.env[varName]));
   }
 
   validateEnvironment() {

@@ -1,37 +1,49 @@
-const fs = require('fs');
+﻿// Production logger with structured logging
+const winston = require('winston');
 const path = require('path');
+const config = require('../config');
 
-const logFilePath = process.env.LOG_FILE_PATH || path.join(__dirname, '../../logs/app.log');
-const logLevel = process.env.LOG_LEVEL || 'info';
-const logDir = path.dirname(logFilePath);
+const logDir = 'logs';
+const { combine, timestamp, printf, colorize, json } = winston.format;
 
-function ensureLogDirectory() {
-  if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir, { recursive: true });
-  }
+const myFormat = printf(({ level, message, timestamp, correlationId, ...meta }) => {
+  return JSON.stringify({
+    timestamp,
+    level,
+    correlationId,
+    message,
+    ...meta
+  });
+});
+
+const logger = winston.createLogger({
+  level: config.LOG_LEVEL,
+  format: combine(
+    timestamp(),
+    config.NODE_ENV === 'production' ? json() : myFormat
+  ),
+  transports: [
+    new winston.transports.File({
+      filename: path.join(logDir, 'error.log'),
+      level: 'error',
+      maxsize: 5242880,
+      maxFiles: 5
+    }),
+    new winston.transports.File({
+      filename: path.join(logDir, 'combined.log'),
+      maxsize: 5242880,
+      maxFiles: 5
+    })
+  ]
+});
+
+if (config.NODE_ENV !== 'production') {
+  logger.add(new winston.transports.Console({
+    format: combine(
+      colorize(),
+      myFormat
+    )
+  }));
 }
 
-function log(message, level = 'info') {
-  if (shouldLog(level)) {
-    ensureLogDirectory();
-    const logEntry = `[${new Date().toISOString()}] [${level.toUpperCase()}] ${message}\n`;
-    fs.appendFileSync(logFilePath, logEntry);
-    if (process.env.NODE_ENV !== 'production') {
-      // eslint-disable-next-line no-console
-      console.log(logEntry.trim());
-    }
-  }
-}
-
-function shouldLog(level) {
-  const levels = ['error', 'warn', 'info', 'debug'];
-  return levels.indexOf(level) <= levels.indexOf(logLevel);
-}
-
-module.exports = {
-  log,
-  error: message => log(message, 'error'),
-  warn: message => log(message, 'warn'),
-  info: message => log(message, 'info'),
-  debug: message => log(message, 'debug'),
-};
+module.exports = logger;

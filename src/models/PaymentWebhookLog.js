@@ -43,7 +43,7 @@ module.exports = (sequelize) =>
     timestamps: true,
     indexes: [
       { fields: ['provider'] },
-      { fields: ['webhookType'] },
-      { fields: ['receivedAt'] }
+      { fields: ['webhook_type'] },
+      { fields: ['received_at'] }
     ]
   });

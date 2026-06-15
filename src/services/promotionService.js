@@ -1,6 +1,24 @@
-const { Promotion } = require('../models');
+const BaseService = require('./base.service');
+const promotionRepository = require('../repositories/promotion.repository');
 
-const listPromotions = async () => Promotion.findAll({ order: [['created_at', 'DESC']] });
-const createPromotion = async (payload) => Promotion.create(payload);
+class PromotionService extends BaseService {
+  constructor() {
+    super(promotionRepository);
+  }
 
-module.exports = { listPromotions, createPromotion };
+  async validatePromotion(code) {
+    const promo = await this.repository.findActiveByCode(code);
+    if (!promo) return null;
+    return promo;
+  }
+
+  async listPromotions() {
+    return await this.getAll({ order: [['created_at', 'DESC']] });
+  }
+
+  async createPromotion(data) {
+    return await this.create(data);
+  }
+}
+
+module.exports = new PromotionService();

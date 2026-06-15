@@ -11,6 +11,7 @@ module.exports = (sequelize) =>
     },
     rating: { type: DataTypes.DECIMAL(3, 2), defaultValue: 5.0 },
     is_online: { type: DataTypes.BOOLEAN, defaultValue: false },
+    status: { type: DataTypes.ENUM('available', 'busy', 'offline'), defaultValue: 'offline' },
     current_lat: { type: DataTypes.DECIMAL(10, 7), allowNull: true },
     current_lng: { type: DataTypes.DECIMAL(10, 7), allowNull: true },
   });

@@ -1,48 +1,57 @@
-const sequelize = require('../config/database');
+﻿// Model registry with associations
+const { sequelize } = require('../config/database');
+const User = require('./User');
+const Driver = require('./Driver');
+const Ride = require('./Ride');
+const Payment = require('./Payment');
+const Review = require('./Review');
+const Promotion = require('./Promotion');
+const Zone = require('./Zone');
+const Vehicle = require('./Vehicle');
+const Incident = require('./Incident');
+const SupportTicket = require('./SupportTicket');
+const AuditLog = require('./AuditLog');
+const Notification = require('./Notification');
+const RefreshToken = require('./RefreshToken');
+const Wallet = require('./Wallet');
+const Transaction = require('./Transaction');
 
-const User = require('./User')(sequelize);
-const Driver = require('./Driver')(sequelize);
-const Ride = require('./Ride')(sequelize);
-const Payment = require('./Payment')(sequelize);
-const Promotion = require('./Promotion')(sequelize);
-const Zone = require('./Zone')(sequelize);
-const SupportTicket = require('./SupportTicket')(sequelize);
-const MobileMoneyTransaction = require('./MobileMoneyTransaction');
-const PaymentWebhookLog = require('./PaymentWebhookLog')(sequelize);
+// Define associations
+User.hasMany(Ride, { as: 'rides', foreignKey: 'rider_id' });
+User.hasMany(Review, { as: 'reviews', foreignKey: 'user_id' });
+User.hasOne(Wallet, { as: 'wallet', foreignKey: 'user_id' });
+User.hasMany(RefreshToken, { as: 'refreshTokens', foreignKey: 'user_id' });
 
-User.hasOne(Driver, { foreignKey: 'user_id', as: 'driverProfile' });
-Driver.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+Driver.belongsTo(User, { as: 'user', foreignKey: 'user_id' });
+Driver.hasMany(Ride, { as: 'rides', foreignKey: 'driver_id' });
+Driver.hasOne(Vehicle, { as: 'vehicle', foreignKey: 'driver_id' });
 
-User.hasMany(Ride, { foreignKey: 'rider_id', as: 'rides' });
-Ride.belongsTo(User, { foreignKey: 'rider_id', as: 'rider' });
-Driver.hasMany(Ride, { foreignKey: 'driver_id', as: 'rides' });
-Ride.belongsTo(Driver, { foreignKey: 'driver_id', as: 'driver' });
+Ride.belongsTo(User, { as: 'rider', foreignKey: 'rider_id' });
+Ride.belongsTo(Driver, { as: 'driver', foreignKey: 'driver_id' });
+Ride.hasOne(Payment, { as: 'payment', foreignKey: 'ride_id' });
+Ride.hasMany(Review, { as: 'reviews', foreignKey: 'ride_id' });
 
-Ride.hasOne(Payment, { foreignKey: 'ride_id', as: 'payment' });
-Payment.belongsTo(Ride, { foreignKey: 'ride_id', as: 'ride' });
-User.hasMany(Payment, { foreignKey: 'user_id', as: 'payments' });
-Payment.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+Payment.belongsTo(Ride, { as: 'ride', foreignKey: 'ride_id' });
+Payment.belongsTo(User, { as: 'user', foreignKey: 'user_id' });
 
-User.hasMany(SupportTicket, { foreignKey: 'user_id', as: 'tickets' });
-SupportTicket.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
-
-const connectDatabase = async () => {
-  await sequelize.authenticate();
-  if (process.env.DB_SYNC === 'true') {
-    await sequelize.sync({ alter: process.env.DB_SYNC_ALTER === 'true' });
-  }
-};
+Wallet.hasMany(Transaction, { as: 'transactions', foreignKey: 'wallet_id' });
+Transaction.belongsTo(Wallet, { as: 'wallet', foreignKey: 'wallet_id' });
 
 module.exports = {
   sequelize,
-  connectDatabase,
   User,
   Driver,
   Ride,
   Payment,
+  Review,
   Promotion,
   Zone,
+  Vehicle,
+  Incident,
   SupportTicket,
-  MobileMoneyTransaction,
-  PaymentWebhookLog,
+  AuditLog,
+  Notification,
+  RefreshToken,
+  Wallet,
+  Transaction
 };

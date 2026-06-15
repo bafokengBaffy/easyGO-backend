@@ -30,11 +30,11 @@ const MobileMoneyTransaction = sequelize.define('MobileMoneyTransaction', {
     index: true
   },
   userId: {
-    type: DataTypes.UUID,
+    type: DataTypes.BIGINT,
     allowNull: true,
     index: true,
     references: {
-      model: 'Users',
+      model: 'User',
       key: 'id'
     }
   },
@@ -98,20 +98,20 @@ const MobileMoneyTransaction = sequelize.define('MobileMoneyTransaction', {
   timestamps: true,
   indexes: [
     {
-      fields: ['transactionId'],
+      fields: ['transaction_id'],
       unique: true
     },
     {
       fields: ['provider', 'status']
     },
     {
-      fields: ['userId', 'createdAt']
+      fields: ['user_id', 'created_at']
     },
     {
-      fields: ['phoneNumber', 'provider']
+      fields: ['phone_number', 'provider']
     },
     {
-      fields: ['createdAt']
+      fields: ['created_at']
     }
   ]
 });

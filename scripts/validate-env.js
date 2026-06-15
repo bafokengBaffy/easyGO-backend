@@ -4,14 +4,14 @@ const dotenv = require('dotenv');
 
 const root = path.resolve(__dirname, '..');
 const nodeEnv = process.env.NODE_ENV || 'production';
-const envSpecificPath = path.join(root, `.env.${nodeEnv}`);
 const envDefaultPath = path.join(root, '.env');
+const envSpecificPath = path.join(root, `.env.${nodeEnv}`);
 
-if (fs.existsSync(envSpecificPath)) {
-  dotenv.config({ path: envSpecificPath });
-}
 if (fs.existsSync(envDefaultPath)) {
   dotenv.config({ path: envDefaultPath });
+}
+if (fs.existsSync(envSpecificPath)) {
+  dotenv.config({ path: envSpecificPath });
 }
 
 const required = [
@@ -23,10 +23,14 @@ const required = [
   'DB_NAME',
   'DB_USER',
   'DB_PASSWORD',
-  'CORS_ORIGIN',
+  'DB_DIALECT',
 ];
 
 const missing = required.filter((key) => !process.env[key] || String(process.env[key]).trim() === '');
+const corsValue = process.env.CORS_ORIGIN || process.env.CORS_ORIGINS;
+if (!corsValue || String(corsValue).trim() === '') {
+  missing.push('CORS_ORIGIN or CORS_ORIGINS');
+}
 
 const errors = [];
 if (missing.length) {

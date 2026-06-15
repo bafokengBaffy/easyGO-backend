@@ -1,0 +1,37 @@
+const fs = require('fs');
+const path = require('path');
+
+const logFilePath = process.env.LOG_FILE_PATH || path.join(__dirname, '../../logs/app.log');
+const logLevel = process.env.LOG_LEVEL || 'info';
+const logDir = path.dirname(logFilePath);
+
+function ensureLogDirectory() {
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+  }
+}
+
+function log(message, level = 'info') {
+  if (shouldLog(level)) {
+    ensureLogDirectory();
+    const logEntry = `[${new Date().toISOString()}] [${level.toUpperCase()}] ${message}\n`;
+    fs.appendFileSync(logFilePath, logEntry);
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log(logEntry.trim());
+    }
+  }
+}
+
+function shouldLog(level) {
+  const levels = ['error', 'warn', 'info', 'debug'];
+  return levels.indexOf(level) <= levels.indexOf(logLevel);
+}
+
+module.exports = {
+  log,
+  error: message => log(message, 'error'),
+  warn: message => log(message, 'warn'),
+  info: message => log(message, 'info'),
+  debug: message => log(message, 'debug'),
+};

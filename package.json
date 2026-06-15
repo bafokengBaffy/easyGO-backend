@@ -17,7 +17,9 @@
     "migrate": "sequelize-cli db:migrate",
     "migrate:undo": "sequelize-cli db:migrate:undo",
     "seed": "sequelize-cli db:seed:all",
-    "seed:undo": "sequelize-cli db:seed:undo:all"
+    "seed:undo": "sequelize-cli db:seed:undo:all",
+    "service:install": "powershell -ExecutionPolicy Bypass -File install-web-backend-service.ps1",
+    "service:uninstall": "powershell -ExecutionPolicy Bypass -File uninstall-web-backend-service.ps1"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -27,6 +29,8 @@
     "cloudinary": "^1.41.3",
     "dotenv": "^16.3.1",
     "mysql2": "^3.11.3",
+    "pg": "^8.12.0",
+    "pg-hstore": "^2.3.4",
     "sequelize": "^6.35.0",
     "redis": "^4.6.11",
     "jsonwebtoken": "^9.0.2",

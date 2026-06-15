@@ -1,26 +1,35 @@
-const path = require('path');
-const dotenv = require('dotenv');
-const http = require('http');
+﻿// Production-ready server.js
 const app = require('./app');
-const { connectDatabase } = require('./src/models');
+const config = require('./src/config');
+const logger = require('./src/utils/logger');
+const { sequelize } = require('./src/models');
 
-const nodeEnv = process.env.NODE_ENV || 'development';
-dotenv.config({ path: path.resolve(__dirname, `.env.${nodeEnv}`) });
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+const PORT = config.PORT || 3000;
 
-const port = Number(process.env.PORT || 4000);
-const server = http.createServer(app);
-
-(async () => {
+const startServer = async () => {
   try {
-    await connectDatabase();
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Database init warning:', error.message);
-  }
+    await sequelize.authenticate();
+    logger.info('✅ Database connected');
+    
+    await sequelize.sync({ alter: config.NODE_ENV === 'development' });
+    
+    const server = app.listen(PORT, () => {
+      logger.info(🚀 Server running on port );
+      logger.info(📚 API Docs: http://localhost:/api-docs);
+      logger.info(🌍 Environment: );
+    });
 
-  server.listen(port, () => {
-    // eslint-disable-next-line no-console
-    console.log(`Web Backend server running on port ${port}`);
-  });
-})();
+    process.on('SIGTERM', () => {
+      logger.info('SIGTERM received, closing server...');
+      server.close(() => {
+        sequelize.close();
+        process.exit(0);
+      });
+    });
+  } catch (error) {
+    logger.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();

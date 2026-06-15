@@ -1,59 +1,67 @@
-﻿
+﻿// Production app.js
 const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
 const compression = require('compression');
-const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
+const { errorHandler } = require('./src/middleware/errorHandler');
+const { requestLogger } = require('./src/middleware/requestLogger');
+const { correlationId } = require('./src/middleware/correlationId');
 const routes = require('./src/routes');
-const notFound = require('./src/middleware/notFound');
-const errorHandler = require('./src/middleware/errorHandler');
-const helmet = require('./src/middleware/helmet');
-const cors = require('./src/middleware/cors');
-const { apiLimiter } = require('./src/middleware/rateLimiter');
-const logger = require('./src/utils/logger');
-const featureFlags = require('./src/utils/featureFlags');
-// const validation = require('./src/middleware/validation'); // Use in routes as needed
+const config = require('./src/config');
 
 const app = express();
 
-// Security headers
-app.use(helmet);
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: config.NODE_ENV === 'production',
+  hsts: config.NODE_ENV === 'production'
+}));
+
 // CORS
-app.use(cors);
-// Rate limiting (global, can also apply per route)
-app.use(apiLimiter);
+app.use(cors(config.CORS_OPTIONS));
+
 // Compression
 app.use(compression());
-// JSON parsing
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-// Logging
-app.use(morgan('dev'));
 
-// Log feature flags on startup
-logger.log(`Feature flags: ${JSON.stringify(featureFlags)}`, 'info');
+// Body parsing
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Correlation ID for tracing
+app.use(correlationId);
 
-app.get('/', (req, res) => {
-  res.status(200).json({
-    success: true,
-    service: 'easygo-web-backend',
-    message: 'EasyGo backend is running.',
-    docs: '/api/v1',
-    health: '/api/v1/health',
-    featureFlags,
-  });
+// Request logging
+app.use(requestLogger);
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: config.NODE_ENV === 'production' ? 100 : 1000,
+  message: 'Too many requests from this IP',
+  standardHeaders: true,
+  legacyHeaders: false
 });
+app.use('/api', limiter);
 
+// Health check
 app.get('/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    status: 'ok',
-    service: 'easygo-web-backend',
-    time: new Date().toISOString(),
-  });
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
+app.get('/ready', (req, res) => {
+  res.json({ status: 'ready' });
+});
+
+// API routes
 app.use('/api/v1', routes);
-app.use(notFound);
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Error handler
 app.use(errorHandler);
 
 module.exports = app;
