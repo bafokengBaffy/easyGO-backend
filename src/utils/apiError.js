@@ -1,4 +1,8 @@
-﻿// Custom API Error class
+﻿/**
+ * Custom API Error classes for consistent error handling
+ * @version 2.0.0
+ */
+
 class APIError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL_ERROR', details = null) {
     super(message);
@@ -7,8 +11,20 @@ class APIError extends Error {
     this.code = code;
     this.details = details;
     this.timestamp = new Date().toISOString();
+    this.isOperational = true;
     
     Error.captureStackTrace(this, this.constructor);
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      statusCode: this.statusCode,
+      code: this.code,
+      details: this.details,
+      timestamp: this.timestamp,
+    };
   }
 }
 
@@ -32,7 +48,7 @@ class AuthorizationError extends APIError {
 
 class NotFoundError extends APIError {
   constructor(resource = 'Resource') {
-    super(${resource} not found, 404, 'NOT_FOUND');
+    super(`${resource} not found`, 404, 'NOT_FOUND');
   }
 }
 
@@ -48,6 +64,24 @@ class RateLimitError extends APIError {
   }
 }
 
+class BadRequestError extends APIError {
+  constructor(message = 'Bad request', details = null) {
+    super(message, 400, 'BAD_REQUEST', details);
+  }
+}
+
+class DatabaseError extends APIError {
+  constructor(message = 'Database error', details = null) {
+    super(message, 500, 'DATABASE_ERROR', details);
+  }
+}
+
+class ServiceUnavailableError extends APIError {
+  constructor(message = 'Service temporarily unavailable') {
+    super(message, 503, 'SERVICE_UNAVAILABLE');
+  }
+}
+
 module.exports = {
   APIError,
   ValidationError,
@@ -55,5 +89,8 @@ module.exports = {
   AuthorizationError,
   NotFoundError,
   ConflictError,
-  RateLimitError
+  RateLimitError,
+  BadRequestError,
+  DatabaseError,
+  ServiceUnavailableError,
 };

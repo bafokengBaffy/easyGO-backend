@@ -1,12 +1,11 @@
 ﻿const express = require('express');
 const router = express.Router();
 const authController = require('../../controllers/authController');
-const { auth } = require('../../middleware/auth');
+const validate = require('../../middleware/validate');
+const authValidation = require('../../middleware/auth.validation');
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
-router.post('/refresh', authController.refresh);
-router.post('/logout', auth, authController.logout);
-router.get('/profile', auth, authController.getProfile);
+// Public routes
+router.post('/register', validate(authValidation.register), authController.register);
+router.post('/login', validate(authValidation.login), authController.login);
 
 module.exports = router;
