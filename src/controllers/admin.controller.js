@@ -1,4 +1,6 @@
 const { Zone, sequelize, User, Driver, Ride, Payment, AuditLog } = require('../models');
+const { Zone, sequelize, User, Driver, Ride, Payment } = require('../models');
+const analyticsService = require('../services/analyticsService');
 const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 const { ApiResponse } = require('../utils/apiResponse');
