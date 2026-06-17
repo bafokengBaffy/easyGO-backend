@@ -3,6 +3,7 @@ const logger = require('../utils/logger');
 const { BadRequestException } = require('../exceptions/api.exception');
 const { Payment, Ride } = require('../models');
 const socketService = require('./socketService');
+const walletService = require('./walletService');
 
 class MpesaService {
   constructor() {
@@ -82,6 +83,16 @@ class MpesaService {
     
     if (payment) {
       await payment.update({ status });
+
+      if (status === 'COMPLETED') {
+        await walletService.updateBalance(
+          payment.user_id,
+          payment.amount,
+          'credit',
+          `M-Pesa Payment Success: ${CheckoutRequestID}`,
+          payment.id
+        );
+      }
 
       if (status === 'COMPLETED' && payment.ride) {
         await payment.ride.update({ status: 'confirmed' });

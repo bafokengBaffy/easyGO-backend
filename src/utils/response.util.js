@@ -1,29 +1,26 @@
 /**
- * Unified API Response Formatter
+ * Standard API Response Handlers
  */
 const sendResponse = (res, statusCode, data, message = 'Success') => {
-  return res.status(statusCode).json({
-    status: 'success',
+  res.status(statusCode).json({
+    success: true,
     message,
-    data
+    data,
   });
 };
 
-const sendPagedResponse = (res, statusCode, data, count, page, limit, message = 'Success') => {
-  return res.status(statusCode).json({
-    status: 'success',
+const sendPagedResponse = (res, statusCode, rows, count, page, limit, message = 'Success') => {
+  res.status(statusCode).json({
+    success: true,
     message,
-    meta: {
+    data: rows,
+    pagination: {
       total: count,
       page: parseInt(page),
+      pages: Math.ceil(count / limit),
       limit: parseInt(limit),
-      pages: Math.ceil(count / limit)
     },
-    data
   });
 };
 
-module.exports = {
-  sendResponse,
-  sendPagedResponse
-};
+module.exports = { sendResponse, sendPagedResponse };

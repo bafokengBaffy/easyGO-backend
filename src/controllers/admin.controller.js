@@ -1,10 +1,10 @@
 const { Zone, sequelize, User, Driver, Ride, Payment, AuditLog } = require('../models');
-const { Zone, sequelize, User, Driver, Ride, Payment } = require('../models');
 const analyticsService = require('../services/analyticsService');
 const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 const { ApiResponse } = require('../utils/apiResponse');
 const { ApiError } = require('../utils/apiError');
+const csvStringify = require('csv-stringify/lib/sync');
 const { Op } = require('sequelize');
 
 /**
@@ -17,22 +17,142 @@ class AdminController {
   getDashboardStats = asyncHandler(async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
 
-    const [totalUsers, totalDrivers, activeRides, dailyRevenue] = await Promise.all([
+    const [totalUsers, totalDrivers, activeRides, dailyRevenue, userGrowth] = await Promise.all([
       User.count(),
       Driver.count({ where: { is_online: true } }),
       Ride.count({ where: { status: { [Op.in]: ['accepted', 'arrived', 'picked_up'] } } }),
-      Payment.sum('amount', { where: { status: 'COMPLETED', createdAt: { [Op.gte]: today } } })
+      Payment.sum('amount', { where: { status: 'COMPLETED', createdAt: { [Op.gte]: today } } }),
+      User.count({ where: { createdAt: { [Op.gte]: lastMonth } } })
     ]);
 
     return res.json(new ApiResponse(200, {
-      stats: {
-        totalUsers,
-        activeDrivers: totalDrivers,
-        liveRides: activeRides,
-        todayRevenue: dailyRevenue || 0
-      }
+      userMetrics: { totalUsers, monthlyGrowth: userGrowth },
+      driverMetrics: { onlineDrivers: totalDrivers },
+      rideMetrics: { activeRides },
+      financialMetrics: { todayRevenue: dailyRevenue || 0 },
+      timestamp: new Date()
     }, 'Dashboard stats retrieved'));
+  });
+
+  /**
+   * Delete user (Admin override)
+   */
+  deleteUser = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    const user = await User.findByPk(id);
+    if (!user) throw new ApiError(404, 'User not found');
+
+    // Soft delete with reason in metadata
+    await user.update({ 
+      is_active: false, 
+      status: 'deleted',
+      metadata: { ...user.metadata, deletionReason: reason, deletedAt: new Date() }
+    });
+
+    logger.info(`Admin ${req.user.id} deleted user ${id}. Reason: ${reason}`);
+    return res.json(new ApiResponse(200, null, 'User account deactivated by admin'));
+  });
+
+  /**
+   * Verify or reject a driver
+   */
+  verifyDriverByAdmin = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { status, reason } = req.body;
+
+    const driver = await Driver.findByPk(id);
+    if (!driver) throw new ApiError(404, 'Driver not found');
+
+    await driver.update({ 
+      verification_status: status,
+      metadata: { ...driver.metadata, verificationNotes: reason }
+    });
+
+    return res.json(new ApiResponse(200, driver, `Driver status updated to ${status}`));
+  });
+
+  /**
+   * Generate financial summary for reportRoutes
+   */
+  getFinancialSummary = asyncHandler(async (req, res) => {
+    const { startDate, endDate } = req.query;
+    const where = { status: 'COMPLETED' };
+    
+    if (startDate && endDate) {
+      where.createdAt = { [Op.between]: [new Date(startDate), new Date(endDate)] };
+    }
+
+    const summary = await Payment.findAll({
+      where,
+      attributes: [
+        [Sequelize.fn('SUM', Sequelize.col('amount')), 'totalRevenue'],
+        [Sequelize.fn('COUNT', Sequelize.col('id')), 'transactionCount'],
+        'provider'
+      ],
+      group: ['provider'],
+      raw: true
+    });
+
+    const total = summary.reduce((acc, curr) => acc + parseFloat(curr.totalRevenue || 0), 0);
+
+    return res.json(new ApiResponse(200, {
+      providers: summary,
+      totalRevenue: total,
+      period: { startDate, endDate: endDate || new Date() }
+    }, 'Financial summary generated'));
+  });
+
+  /**
+   * Get system health metrics
+   */
+  getSystemHealth = asyncHandler(async (req, res) => {
+    const dbStatus = await sequelize.authenticate().then(() => 'online').catch(() => 'offline');
+    const memory = process.memoryUsage();
+    
+    return res.json(new ApiResponse(200, {
+      database: dbStatus,
+      uptime: process.uptime(),
+      memory: {
+        heapUsed: `${Math.round(memory.heapUsed / 1024 / 1024)}MB`,
+        rss: `${Math.round(memory.rss / 1024 / 1024)}MB`
+      }
+    }, 'System health retrieved'));
+  });
+
+  /**
+   * Get paginated audit logs
+   */
+  getAuditLogs = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 50, action, userId } = req.query;
+    const where = {};
+    if (action) where.action = action;
+    if (userId) where.user_id = userId;
+
+    const { count, rows } = await AuditLog.findAndCountAll({
+      where,
+      limit: parseInt(limit),
+      offset: (page - 1) * limit,
+      order: [['createdAt', 'DESC']]
+    });
+
+    return res.json(new ApiResponse(200, { logs: rows, total: count }));
+  });
+
+  /**
+   * Export audit logs to CSV
+   */
+  exportAuditLogs = asyncHandler(async (req, res) => {
+    const logs = await AuditLog.findAll({ limit: 1000, order: [['createdAt', 'DESC']] });
+    const data = logs.map(l => l.get({ plain: true }));
+    const csv = csvStringify(data, { header: true });
+    
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=audit_logs.csv');
+    return res.send(csv);
   });
 
   /**

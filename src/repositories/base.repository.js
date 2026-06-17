@@ -1,5 +1,6 @@
 /**
- * Abstract Base Repository for Sequelize Models
+ * Base Repository
+ * Provides standard CRUD operations for Sequelize models
  */
 class BaseRepository {
   constructor(model) {
@@ -8,6 +9,10 @@ class BaseRepository {
 
   async findAll(options = {}) {
     return await this.model.findAll(options);
+  }
+
+  async findAndCountAll(options = {}) {
+    return await this.model.findAndCountAll(options);
   }
 
   async findById(id, options = {}) {
@@ -35,12 +40,8 @@ class BaseRepository {
     return true;
   }
 
-  async findAndCountAll(options = {}) {
-    return await this.model.findAndCountAll(options);
-  }
-
-  async bulkCreate(data, options = {}) {
-    return await this.model.bulkCreate(data, options);
+  async count(options = {}) {
+    return await this.model.count(options);
   }
 }
 

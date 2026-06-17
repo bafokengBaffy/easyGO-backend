@@ -1,8 +1,11 @@
-const { User, Ride, Payment, Sequelize } = require('../models');
+const { User, Ride, Payment, AuditLog, Sequelize } = require('../models');
 const asyncHandler = require('../utils/asyncHandler');
 const { sendResponse } = require('../utils/response.util');
 const { NotFoundError, BadRequestError } = require('../utils/apiError');
 const storageService = require('../services/storageService');
+const bcrypt = require('bcrypt');
+const emailService = require('../services/emailService');
+const logger = require('../utils/logger');
 
 /**
  * User Controller - Handles user profile and administrative management
@@ -129,11 +132,88 @@ class UserController {
   });
 
   changePassword = asyncHandler(async (req, res) => {
-    return sendResponse(res, 501, null, 'Method not implemented');
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findByPk(req.user.id);
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!isMatch) {
+      throw new BadRequestError('Current password incorrect');
+    }
+
+    const salt = await bcrypt.genSalt(12);
+    user.password_hash = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    await emailService.sendSecurityAlert(user.email, 'Password Change');
+    return sendResponse(res, 200, null, 'Password updated successfully');
   });
 
   deleteAccount = asyncHandler(async (req, res) => {
-    return sendResponse(res, 501, null, 'Account deletion requires verification');
+    const user = await User.findByPk(req.user.id);
+    // Soft delete strategy
+    await user.update({ is_active: false, status: 'deleted' });
+    
+    logger.info(`User ${user.id} requested account deletion`);
+    return sendResponse(res, 200, null, 'Account successfully deactivated');
+  });
+
+  /**
+   * Get user audit logs (Admin only)
+   */
+  getUserAuditLogs = asyncHandler(async (req, res) => {
+    const logs = await AuditLog.findAll({
+      where: { user_id: req.params.id },
+      order: [['createdAt', 'DESC']],
+      limit: 50
+    });
+    return sendResponse(res, 200, logs);
+  });
+
+  /**
+   * Update user role (Admin only)
+   */
+  updateUserRole = asyncHandler(async (req, res) => {
+    const { role } = req.body;
+    const user = await User.findByPk(req.params.id);
+    if (!user) throw new NotFoundError('User');
+
+    await user.update({ role });
+    return sendResponse(res, 200, user, `User role updated to ${role}`);
+  });
+
+  /**
+   * Register device for push notifications
+   */
+  registerDevice = asyncHandler(async (req, res) => {
+    const { deviceId, deviceName, deviceType, pushToken } = req.body;
+    const user = await User.findByPk(req.user.id);
+    
+    const devices = user.metadata?.devices || [];
+    const existingIndex = devices.findIndex(d => d.deviceId === deviceId);
+    
+    const deviceData = { deviceId, deviceName, deviceType, pushToken, lastUsed: new Date() };
+    
+    if (existingIndex > -1) {
+      devices[existingIndex] = deviceData;
+    } else {
+      devices.push(deviceData);
+    }
+
+    await user.update({ metadata: { ...user.metadata, devices } });
+    return sendResponse(res, 200, deviceData, 'Device registered successfully');
+  });
+
+  /**
+   * Remove device
+   */
+  removeDevice = asyncHandler(async (req, res) => {
+    const { deviceId } = req.params;
+    const user = await User.findByPk(req.user.id);
+    
+    const devices = (user.metadata?.devices || []).filter(d => d.deviceId !== deviceId);
+    
+    await user.update({ metadata: { ...user.metadata, devices } });
+    return sendResponse(res, 200, null, 'Device removed');
   });
 }
 

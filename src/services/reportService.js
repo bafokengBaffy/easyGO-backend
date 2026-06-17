@@ -1,7 +1,12 @@
-const { Ride, Payment, Sequelize } = require('../models');
+const { Ride, Payment, Sequelize, Report } = require('../models');
+const reportRepository = require('../repositories/report.repository');
 const { Op } = Sequelize;
 
 class ReportService {
+  constructor() {
+    this.repository = reportRepository;
+  }
+
   /**
    * Generates a weekly analytics report for rides and revenue
    */

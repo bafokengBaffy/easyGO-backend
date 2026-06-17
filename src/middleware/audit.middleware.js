@@ -1,4 +1,4 @@
-const auditLogService = require('../services/auditLogService');
+const auditService = require('../services/auditService');
 const asyncHandler = require('../utils/asyncHandler');
 const logger = require('../utils/logger');
 
@@ -42,18 +42,17 @@ const auditAdminAction = asyncHandler(async (req, res, next) => {
   const sanitizedBody = { ...body };
   if (sanitizedBody.password) sanitizedBody.password = '********';
   if (sanitizedBody.password_hash) sanitizedBody.password_hash = '********';
-  // Add any other sensitive fields that should not be logged in plain text
 
-  const details = {
-    method,
-    originalUrl,
-    params,
-    body: sanitizedBody,
-    // correlationId: req.correlationId, // Uncomment if you have a correlationId middleware
-  };
-
-  // Log the action asynchronously without blocking the main request flow
-  auditLogService.logAdminAction(userId, action, resource, resourceId, details, ipAddress, userAgent)
+  // Use the new AuditService
+  auditService.logAction({
+    userId,
+    action,
+    resource,
+    resourceId,
+    newValues: sanitizedBody,
+    ipAddress,
+    userAgent
+  })
     .catch(err => {
       logger.error('Error during asynchronous audit logging:', err);
     });

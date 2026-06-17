@@ -1,48 +1,55 @@
-module.exports = (sequelize, DataTypes) => {
+const { DataTypes } = require('sequelize');
+
+module.exports = (sequelize) => {
   const AuditLog = sequelize.define('AuditLog', {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      primaryKey: true
+      primaryKey: true,
     },
     user_id: {
       type: DataTypes.UUID,
       allowNull: false,
-      comment: 'The ID of the admin who performed the action'
+      references: {
+        model: 'Users',
+        key: 'id',
+      },
     },
     action: {
       type: DataTypes.STRING,
-      allowNull: false,
-      comment: 'e.g., CREATE_PROMOTION, UPDATE_USER'
+      allowNull: false, // e.g., 'SUSPEND_USER', 'UPDATE_FARE'
     },
     resource: {
       type: DataTypes.STRING,
-      allowNull: true,
-      comment: 'The entity being affected (e.g., users, promotions)'
+      allowNull: false, // e.g., 'User', 'Ride', 'Zone'
     },
     resource_id: {
       type: DataTypes.STRING,
       allowNull: true,
-      comment: 'The ID of the affected resource'
     },
-    details: {
+    old_values: {
       type: DataTypes.JSONB,
       allowNull: true,
-      comment: 'Snapshot of the changes or request body'
+    },
+    new_values: {
+      type: DataTypes.JSONB,
+      allowNull: true,
     },
     ip_address: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     user_agent: {
-      type: DataTypes.STRING,
-      allowNull: true
-    }
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    timestamp: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
   }, {
-    tableName: 'audit_logs',
-    underscored: true,
-    timestamps: true,
-    updatedAt: false // Audit logs are immutable
+    tableName: 'AuditLogs',
+    timestamps: false,
   });
 
   return AuditLog;
