@@ -4,7 +4,7 @@ services:
     env: docker
     plan: starter
     rootDir: .
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./web-backend/Dockerfile
     autoDeploy: true
     healthCheckPath: /health
     envVars:
