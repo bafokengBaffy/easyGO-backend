@@ -21,6 +21,11 @@
     "migrate:undo": "sequelize-cli db:migrate:undo",
     "seed": "sequelize-cli db:seed:all",
     "seed:undo": "sequelize-cli db:seed:undo:all",
+    "seed:all": "node src/seeders/index.js",
+    "seed:users": "node src/seeders/01-users.seeder.js",
+    "seed:drivers": "node src/seeders/02-drivers-vehicles.seeder.js",
+    "seed:rides": "node src/seeders/03-rides-payments.seeder.js",
+    "db:reset": "sequelize-cli db:drop && sequelize-cli db:create && npm run migrate && npm run seed:all",
     "service:install": "powershell -ExecutionPolicy Bypass -File install-web-backend-service.ps1",
     "service:uninstall": "powershell -ExecutionPolicy Bypass -File uninstall-web-backend-service.ps1"
   },

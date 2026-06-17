@@ -1,7 +1,7 @@
 const { defaultCacheClient } = require('../config/cache-strategies');
 const logger = require('../config/logger');
 
-module.exports = ({ ttl = 60 } = {}) => {
+const cacheMiddleware = ({ ttl = 60 } = {}) => {
 	const cache = defaultCacheClient();
 	return async (req, res, next) => {
 		if (!cache) return next();
@@ -27,3 +27,7 @@ module.exports = ({ ttl = 60 } = {}) => {
 		return next();
 	};
 };
+
+module.exports = cacheMiddleware;
+module.exports.cacheMiddleware = cacheMiddleware;
+

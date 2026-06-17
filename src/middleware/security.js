@@ -3,6 +3,23 @@ const helmet = require('helmet');
 const hpp = require('hpp');
 const xss = require('xss-clean');
 
+// Named middleware that can be used directly in routes
+const securityHeaders = (req, res, next) => {
+  // Apply selected helmet protections for route-level usage
+  helmet({
+    contentSecurityPolicy: false,
+  })(req, res, () => {});
+
+  // Minimal XSS and param pollution protections for request-level
+  // (these are typically used as app-level middleware; for route-level
+  // we keep them lightweight)
+  xss()(req, res, () => {});
+  hpp()(req, res, () => {});
+
+  next();
+};
+
+// Full application-level security middleware (keeps backward compatibility)
 const securityMiddleware = (app) => {
   // Set security HTTP headers (OWASP)
   app.use(helmet());
@@ -21,4 +38,4 @@ const securityMiddleware = (app) => {
   }));
 };
 
-module.exports = securityMiddleware;
+module.exports = { securityHeaders, securityMiddleware };

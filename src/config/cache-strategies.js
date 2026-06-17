@@ -1,5 +1,9 @@
 const logger = require('./logger');
-const { getRedis } = require('./redis');
+const { redisClient } = require('./redis');
+
+function getRedis() {
+	return redisClient && redisClient.isOpen ? redisClient : null;
+}
 
 function defaultCacheClient() {
 	const redis = getRedis();
@@ -25,4 +29,4 @@ function defaultCacheClient() {
 	};
 }
 
-module.exports = { defaultCacheClient };
+module.exports = { defaultCacheClient, getRedis };
