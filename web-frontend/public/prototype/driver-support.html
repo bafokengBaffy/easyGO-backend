@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGo - Driver Support</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Page Specific Styles */
+        .support-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .support-header h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        
+        .support-header p {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-bottom: 25px;
+        }
+        
+        .search-box {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 18px;
+        }
+        
+        .support-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+        }
+        
+        .stat-icon i {
+            font-size: 24px;
+            color: white;
+        }
+        
+        .stat-card h3 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .stat-card p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .quick-help {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .help-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .help-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        .help-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .help-icon i {
+            font-size: 30px;
+            color: white;
+        }
+        
+        .help-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .help-card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .help-link {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .help-link:hover {
+            gap: 10px;
+        }
+        
+        .faq-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .section-title i {
+            font-size: 24px;
+            color: #667eea;
+        }
+        
+        .section-title h2 {
+            font-size: 22px;
+            color: #333;
+        }
+        
+        .faq-categories {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+        
+        .faq-category {
+            padding: 8px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            background: white;
+            color: #666;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-category:hover,
+        .faq-category.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .faq-item {
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 15px;
+        }
+        
+        .faq-question {
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-question:hover {
+            color: #667eea;
+        }
+        
+        .faq-question h4 {
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .faq-question h4 i {
+            color: #667eea;
+            font-size: 14px;
+        }
+        
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
+        
+        .faq-answer {
+            display: none;
+            padding: 0 0 15px 25px;
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        
+        .faq-answer.show {
+            display: block;
+        }
+        
+        .contact-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .contact-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        .contact-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .contact-icon i {
+            font-size: 35px;
+            color: white;
+        }
+        
+        .contact-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .contact-card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .contact-detail {
+            font-size: 18px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .contact-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .contact-btn.whatsapp {
+            background: #25D366;
+        }
+        
+        .contact-btn.whatsapp:hover {
+            background: #128C7E;
+        }
+        
+        .contact-btn.email {
+            background: #EA4335;
+        }
+        
+        .contact-btn.email:hover {
+            background: #D33426;
+        }
+        
+        .ticket-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .ticket-form {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 5px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        
+        .file-upload {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .file-upload i {
+            font-size: 40px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .file-upload p {
+            color: #666;
+        }
+        
+        .file-upload small {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .submit-ticket {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .submit-ticket:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .recent-tickets {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .ticket-list {
+            margin-top: 20px;
+        }
+        
+        .ticket-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .ticket-item:last-child {
+            border-bottom: none;
+        }
+        
+        .ticket-item:hover {
+            background: #f8f9fa;
+            transform: translateX(5px);
+        }
+        
+        .ticket-icon {
+            width: 45px;
+            height: 45px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .ticket-icon i {
+            font-size: 20px;
+            color: #667eea;
+        }
+        
+        .ticket-info {
+            flex: 1;
+        }
+        
+        .ticket-info h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .ticket-info p {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .ticket-status {
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-open {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-in-progress {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-resolved {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-closed {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .ticket-date {
+            font-size: 12px;
+            color: #999;
+            margin-left: 15px;
+        }
+        
+        .resources-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .resource-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .resource-card:hover i,
+        .resource-card:hover h4,
+        .resource-card:hover p {
+            color: white;
+        }
+        
+        .resource-card i {
+            font-size: 40px;
+            color: #667eea;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-card h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .resource-card p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .resource-link {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .resource-card:hover .resource-link {
+            color: white;
+        }
+        
+        .live-chat {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+        }
+        
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+        }
+        
+        .chat-button i {
+            color: white;
+            font-size: 30px;
+        }
+        
+        .chat-tooltip {
+            position: absolute;
+            right: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            white-space: nowrap;
+            font-weight: 600;
+            color: #333;
+            display: none;
+        }
+        
+        .chat-button:hover .chat-tooltip {
+            display: block;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1100;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .support-header h1 {
+                font-size: 24px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .live-chat {
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .chat-button {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .chat-button i {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                             <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="EasyGo">
+
+            </div>
+            <div class="user-info">
+                <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="User" class="user-avatar" id="userAvatar">
+                <div class="user-details">
+                    <h4 class="user-name" id="userName">Sipho Dlamini</h4>
+                    <p>Driver since 2024</p>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="driver-dashboard.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/dashboard.png" alt="Dashboard">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-available-rides.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Available Rides">
+                    <span>Available Rides</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-current-trip.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/road.png" alt="Current Trip">
+                    <span>Current Trip</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-earnings.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/money.png" alt="Earnings">
+                    <span>Earnings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-profile.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/user.png" alt="Profile">
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-vehicle.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Vehicle">
+                    <span>Vehicle</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-settings.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/settings.png" alt="Settings">
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-support.html" class="nav-link active">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/support.png" alt="Support">
+                    <span>Support</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="javascript:void(0)" class="nav-link" onclick="logout()">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/exit.png" alt="Logout">
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Support Header with Search -->
+            <div class="support-header">
+                <h1>How can we help you today?</h1>
+                <p>Search our knowledge base or browse topics below</p>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search for help articles, FAQs, or topics..." id="searchInput" onkeyup="searchHelp()">
+                </div>
+            </div>
+            
+            <!-- Support Stats -->
+            <div class="support-stats">
+                <div class="stat-card" onclick="filterByType('faq')">
+                    <div class="stat-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h3>128</h3>
+                    <p>Help Articles</p>
+                </div>
+                <div class="stat-card" onclick="openTicketForm()">
+                    <div class="stat-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <h3>24/7</h3>
+                    <p>Support Available</p>
+                </div>
+                <div class="stat-card" onclick="startLiveChat()">
+                    <div class="stat-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>5 min</h3>
+                    <p>Avg Response Time</p>
+                </div>
+                <div class="stat-card" onclick="viewTickets()">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>98%</h3>
+                    <p>Satisfaction Rate</p>
+                </div>
+            </div>
+            
+            <!-- Quick Help Cards -->
+            <div class="quick-help">
+                <div class="help-card" onclick="navigateTo('faq')">
+                    <div class="help-icon">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <h3>FAQs</h3>
+                    <p>Find quick answers to commonly asked questions about driving with EasyGo</p>
+                    <span class="help-link">Browse FAQs <i class="fas fa-arrow-right"></i></span>
+                </div>
+                
+                <div class="help-card" onclick="openTicketForm()">
+                    <div class="help-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <h3>Submit Ticket</h3>
+                    <p>Can't find what you're looking for? Submit a support ticket and we'll help</p>
+                    <span class="help-link">Create Ticket <i class="fas fa-arrow-right"></i></span>
+                </div>
+                
+                <div class="help-card" onclick="startLiveChat()">
+                    <div class="help-icon">
+                        <i class="fas fa-comment-dots"></i>
+                    </div>
+                    <h3>Live Chat</h3>
+                    <p>Chat with our support team in real-time for immediate assistance</p>
+                    <span class="help-link">Start Chat <i class="fas fa-arrow-right"></i></span>
+                </div>
+                
+                <div class="help-card" onclick="navigateTo('guides')">
+                    <div class="help-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3>Driver Guides</h3>
+                    <p>Comprehensive guides to help you make the most of your driving experience</p>
+                    <span class="help-link">View Guides <i class="fas fa-arrow-right"></i></span>
+                </div>
+            </div>
+            
+            <!-- FAQ Section -->
+            <div class="faq-section" id="faq">
+                <div class="section-title">
+                    <i class="fas fa-question-circle"></i>
+                    <h2>Frequently Asked Questions</h2>
+                </div>
+                
+                <div class="faq-categories">
+                    <button class="faq-category active" onclick="filterFaq('all')">All</button>
+                    <button class="faq-category" onclick="filterFaq('account')">Account</button>
+                    <button class="faq-category" onclick="filterFaq('payments')">Payments</button>
+                    <button class="faq-category" onclick="filterFaq('rides')">Rides</button>
+                    <button class="faq-category" onclick="filterFaq('vehicle')">Vehicle</button>
+                    <button class="faq-category" onclick="filterFaq('safety')">Safety</button>
+                </div>
+                
+                <div class="faq-list">
+                    <div class="faq-item" data-category="account">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4><i class="fas fa-user"></i> How do I update my profile information?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            You can update your profile information by going to Settings > Profile Information. From there, you can edit your name, contact details, address, and other personal information. Don't forget to click Save after making changes.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-category="account">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4><i class="fas fa-lock"></i> How do I change my password?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            To change your password, go to Settings > Privacy & Security. Enter your current password, then your new password twice, and click "Change Password". Make sure your new password is at least 8 characters long and includes a mix of letters and numbers.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-category="payments">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4><i class="fas fa-money-bill"></i> When will I get paid?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Payouts are processed weekly every Monday for all rides completed in the previous week (Monday to Sunday). You can also opt for daily payouts in Settings > Payment Settings. Payments are sent to your selected payout method within 24-48 hours.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-category="payments">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4><i class="fas fa-credit-card"></i> How do I update my payout method?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Go to Settings > Payment Settings to update your payout method. You can add bank accounts, cards, or PayPal. Make sure all details are correct to avoid payment delays. You can also set a primary payout method and backup methods.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-category="rides">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4><i class="fas fa-car"></i> How do I cancel a ride?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            To cancel a ride, go to your Current Trip and click the Cancel button. Please note that frequent cancellations may affect your driver rating. If you need to cancel due to an emergency, please contact support immediately.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-category="rides">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4><i class="fas fa-map-marker-alt"></i> Can I set preferred areas?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Yes! Go to Settings > Driver Preferences to set your preferred areas. You can select multiple areas where you prefer to drive. The app will prioritize showing you rides in these areas when you're online.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-category="vehicle">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4><i class="fas fa-tools"></i> How do I report vehicle issues?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            If you're experiencing vehicle issues, go to Support > Submit Ticket and select "Vehicle Issue" as the category. Describe the problem and upload photos if applicable. Our team will get back to you within 24 hours.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-category="vehicle">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4><i class="fas fa-calendar-check"></i> How do I schedule maintenance?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            You can schedule maintenance reminders in the Vehicle section. Go to My Vehicles, select your vehicle, and click "Schedule Maintenance". Set the type of maintenance, due date, and get reminders when it's time.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-category="safety">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4><i class="fas fa-shield-alt"></i> What safety features are available?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            EasyGo provides several safety features including: emergency button during rides, ride tracking, driver verification, and 24/7 support. You can also share your trip status with emergency contacts. In case of emergency, use the SOS button in the app.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-category="safety">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <h4><i class="fas fa-user-shield"></i> How do I report a safety concern?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            If you have a safety concern, immediately use the emergency button in the app. For non-emergency safety issues, submit a ticket with the "Safety Concern" category or call our dedicated safety hotline at +27 80 123 4567.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Options -->
+            <div class="contact-section">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h3>Phone Support</h3>
+                    <p>Speak directly with our support team</p>
+                    <div class="contact-detail">+27 11 234 5678</div>
+                    <button class="contact-btn" onclick="callSupport()">
+                        <i class="fas fa-phone"></i> Call Now
+                    </button>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h3>WhatsApp Support</h3>
+                    <p>Chat with us on WhatsApp</p>
+                    <div class="contact-detail">+27 71 234 5678</div>
+                    <button class="contact-btn whatsapp" onclick="whatsappSupport()">
+                        <i class="fab fa-whatsapp"></i> WhatsApp Us
+                    </button>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Email Support</h3>
+                    <p>Get a response within 24 hours</p>
+                    <div class="contact-detail">support@easygo.co.za</div>
+                    <button class="contact-btn email" onclick="emailSupport()">
+                        <i class="fas fa-envelope"></i> Send Email
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Submit Ticket Section -->
+            <div class="ticket-section" id="ticketForm">
+                <div class="section-title">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h2>Submit a Support Ticket</h2>
+                </div>
+                
+                <form class="ticket-form" onsubmit="event.preventDefault(); submitTicket()">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <input type="text" id="ticketSubject" placeholder="Brief description of your issue" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="ticketCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="account">Account Issue</option>
+                                <option value="payment">Payment Problem</option>
+                                <option value="ride">Ride Issue</option>
+                                <option value="vehicle">Vehicle Related</option>
+                                <option value="technical">Technical Support</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Priority</label>
+                            <select id="ticketPriority">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Related Ride (Optional)</label>
+                            <input type="text" id="relatedRide" placeholder="Ride ID if applicable">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="ticketDescription" rows="5" placeholder="Please provide detailed information about your issue..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Attachments (Optional)</label>
+                        <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload or drag and drop</p>
+                            <small>Supports: JPG, PNG, PDF (Max 10MB)</small>
+                            <input type="file" id="fileInput" multiple style="display: none;" onchange="fileSelected()">
+                        </div>
+                        <div id="fileList" style="margin-top: 10px;"></div>
+                    </div>
+                    
+                    <button type="submit" class="submit-ticket">
+                        <i class="fas fa-paper-plane"></i> Submit Ticket
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Recent Tickets -->
+            <div class="recent-tickets" id="recentTickets">
+                <div class="section-title">
+                    <i class="fas fa-history"></i>
+                    <h2>Recent Support Tickets</h2>
+                </div>
+                
+                <div class="ticket-list">
+                    <div class="ticket-item" onclick="viewTicket(1)">
+                        <div class="ticket-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="ticket-info">
+                            <h4>Payment Delay Issue</h4>
+                            <p>#TKT-2024-001 • Last updated: 2 hours ago</p>
+                        </div>
+                        <span class="ticket-status status-in-progress">In Progress</span>
+                        <span class="ticket-date">Today</span>
+                    </div>
+                    
+                    <div class="ticket-item" onclick="viewTicket(2)">
+                        <div class="ticket-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="ticket-info">
+                            <h4>Vehicle Verification Failed</h4>
+                            <p>#TKT-2024-002 • Last updated: Yesterday</p>
+                        </div>
+                        <span class="ticket-status status-resolved">Resolved</span>
+                        <span class="ticket-date">Yesterday</span>
+                    </div>
+                    
+                    <div class="ticket-item" onclick="viewTicket(3)">
+                        <div class="ticket-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="ticket-info">
+                            <h4>Incorrect Dropoff Location</h4>
+                            <p>#TKT-2024-003 • Last updated: 3 days ago</p>
+                        </div>
+                        <span class="ticket-status status-closed">Closed</span>
+                        <span class="ticket-date">3 days ago</span>
+                    </div>
+                    
+                    <div class="ticket-item" onclick="viewTicket(4)">
+                        <div class="ticket-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="ticket-info">
+                            <h4>Profile Update Issue</h4>
+                            <p>#TKT-2024-004 • Last updated: 5 days ago</p>
+                        </div>
+                        <span class="ticket-status status-resolved">Resolved</span>
+                        <span class="ticket-date">5 days ago</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resources Section -->
+            <div class="resources-section">
+                <div class="section-title">
+                    <i class="fas fa-book"></i>
+                    <h2>Driver Resources</h2>
+                </div>
+                
+                <div class="resources-grid">
+                    <div class="resource-card" onclick="viewResource('guide')">
+                        <i class="fas fa-book-open"></i>
+                        <h4>Driver Handbook</h4>
+                        <p>Complete guide to driving with EasyGo</p>
+                        <span class="resource-link">Read More <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                    
+                    <div class="resource-card" onclick="viewResource('video')">
+                        <i class="fas fa-video"></i>
+                        <h4>Video Tutorials</h4>
+                        <p>Watch step-by-step video guides</p>
+                        <span class="resource-link">Watch Now <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                    
+                    <div class="resource-card" onclick="viewResource('safety')">
+                        <i class="fas fa-shield-alt"></i>
+                        <h4>Safety Guidelines</h4>
+                        <p>Essential safety information for drivers</p>
+                        <span class="resource-link">Learn More <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                    
+                    <div class="resource-card" onclick="viewResource('tips')">
+                        <i class="fas fa-lightbulb"></i>
+                        <h4>Pro Tips</h4>
+                        <p>Tips to maximize your earnings</p>
+                        <span class="resource-link">Get Tips <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Live Chat Button -->
+    <div class="live-chat">
+        <div class="chat-button" onclick="startLiveChat()">
+            <i class="fas fa-comment-dots"></i>
+            <span class="chat-tooltip">Chat with us!</span>
+        </div>
+    </div>
+    
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script>
+        // Load user data
+        function loadUserData() {
+            const user = getCurrentUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.name;
+                
+                if (user.name.includes('Sipho')) {
+                    document.getElementById('userAvatar').src = 'https://randomuser.me/api/portraits/men/2.jpg';
+                } else {
+                    document.getElementById('userAvatar').src = 'https://randomuser.me/api/portraits/women/3.jpg';
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // FAQ Functions
+        function toggleFaq(element) {
+            element.classList.toggle('active');
+            const answer = element.nextElementSibling;
+            answer.classList.toggle('show');
+        }
+        
+        function filterFaq(category) {
+            // Update active category
+            document.querySelectorAll('.faq-category').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter FAQ items
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Search Function
+        function searchHelp() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question h4').textContent.toLowerCase();
+                const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+                
+                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Ticket Functions
+        function openTicketForm() {
+            document.getElementById('ticketForm').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function fileSelected() {
+            const fileInput = document.getElementById('fileInput');
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            for (let i = 0; i < fileInput.files.length; i++) {
+                const file = fileInput.files[i];
+                fileList.innerHTML += `<div style="padding: 5px; background: #f0f0f0; margin: 5px 0; border-radius: 5px;">
+                    <i class="fas fa-file"></i> ${file.name} (${(file.size/1024).toFixed(2)} KB)
+                </div>`;
+            }
+        }
+        
+        function submitTicket() {
+            const subject = document.getElementById('ticketSubject').value;
+            const category = document.getElementById('ticketCategory').value;
+            const description = document.getElementById('ticketDescription').value;
+            
+            if (!subject || !category || !description) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            showNotification('Ticket submitted successfully! Support will contact you within 24 hours.', 'success');
+            
+            // Reset form
+            document.getElementById('ticketSubject').value = '';
+            document.getElementById('ticketCategory').value = '';
+            document.getElementById('ticketPriority').value = 'medium';
+            document.getElementById('relatedRide').value = '';
+            document.getElementById('ticketDescription').value = '';
+            document.getElementById('fileList').innerHTML = '';
+            document.getElementById('fileInput').value = '';
+        }
+        
+        function viewTicket(ticketId) {
+            showNotification(`Viewing ticket #TKT-2024-00${ticketId}`, 'info');
+        }
+        
+        // Contact Functions
+        function callSupport() {
+            showNotification('Calling support: +27 11 234 5678', 'info');
+        }
+        
+        function whatsappSupport() {
+            showNotification('Opening WhatsApp chat', 'info');
+        }
+        
+        function emailSupport() {
+            showNotification('Opening email client', 'info');
+        }
+        
+        function startLiveChat() {
+            showNotification('Live chat started. An agent will connect shortly.', 'success');
+        }
+        
+        // Navigation Functions
+        function navigateTo(section) {
+            if (section === 'faq') {
+                document.getElementById('faq').scrollIntoView({ behavior: 'smooth' });
+            } else if (section === 'guides') {
+                showNotification('Driver guides section coming soon', 'info');
+            }
+        }
+        
+        function filterByType(type) {
+            if (type === 'faq') {
+                document.getElementById('faq').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        function viewTickets() {
+            document.getElementById('recentTickets').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function viewResource(resource) {
+            const titles = {
+                'guide': 'Driver Handbook',
+                'video': 'Video Tutorials',
+                'safety': 'Safety Guidelines',
+                'tips': 'Pro Tips'
+            };
+            showNotification(`Opening ${titles[resource]}`, 'info');
+        }
+        
+        // Notification Function
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = 'toast';
+            
+            let bgColor = '#28a745';
+            if (type === 'error') bgColor = '#dc3545';
+            if (type === 'info') bgColor = '#17a2b8';
+            if (type === 'warning') bgColor = '#ffc107';
+            
+            notification.style.backgroundColor = bgColor;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Load user data on page load
+        document.addEventListener('DOMContentLoaded', loadUserData);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGo - Driver Settings</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Page Specific Styles */
+        .settings-header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .settings-header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .settings-header p {
+            color: #666;
+        }
+        
+        .save-all-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .save-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .settings-nav {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .settings-nav-item {
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .settings-nav-item i {
+            color: #667eea;
+        }
+        
+        .settings-nav-item:hover,
+        .settings-nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .settings-nav-item:hover i,
+        .settings-nav-item.active i {
+            color: white;
+        }
+        
+        .settings-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .section-title i {
+            color: #667eea;
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .settings-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-icon i {
+            font-size: 24px;
+            color: white;
+        }
+        
+        .card-header h3 {
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+        
+        .toggle-label {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #28a745;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .range-slider {
+            padding: 10px 0;
+        }
+        
+        .range-slider input {
+            width: 100%;
+        }
+        
+        .range-values {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .payment-method:hover {
+            border-color: #667eea;
+        }
+        
+        .payment-method.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .payment-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .payment-icon i {
+            font-size: 20px;
+            color: #667eea;
+        }
+        
+        .payment-info {
+            flex: 1;
+        }
+        
+        .payment-info h4 {
+            font-size: 16px;
+            margin-bottom: 3px;
+            color: #333;
+        }
+        
+        .payment-info p {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .notification-group {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .notification-group:last-child {
+            border-bottom: none;
+        }
+        
+        .notification-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+        }
+        
+        .notification-info h4 {
+            font-size: 15px;
+            margin-bottom: 3px;
+            color: #333;
+        }
+        
+        .notification-info p {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .language-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .language-option {
+            text-align: center;
+            padding: 15px 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .language-option:hover,
+        .language-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .language-option img {
+            width: 30px;
+            height: 20px;
+            object-fit: cover;
+            margin-bottom: 8px;
+            border-radius: 3px;
+        }
+        
+        .language-option span {
+            display: block;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .danger-zone {
+            background: #fff5f5;
+            border: 2px solid #dc3545;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        .danger-zone h3 {
+            color: #dc3545;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .danger-zone p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1100;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .settings-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .settings-nav {
+                justify-content: center;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                              <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="EasyGo">
+
+            </div>
+            <div class="user-info">
+                <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="User" class="user-avatar" id="userAvatar">
+                <div class="user-details">
+                    <h4 class="user-name" id="userName">Sipho Dlamini</h4>
+                    <p>Driver since 2024</p>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="driver-dashboard.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/dashboard.png" alt="Dashboard">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-available-rides.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Available Rides">
+                    <span>Available Rides</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-current-trip.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/road.png" alt="Current Trip">
+                    <span>Current Trip</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-earnings.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/money.png" alt="Earnings">
+                    <span>Earnings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-profile.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/user.png" alt="Profile">
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-vehicle.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Vehicle">
+                    <span>Vehicle</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-settings.html" class="nav-link active">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/settings.png" alt="Settings">
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-support.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/support.png" alt="Support">
+                    <span>Support</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="javascript:void(0)" class="nav-link" onclick="logout()">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/exit.png" alt="Logout">
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Settings Header -->
+            <div class="settings-header">
+                <div>
+                    <h1>Settings</h1>
+                    <p>Manage your account preferences and application settings</p>
+                </div>
+                <button class="save-all-btn" onclick="saveAllSettings()">
+                    <i class="fas fa-save"></i> Save All Changes
+                </button>
+            </div>
+            
+            <!-- Settings Navigation -->
+            <div class="settings-nav">
+                <div class="settings-nav-item active" onclick="scrollToSection('profile')">
+                    <i class="fas fa-user"></i> Profile
+                </div>
+                <div class="settings-nav-item" onclick="scrollToSection('notifications')">
+                    <i class="fas fa-bell"></i> Notifications
+                </div>
+                <div class="settings-nav-item" onclick="scrollToSection('payments')">
+                    <i class="fas fa-wallet"></i> Payments
+                </div>
+                <div class="settings-nav-item" onclick="scrollToSection('privacy')">
+                    <i class="fas fa-lock"></i> Privacy
+                </div>
+                <div class="settings-nav-item" onclick="scrollToSection('preferences')">
+                    <i class="fas fa-sliders-h"></i> Preferences
+                </div>
+                <div class="settings-nav-item" onclick="scrollToSection('language')">
+                    <i class="fas fa-language"></i> Language
+                </div>
+                <div class="settings-nav-item" onclick="scrollToSection('danger')">
+                    <i class="fas fa-exclamation-triangle"></i> Danger Zone
+                </div>
+            </div>
+            
+            <!-- Profile Settings -->
+            <div class="settings-section" id="profile">
+                <h2 class="section-title">
+                    <i class="fas fa-user-circle"></i>
+                    Profile Information
+                </h2>
+                
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h3>Personal Details</h3>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="fullName" value="Sipho Dlamini">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="email" value="sipho.dlamini@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" id="phone" value="+27 71 234 5678">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="date" id="dob" value="1985-06-15">
+                        </div>
+                        
+                        <button class="btn-save" onclick="saveSection('profile')">
+                            <i class="fas fa-save"></i> Save Profile
+                        </button>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h3>Address</h3>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Street Address</label>
+                            <input type="text" id="address" value="123 Main Street">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>City</label>
+                                <input type="text" id="city" value="Johannesburg">
+                            </div>
+                            <div class="form-group">
+                                <label>Province</label>
+                                <select id="province">
+                                    <option value="gp" selected>Gauteng</option>
+                                    <option value="wc">Western Cape</option>
+                                    <option value="kzn">KwaZulu-Natal</option>
+                                    <option value="ec">Eastern Cape</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Postal Code</label>
+                                <input type="text" id="postalCode" value="2000">
+                            </div>
+                            <div class="form-group">
+                                <label>Country</label>
+                                <input type="text" id="country" value="South Africa" disabled>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-save" onclick="saveSection('address')">
+                            <i class="fas fa-save"></i> Save Address
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notification Settings -->
+            <div class="settings-section" id="notifications">
+                <h2 class="section-title">
+                    <i class="fas fa-bell"></i>
+                    Notification Preferences
+                </h2>
+                
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-ride"></i>
+                            </div>
+                            <h3>Ride Notifications</h3>
+                        </div>
+                        
+                        <div class="notification-group">
+                            <div class="notification-item">
+                                <div class="notification-info">
+                                    <h4>New Ride Requests</h4>
+                                    <p>Get notified when new rides are available</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="newRidesNotify" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="notification-item">
+                                <div class="notification-info">
+                                    <h4>Ride Cancellations</h4>
+                                    <p>Get notified when a ride is cancelled</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="cancellationNotify" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="notification-item">
+                                <div class="notification-info">
+                                    <h4>Payment Received</h4>
+                                    <p>Get notified when you receive payment</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="paymentNotify" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <h3>Promotional Notifications</h3>
+                        </div>
+                        
+                        <div class="notification-group">
+                            <div class="notification-item">
+                                <div class="notification-info">
+                                    <h4>Promotional Offers</h4>
+                                    <p>Get notified about bonuses and incentives</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="promoNotify" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="notification-item">
+                                <div class="notification-info">
+                                    <h4>News & Updates</h4>
+                                    <p>Receive app updates and news</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="newsNotify">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="notification-item">
+                                <div class="notification-info">
+                                    <h4>Maintenance Reminders</h4>
+                                    <p>Get reminded about vehicle maintenance</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="maintenanceNotify" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-volume-up"></i>
+                            </div>
+                            <h3>Sound & Alerts</h3>
+                        </div>
+                        
+                        <div class="notification-group">
+                            <div class="notification-item">
+                                <div class="notification-info">
+                                    <h4>Ride Request Sound</h4>
+                                    <p>Play sound for new ride requests</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="soundNotify" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="notification-item">
+                                <div class="notification-info">
+                                    <h4>Vibrate</h4>
+                                    <p>Vibrate for notifications</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="vibrateNotify" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Notification Volume</label>
+                                <div class="range-slider">
+                                    <input type="range" id="volume" min="0" max="100" value="80">
+                                    <div class="range-values">
+                                        <span>0%</span>
+                                        <span id="volumeValue">80%</span>
+                                        <span>100%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-save" onclick="saveSection('notifications')">
+                    <i class="fas fa-save"></i> Save Notification Settings
+                </button>
+            </div>
+            
+            <!-- Payment Settings -->
+            <div class="settings-section" id="payments">
+                <h2 class="section-title">
+                    <i class="fas fa-wallet"></i>
+                    Payment Settings
+                </h2>
+                
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <h3>Payout Method</h3>
+                        </div>
+                        
+                        <div class="payment-method selected" onclick="selectPaymentMethod('bank')">
+                            <div class="payment-icon">
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <div class="payment-info">
+                                <h4>Bank Transfer</h4>
+                                <p>•••• 1234 • FNB • Sipho Dlamini</p>
+                            </div>
+                            <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                        </div>
+                        
+                        <div class="payment-method" onclick="selectPaymentMethod('card')">
+                            <div class="payment-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="payment-info">
+                                <h4>Debit Card</h4>
+                                <p>VISA •••• 5678</p>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method" onclick="selectPaymentMethod('paypal')">
+                            <div class="payment-icon">
+                                <i class="fab fa-paypal"></i>
+                            </div>
+                            <div class="payment-info">
+                                <h4>PayPal</h4>
+                                <p>sipho.d@example.com</p>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-save" style="width: 100%; margin-top: 20px;" onclick="addPaymentMethod()">
+                            <i class="fas fa-plus"></i> Add Payment Method
+                        </button>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <h3>Payout Schedule</h3>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Payout Frequency</label>
+                            <select id="payoutFrequency">
+                                <option value="daily">Daily</option>
+                                <option value="weekly" selected>Weekly (Every Monday)</option>
+                                <option value="biweekly">Bi-Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Minimum Payout Amount</label>
+                            <input type="number" id="minPayout" value="100" min="50" step="10">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Currency</label>
+                            <select id="currency">
+                                <option value="zar" selected>ZAR - South African Rand</option>
+                                <option value="usd">USD - US Dollar</option>
+                                <option value="eur">EUR - Euro</option>
+                                <option value="gbp">GBP - British Pound</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-save" onclick="saveSection('payments')">
+                    <i class="fas fa-save"></i> Save Payment Settings
+                </button>
+            </div>
+            
+            <!-- Privacy Settings -->
+            <div class="settings-section" id="privacy">
+                <h2 class="section-title">
+                    <i class="fas fa-lock"></i>
+                    Privacy & Security
+                </h2>
+                
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <h3>Security</h3>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="currentPassword" placeholder="Enter current password">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="newPassword" placeholder="Enter new password">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                        </div>
+                        
+                        <button class="btn-save" onclick="changePassword()">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Two-Factor Authentication</h3>
+                        </div>
+                        
+                        <div class="notification-item">
+                            <div class="notification-info">
+                                <h4>Enable 2FA</h4>
+                                <p>Add extra security to your account</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="twoFactor">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="notification-item">
+                            <div class="notification-info">
+                                <h4>Login Alerts</h4>
+                                <p>Get notified of new logins</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="loginAlerts" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Recovery Email</label>
+                            <input type="email" id="recoveryEmail" value="sipho.recovery@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-user-secret"></i>
+                            </div>
+                            <h3>Data & Privacy</h3>
+                        </div>
+                        
+                        <div class="notification-item">
+                            <div class="notification-info">
+                                <h4>Share Usage Data</h4>
+                                <p>Help improve EasyGo by sharing usage data</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="shareData" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="notification-item">
+                            <div class="notification-info">
+                                <h4>Location History</h4>
+                                <p>Store location history for better rides</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="locationHistory" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <button class="btn-save" style="margin-top: 20px;" onclick="downloadData()">
+                            <i class="fas fa-download"></i> Download My Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Driver Preferences -->
+            <div class="settings-section" id="preferences">
+                <h2 class="section-title">
+                    <i class="fas fa-sliders-h"></i>
+                    Driver Preferences
+                </h2>
+                
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <h3>Ride Preferences</h3>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Maximum Ride Distance</label>
+                            <select id="maxDistance">
+                                <option value="10">10 km</option>
+                                <option value="20">20 km</option>
+                                <option value="30" selected>30 km</option>
+                                <option value="50">50 km</option>
+                                <option value="100">100+ km</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Preferred Areas</label>
+                            <select id="preferredAreas" multiple size="3">
+                                <option value="sandton" selected>Sandton</option>
+                                <option value="fourways" selected>Fourways</option>
+                                <option value="midrand">Midrand</option>
+                                <option value="rosbank">Rosebank</option>
+                                <option value="airport">Airport</option>
+                            </select>
+                            <small style="color: #666;">Hold Ctrl to select multiple</small>
+                        </div>
+                        
+                        <div class="toggle-switch">
+                            <span class="toggle-label">Accept Airport Rides</span>
+                            <label class="switch">
+                                <input type="checkbox" id="airportRides" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3>Working Hours</h3>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Start Time</label>
+                                <input type="time" id="startTime" value="06:00">
+                            </div>
+                            <div class="form-group">
+                                <label>End Time</label>
+                                <input type="time" id="endTime" value="20:00">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Days Available</label>
+                            <select id="workDays" multiple size="4">
+                                <option value="mon" selected>Monday</option>
+                                <option value="tue" selected>Tuesday</option>
+                                <option value="wed" selected>Wednesday</option>
+                                <option value="thu" selected>Thursday</option>
+                                <option value="fri" selected>Friday</option>
+                                <option value="sat">Saturday</option>
+                                <option value="sun">Sunday</option>
+                            </select>
+                        </div>
+                        
+                        <div class="toggle-switch">
+                            <span class="toggle-label">Auto-offline after last ride</span>
+                            <label class="switch">
+                                <input type="checkbox" id="autoOffline" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-car-side"></i>
+                            </div>
+                            <h3>Ride Experience</h3>
+                        </div>
+                        
+                        <div class="toggle-switch">
+                            <span class="toggle-label">Allow Pet Friendly Rides</span>
+                            <label class="switch">
+                                <input type="checkbox" id="petFriendly" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="toggle-switch">
+                            <span class="toggle-label">Allow Wheelchair Access</span>
+                            <label class="switch">
+                                <input type="checkbox" id="wheelchair">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="toggle-switch">
+                            <span class="toggle-label">Allow Music in Car</span>
+                            <label class="switch">
+                                <input type="checkbox" id="musicAllowed" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="toggle-switch">
+                            <span class="toggle-label">Allow Talking</span>
+                            <label class="switch">
+                                <input type="checkbox" id="talkingAllowed" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-save" onclick="saveSection('preferences')">
+                    <i class="fas fa-save"></i> Save Preferences
+                </button>
+            </div>
+            
+            <!-- Language & Region -->
+            <div class="settings-section" id="language">
+                <h2 class="section-title">
+                    <i class="fas fa-language"></i>
+                    Language & Region
+                </h2>
+                
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <h3>App Language</h3>
+                        </div>
+                        
+                        <div class="language-selector">
+                            <div class="language-option selected" onclick="selectLanguage('en')">
+                                <img src="https://flagcdn.com/w40/gb.png" alt="English">
+                                <span>English</span>
+                            </div>
+                            <div class="language-option" onclick="selectLanguage('af')">
+                                <img src="https://flagcdn.com/w40/za.png" alt="Afrikaans">
+                                <span>Afrikaans</span>
+                            </div>
+                            <div class="language-option" onclick="selectLanguage('zu')">
+                                <img src="https://flagcdn.com/w40/za.png" alt="Zulu">
+                                <span>isiZulu</span>
+                            </div>
+                            <div class="language-option" onclick="selectLanguage('xh')">
+                                <img src="https://flagcdn.com/w40/za.png" alt="Xhosa">
+                                <span>isiXhosa</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3>Time & Date</h3>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Time Format</label>
+                            <select id="timeFormat">
+                                <option value="12" selected>12-hour (12:00 PM)</option>
+                                <option value="24">24-hour (14:00)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Date Format</label>
+                            <select id="dateFormat">
+                                <option value="dmy" selected>DD/MM/YYYY</option>
+                                <option value="mdy">MM/DD/YYYY</option>
+                                <option value="ymd">YYYY/MM/DD</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Time Zone</label>
+                            <select id="timezone">
+                                <option value="jhb" selected>South Africa Standard Time (GMT+2)</option>
+                                <option value="london">London (GMT+0)</option>
+                                <option value="ny">New York (GMT-5)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-ruler"></i>
+                            </div>
+                            <h3>Units</h3>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Distance</label>
+                            <select id="distanceUnit">
+                                <option value="km" selected>Kilometers (km)</option>
+                                <option value="mi">Miles (mi)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Currency</label>
+                            <select id="currencyUnit">
+                                <option value="zar" selected>South African Rand (R)</option>
+                                <option value="usd">US Dollar ($)</option>
+                                <option value="eur">Euro (€)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Fuel Efficiency</label>
+                            <select id="fuelUnit">
+                                <option value="l100" selected>L/100km</option>
+                                <option value="mpg">MPG</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-save" onclick="saveSection('language')">
+                    <i class="fas fa-save"></i> Save Language Settings
+                </button>
+            </div>
+            
+            <!-- Danger Zone -->
+            <div class="danger-zone" id="danger">
+                <h3>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Danger Zone
+                </h3>
+                <p>Once you delete your account, there is no going back. Please be certain.</p>
+                
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn-danger" onclick="deactivateAccount()">
+                        <i class="fas fa-pause-circle"></i> Deactivate Account
+                    </button>
+                    <button class="btn-danger" onclick="deleteAccount()">
+                        <i class="fas fa-trash-alt"></i> Delete Account
+                    </button>
+                    <button class="btn-danger" onclick="clearData()">
+                        <i class="fas fa-eraser"></i> Clear All Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script>
+        // Load user data
+        function loadUserData() {
+            const user = getCurrentUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.name;
+                
+                if (user.name.includes('Sipho')) {
+                    document.getElementById('userAvatar').src = 'https://randomuser.me/api/portraits/men/2.jpg';
+                } else {
+                    document.getElementById('userAvatar').src = 'https://randomuser.me/api/portraits/women/3.jpg';
+                }
+                
+                // Populate form fields based on user
+                if (user.name === 'Sipho Dlamini') {
+                    document.getElementById('fullName').value = 'Sipho Dlamini';
+                    document.getElementById('email').value = 'sipho.dlamini@example.com';
+                    document.getElementById('phone').value = '+27 71 234 5678';
+                } else if (user.name === 'Nomsa Zwane') {
+                    document.getElementById('fullName').value = 'Nomsa Zwane';
+                    document.getElementById('email').value = 'nomsa.zwane@example.com';
+                    document.getElementById('phone').value = '+27 72 345 6789';
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // Volume slider
+        const volumeSlider = document.getElementById('volume');
+        const volumeValue = document.getElementById('volumeValue');
+        
+        if (volumeSlider) {
+            volumeSlider.addEventListener('input', function() {
+                volumeValue.textContent = this.value + '%';
+            });
+        }
+        
+        function scrollToSection(sectionId) {
+            // Update active nav item
+            document.querySelectorAll('.settings-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Scroll to section
+            const section = document.getElementById(sectionId);
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function saveAllSettings() {
+            showNotification('All settings saved successfully!', 'success');
+        }
+        
+        function saveSection(section) {
+            showNotification(`${section} settings saved successfully!`, 'success');
+        }
+        
+        function selectPaymentMethod(method) {
+            document.querySelectorAll('.payment-method').forEach(m => {
+                m.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+        
+        function addPaymentMethod() {
+            alert('Add payment method functionality would open here');
+        }
+        
+        function changePassword() {
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            
+            if (!current || !newPass || !confirm) {
+                showNotification('Please fill in all password fields', 'error');
+                return;
+            }
+            
+            if (newPass !== confirm) {
+                showNotification('New passwords do not match', 'error');
+                return;
+            }
+            
+            if (newPass.length < 8) {
+                showNotification('Password must be at least 8 characters', 'error');
+                return;
+            }
+            
+            showNotification('Password changed successfully!', 'success');
+            
+            // Clear fields
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+        
+        function downloadData() {
+            showNotification('Your data download has been initiated. You will receive an email shortly.', 'success');
+        }
+        
+        function selectLanguage(lang) {
+            document.querySelectorAll('.language-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+        
+        function deactivateAccount() {
+            if (confirm('Are you sure you want to deactivate your account? You can reactivate anytime by logging in.')) {
+                showNotification('Account deactivated successfully', 'success');
+            }
+        }
+        
+        function deleteAccount() {
+            if (confirm('WARNING: This action is irreversible. Are you absolutely sure you want to delete your account?')) {
+                if (confirm('This will permanently delete all your data. Type "DELETE" to confirm.')) {
+                    showNotification('Account deletion initiated', 'success');
+                }
+            }
+        }
+        
+        function clearData() {
+            if (confirm('Clear all app data? This will reset all settings to default.')) {
+                showNotification('All data cleared successfully', 'success');
+            }
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = 'toast';
+            
+            let bgColor = '#28a745';
+            if (type === 'error') bgColor = '#dc3545';
+            if (type === 'warning') bgColor = '#ffc107';
+            
+            notification.style.backgroundColor = bgColor;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Load user data on page load
+        document.addEventListener('DOMContentLoaded', loadUserData);
+    </script>
+</body>
+</html>

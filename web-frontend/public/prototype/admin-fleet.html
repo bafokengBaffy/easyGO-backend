@@ -1,0 +1,1254 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGo - Fleet Management Center</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Page Specific Styles */
+        :root {
+            --primary: #1d4e89;
+            --primary-light: #e8f0fe;
+            --success: #00a86b;
+            --warning: #f9a826;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --gray-bg: #f8fafd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-bg);
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+            transition: margin-left 0.3s;
+        }
+
+        .main-content.expanded {
+            margin-left: 70px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-title h1 {
+            font-size: 32px;
+            color: #1a2639;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .page-title p {
+            color: #5f6b7a;
+            font-size: 15px;
+        }
+        
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            padding: 10px 20px;
+            min-width: 350px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        
+        .search-box i {
+            color: #94a3b8;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+        
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+            background: transparent;
+        }
+
+        .filter-dropdown {
+            position: relative;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2d3f59;
+        }
+
+        .filter-btn i {
+            color: var(--primary);
+        }
+        
+        .add-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, #2a5f9e 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 6px 12px -8px var(--primary);
+            transition: all 0.2s;
+        }
+        
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px -10px var(--primary);
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f9;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(29,78,137,0.08);
+        }
+        
+        .stat-card h3 {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-trend {
+            font-size: 13px;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-trend.down {
+            color: #ef4444;
+        }
+
+        /* Vehicle Health Cards */
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .health-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #edf2f9;
+        }
+
+        .health-card.good { border-left: 4px solid var(--success); }
+        .health-card.warning { border-left: 4px solid var(--warning); }
+        .health-card.critical { border-left: 4px solid var(--danger); }
+
+        .health-title {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .health-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .health-progress {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--success);
+            border-radius: 6px;
+            width: 75%;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            border: 1px solid #edf2f9;
+            margin-bottom: 30px;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .table-header h2 {
+            font-size: 20px;
+            color: #1a2639;
+            font-weight: 600;
+        }
+
+        .table-tabs {
+            display: flex;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 50px;
+        }
+
+        .tab-btn {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #475569;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 16px 12px;
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #eef2f6;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .vehicle-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .vehicle-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #1d4e89 0%, #2a5f9e 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .vehicle-details {
+            font-weight: 500;
+        }
+
+        .vehicle-model {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            letter-spacing: 0.2px;
+        }
+        
+        .status-active {
+            background: #e3f9ed;
+            color: #00a86b;
+        }
+        
+        .status-maintenance {
+            background: #fff4e0;
+            color: #f9a826;
+        }
+
+        .status-inactive {
+            background: #fee9e7;
+            color: #e74c3c;
+        }
+
+        .status-reserved {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .badge {
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #475569;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge i {
+            font-size: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .action-btn.schedule {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .action-btn.maintenance {
+            background: #fff4e0;
+            color: #f9a826;
+        }
+        
+        .action-btn.view {
+            background: #e8f0fe;
+            color: var(--primary);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 30px;
+        }
+        
+        .page-item {
+            padding: 10px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 40px;
+            cursor: pointer;
+            color: #475569;
+            font-weight: 500;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .page-item:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .page-item.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Maintenance Timeline */
+        .timeline {
+            margin-top: 30px;
+            background: white;
+            border-radius: 28px;
+            padding: 24px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            padding: 16px 0;
+            border-bottom: 1px solid #eef2f6;
+        }
+
+        .timeline-date {
+            min-width: 100px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .timeline-subtitle {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            padding: 30px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h3 {
+            font-size: 22px;
+            color: #1a2639;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #334155;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            font-family: inherit;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Alert */
+        .alert {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 16px 24px;
+            border-radius: 50px;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .alert.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .alert.success i {
+            color: var(--success);
+        }
+
+        .alert.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .alert.warning i {
+            color: var(--warning);
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                               <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="EasyGo">
+
+            </div>
+            <div class="user-info">
+                <img src="https://randomuser.me/api/portraits/men/5.jpg" alt="Admin" class="user-avatar" id="userAvatar">
+                <div class="user-details">
+                    <h4 class="user-name" id="userName">Bongani Mkhize</h4>
+                    <p>Operations Manager</p>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="admin-panel.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/dashboard.png" alt="Dashboard">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-users.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/user-group-man-man.png" alt="Users">
+                    <span>Users</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-drivers.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/driver.png" alt="Drivers">
+                    <span>Drivers</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-trips.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Trips">
+                    <span>Trips</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-payments.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/money.png" alt="Payments">
+                    <span>Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-reports.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/analytics.png" alt="Reports">
+                    <span>Reports</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-verification.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/approval.png" alt="Verification">
+                    <span>Verification</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-support.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/support.png" alt="Support">
+                    <span>Support</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-promotions.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/discount.png" alt="Promotions">
+                    <span>Promotions</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-fleet.html" class="nav-link active">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/truck.png" alt="Fleet">
+                    <span>Fleet</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-zones.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/map.png" alt="Zones">
+                    <span>Zones</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-audit.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/activity-log.png" alt="Audit">
+                    <span>Audit Logs</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-incidents.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/emergency-button.png" alt="Incidents">
+                    <span>Incidents</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-reviews.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/star.png" alt="Reviews">
+                    <span>Reviews</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-admins.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/admin-settings-male.png" alt="Admins">
+                    <span>Admin Users</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-settings.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/settings.png" alt="Settings">
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="javascript:void(0)" class="nav-link" onclick="logout()">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/exit.png" alt="Logout">
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <h1>Fleet Management Center</h1>
+                    <p>Track, manage, and maintain your entire vehicle fleet</p>
+                </div>
+                <div class="action-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by model, plate, or driver...">
+                    </div>
+                    <div class="filter-dropdown">
+                        <button class="filter-btn" onclick="toggleFilter()">
+                            <i class="fas fa-filter"></i>
+                            Filter
+                        </button>
+                    </div>
+                    <button class="add-btn" onclick="showAddVehicleModal()">
+                        <i class="fas fa-plus"></i>
+                        Add Vehicle
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>Total Vehicles</h3>
+                    <div class="stat-number">342</div>
+                    <div class="stat-trend"><i class="fas fa-arrow-up"></i> +12 this month</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active on Road</h3>
+                    <div class="stat-number">276</div>
+                    <div class="stat-trend"><i class="fas fa-check-circle"></i> 81% utilization</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Maintenance</h3>
+                    <div class="stat-number">48</div>
+                    <div class="stat-trend warning"><i class="fas fa-exclamation-triangle"></i> 12 overdue</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg. Mileage</h3>
+                    <div class="stat-number">45,289</div>
+                    <div class="stat-trend"><i class="fas fa-road"></i> +1,234 this week</div>
+                </div>
+            </div>
+
+            <!-- Vehicle Health Overview -->
+            <div class="health-grid">
+                <div class="health-card good">
+                    <div class="health-title">Fleet Health</div>
+                    <div class="health-value">87% Good</div>
+                    <div class="health-progress">
+                        <div class="progress-bar" style="width: 87%"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #64748b;">
+                        <span>Excellent: 198</span>
+                        <span>Good: 96</span>
+                        <span>Fair: 48</span>
+                    </div>
+                </div>
+                <div class="health-card warning">
+                    <div class="health-title">Upcoming Service</div>
+                    <div class="health-value">23 Vehicles</div>
+                    <div style="margin-top: 10px; font-size: 13px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Next 7 days</span>
+                            <span>8</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Next 30 days</span>
+                            <span>15</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="health-card critical">
+                    <div class="health-title">Immediate Attention</div>
+                    <div class="health-value">12 Vehicles</div>
+                    <div style="margin-top: 10px;">
+                        <span class="badge" style="background: #fee9e7; color: #e74c3c;">
+                            <i class="fas fa-exclamation-circle"></i> Overdue service: 5
+                        </span>
+                        <span class="badge" style="margin-left: 5px; background: #fee9e7; color: #e74c3c;">
+                            <i class="fas fa-wrench"></i> Breakdown: 7
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Table with Tabs -->
+            <div class="data-table">
+                <div class="table-header">
+                    <h2>Vehicle Fleet Directory</h2>
+                    <div class="table-tabs">
+                        <button class="tab-btn active" onclick="filterTable('all')">All Vehicles</button>
+                        <button class="tab-btn" onclick="filterTable('active')">Active</button>
+                        <button class="tab-btn" onclick="filterTable('maintenance')">Maintenance</button>
+                        <button class="tab-btn" onclick="filterTable('inactive')">Inactive</button>
+                    </div>
+                </div>
+                
+                <table id="fleetTable">
+                    <thead>
+                        <tr>
+                            <th>Vehicle</th>
+                            <th>License Plate</th>
+                            <th>Driver</th>
+                            <th>Status</th>
+                            <th>Mileage</th>
+                            <th>Last Service</th>
+                            <th>Next Service</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+                
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <div class="page-item" onclick="changePage(1)">1</div>
+                    <div class="page-item active" onclick="changePage(2)">2</div>
+                    <div class="page-item" onclick="changePage(3)">3</div>
+                    <div class="page-item" onclick="changePage(4)">4</div>
+                </div>
+            </div>
+
+            <!-- Maintenance Timeline -->
+            <div class="timeline">
+                <div class="table-header">
+                    <h2>Upcoming Maintenance Schedule</h2>
+                    <a href="#" style="color: var(--primary); text-decoration: none;">View Calendar →</a>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">Today, 2:00 PM</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Toyota Corolla · GP 123-456</div>
+                        <div class="timeline-subtitle">Regular service · Assigned to Mike's Garage</div>
+                    </div>
+                    <span class="badge" style="background: var(--warning); color: white;">Due today</span>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">Tomorrow, 9:00 AM</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Hyundai i20 · GP 789-012</div>
+                        <div class="timeline-subtitle">Tire rotation & alignment · Assigned to Auto Care</div>
+                    </div>
+                    <span class="badge">Scheduled</span>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">Feb 20, 2026</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Ford Ranger · GP 345-678</div>
+                        <div class="timeline-subtitle">Major service (60,000 km) · Assigned to Ford Dealership</div>
+                    </div>
+                    <span class="badge">Upcoming</span>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">Feb 22, 2026</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Volkswagen Polo · GP 901-234</div>
+                        <div class="timeline-subtitle">Brake pad replacement · Assigned to VW Service</div>
+                    </div>
+                    <span class="badge">Upcoming</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Vehicle Modal -->
+    <div class="modal" id="vehicleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Vehicle</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <form id="vehicleForm" onsubmit="event.preventDefault(); saveVehicle();">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Make</label>
+                        <select id="vehicleMake" required>
+                            <option value="">Select make</option>
+                            <option value="Toyota">Toyota</option>
+                            <option value="Hyundai">Hyundai</option>
+                            <option value="Ford">Ford</option>
+                            <option value="Volkswagen">Volkswagen</option>
+                            <option value="Nissan">Nissan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Model</label>
+                        <input type="text" id="vehicleModel" placeholder="e.g., Corolla" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="number" id="vehicleYear" placeholder="2023" required>
+                    </div>
+                    <div class="form-group">
+                        <label>License Plate</label>
+                        <input type="text" id="licensePlate" placeholder="GP 123-456" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="text" id="vehicleColor" placeholder="White">
+                    </div>
+                    <div class="form-group">
+                        <label>Current Mileage</label>
+                        <input type="number" id="mileage" placeholder="15000">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Assigned Driver</label>
+                    <select id="assignedDriver">
+                        <option value="">Unassigned</option>
+                        <option value="Sipho Dlamini">Sipho Dlamini</option>
+                        <option value="Lerato Molefe">Lerato Molefe</option>
+                        <option value="Thabo Zwane">Thabo Zwane</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="vehicleNotes" rows="3" placeholder="Additional information..."></textarea>
+                </div>
+                
+                <button type="submit" class="add-btn" style="width: 100%;">Save Vehicle</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alertContainer"></div>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script>
+        // Mock Fleet Data
+        const fleetData = [
+            {
+                id: 'VH001',
+                make: 'Toyota',
+                model: 'Corolla',
+                year: 2023,
+                plate: 'GP 123-456',
+                color: 'White',
+                driver: 'Sipho Dlamini',
+                driverId: 'DR001',
+                status: 'active',
+                mileage: 45289,
+                lastService: '2026-01-15',
+                nextService: '2026-03-15',
+                health: 'good'
+            },
+            {
+                id: 'VH002',
+                make: 'Hyundai',
+                model: 'i20',
+                year: 2022,
+                plate: 'GP 789-012',
+                color: 'Blue',
+                driver: 'Lerato Molefe',
+                driverId: 'DR002',
+                status: 'active',
+                mileage: 38456,
+                lastService: '2026-01-20',
+                nextService: '2026-03-20',
+                health: 'good'
+            },
+            {
+                id: 'VH003',
+                make: 'Ford',
+                model: 'Ranger',
+                year: 2021,
+                plate: 'GP 345-678',
+                color: 'Black',
+                driver: 'Thabo Zwane',
+                driverId: 'DR003',
+                status: 'maintenance',
+                mileage: 67890,
+                lastService: '2026-01-05',
+                nextService: '2026-02-05',
+                health: 'warning'
+            },
+            {
+                id: 'VH004',
+                make: 'Volkswagen',
+                model: 'Polo',
+                year: 2023,
+                plate: 'GP 901-234',
+                color: 'Silver',
+                driver: 'Nomsa Nkosi',
+                driverId: 'DR004',
+                status: 'active',
+                mileage: 12345,
+                lastService: '2026-02-01',
+                nextService: '2026-04-01',
+                health: 'good'
+            },
+            {
+                id: 'VH005',
+                make: 'Nissan',
+                model: 'Qashqai',
+                year: 2022,
+                plate: 'GP 567-890',
+                color: 'Red',
+                driver: 'Bongani Khumalo',
+                driverId: 'DR005',
+                status: 'inactive',
+                mileage: 56789,
+                lastService: '2025-12-10',
+                nextService: '2026-02-10',
+                health: 'critical'
+            },
+            {
+                id: 'VH006',
+                make: 'Toyota',
+                model: 'Hilux',
+                year: 2023,
+                plate: 'GP 234-567',
+                color: 'Gray',
+                driver: 'Zanele Mthembu',
+                driverId: 'DR006',
+                status: 'active',
+                mileage: 28901,
+                lastService: '2026-01-28',
+                nextService: '2026-03-28',
+                health: 'good'
+            },
+            {
+                id: 'VH007',
+                make: 'Hyundai',
+                model: 'Tucson',
+                year: 2022,
+                plate: 'GP 890-123',
+                color: 'Green',
+                driver: 'Kagiso Moeketsi',
+                driverId: 'DR007',
+                status: 'maintenance',
+                mileage: 45678,
+                lastService: '2026-01-12',
+                nextService: '2026-02-12',
+                health: 'warning'
+            }
+        ];
+
+        let currentFilter = 'all';
+        let currentPage = 1;
+        const itemsPerPage = 5;
+
+        // Render Fleet Table
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            if (!tbody) return;
+
+            let filteredData = fleetData;
+            if (currentFilter !== 'all') {
+                filteredData = fleetData.filter(v => v.status === currentFilter);
+            }
+
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedData = filteredData.slice(start, end);
+
+            tbody.innerHTML = paginatedData.map(vehicle => {
+                const serviceDate = new Date(vehicle.nextService);
+                const today = new Date();
+                const daysUntil = Math.ceil((serviceDate - today) / (1000 * 60 * 60 * 24));
+                
+                let serviceBadge = '';
+                if (daysUntil < 0) {
+                    serviceBadge = '<span class="badge" style="background: #fee9e7; color: #e74c3c;">Overdue</span>';
+                } else if (daysUntil <= 7) {
+                    serviceBadge = '<span class="badge" style="background: #fff4e0; color: #f9a826;">Due soon</span>';
+                } else {
+                    serviceBadge = '<span class="badge">On track</span>';
+                }
+
+                return `
+                    <tr>
+                        <td>
+                            <div class="vehicle-info">
+                                <div class="vehicle-icon">
+                                    <i class="fas fa-${vehicle.make === 'Ford' ? 'truck' : 'car'}"></i>
+                                </div>
+                                <div>
+                                    <div class="vehicle-details">${vehicle.make} ${vehicle.model} (${vehicle.year})</div>
+                                    <div class="vehicle-model">${vehicle.color} · ID: ${vehicle.id}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><strong>${vehicle.plate}</strong></td>
+                        <td>
+                            ${vehicle.driver ? `
+                                <div>${vehicle.driver}</div>
+                                <div style="font-size: 11px; color: #64748b;">${vehicle.driverId}</div>
+                            ` : '<span class="badge">Unassigned</span>'}
+                        </td>
+                        <td>
+                            <span class="status-badge status-${vehicle.status}">
+                                ${vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)}
+                            </span>
+                        </td>
+                        <td>${vehicle.mileage.toLocaleString()} km</td>
+                        <td>${vehicle.lastService}</td>
+                        <td>
+                            <div>${vehicle.nextService}</div>
+                            <div style="margin-top: 4px;">${serviceBadge}</div>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view" onclick="viewVehicle('${vehicle.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn schedule" onclick="scheduleMaintenance('${vehicle.id}')">
+                                    <i class="fas fa-calendar"></i>
+                                </button>
+                                <button class="action-btn maintenance" onclick="reportIssue('${vehicle.id}')">
+                                    <i class="fas fa-wrench"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter table
+        function filterTable(filter) {
+            currentFilter = filter;
+            currentPage = 1;
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            renderTable();
+        }
+
+        // Change page
+        function changePage(page) {
+            currentPage = page;
+            renderTable();
+            
+            document.querySelectorAll('.page-item').forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // View vehicle details
+        function viewVehicle(vehicleId) {
+            const vehicle = fleetData.find(v => v.id === vehicleId);
+            if (vehicle) {
+                showAlert(`📋 Viewing ${vehicle.make} ${vehicle.model} (${vehicle.plate})`, 'success');
+            }
+        }
+
+        // Schedule maintenance
+        function scheduleMaintenance(vehicleId) {
+            showAlert('🔧 Opening maintenance scheduler...', 'success');
+        }
+
+        // Report issue
+        function reportIssue(vehicleId) {
+            showAlert('⚠️ Report issue form opened', 'warning');
+        }
+
+        // Show add vehicle modal
+        function showAddVehicleModal() {
+            document.getElementById('vehicleModal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('vehicleModal').classList.remove('active');
+        }
+
+        // Save vehicle
+        function saveVehicle() {
+            showAlert('✅ New vehicle added successfully!', 'success');
+            closeModal();
+        }
+
+        // Toggle filter
+        function toggleFilter() {
+            showAlert('🔍 Advanced filters coming soon', 'success');
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+        });
+    </script>
+</body>
+</html>

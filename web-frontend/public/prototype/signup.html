@@ -1,0 +1,565 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGo – Professional sign‑up</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #f6f9fc 0%, #edf2f9 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .signup-container {
+            width: 100%;
+            max-width: 640px;
+        }
+
+        .signup-card {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            box-shadow: 0 30px 70px -20px rgba(0,40,80,0.25), 0 10px 30px -10px rgba(0,0,0,0.05);
+            padding: 2.5rem 2.8rem;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        .signup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-area img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+        }
+
+        .brand-area h2 {
+            font-weight: 600;
+            font-size: 1.7rem;
+            letter-spacing: -0.02em;
+            color: #122334;
+        }
+
+        .steps {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            background: #eef2f7;
+            padding: 0.4rem 0.8rem;
+            border-radius: 60px;
+        }
+
+        .step-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 32px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #2c3e50;
+            transition: all 0.2s;
+        }
+
+        .step-badge.active {
+            background: #1d4e89;
+            color: white;
+        }
+
+        .step-badge.completed {
+            background: #00a86b;
+            color: white;
+        }
+
+        .step-line {
+            width: 20px;
+            height: 2px;
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+
+        .step-pane {
+            display: block;
+            animation: fade 0.3s ease;
+        }
+
+        .step-pane.hidden {
+            display: none;
+        }
+
+        @keyframes fade {
+            0% { opacity: 0.3; transform: translateY(5px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .selector-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #1e2f44;
+            margin-bottom: 1.8rem;
+        }
+
+        .role-cards {
+            display: flex;
+            gap: 1.8rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .role-card {
+            flex: 1 1 180px;
+            background: white;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 30px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .role-card i {
+            font-size: 2.8rem;
+            color: #346a9e;
+            margin-bottom: 1.2rem;
+        }
+
+        .role-card h3 {
+            font-weight: 600;
+            font-size: 1.3rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .role-card p {
+            font-size: 0.9rem;
+            color: #5f6c80;
+        }
+
+        .role-card.selected {
+            border-color: #1d4e89;
+            background: #f4faff;
+            box-shadow: 0 18px 30px -14px #1d4e8940;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #2d3f59;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-label i {
+            color: #1d4e89;
+            font-size: 0.9rem;
+            width: 18px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            font-size: 1rem;
+            background: white;
+            border: 1.5px solid #e0e8f0;
+            border-radius: 22px;
+            transition: 0.15s;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-field:focus {
+            border-color: #1d4e89;
+            box-shadow: 0 0 0 4px rgba(29,78,137,0.1);
+        }
+
+        .double-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .hint {
+            font-size: 0.8rem;
+            color: #7b8ba3;
+            margin-top: 0.3rem;
+            margin-left: 0.5rem;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin: 1.8rem 0 1.2rem;
+        }
+
+        .checkbox-row input {
+            width: 18px;
+            height: 18px;
+            accent-color: #1d4e89;
+        }
+
+        .checkbox-row label {
+            font-size: 0.95rem;
+            color: #2d3f59;
+        }
+
+        .checkbox-row a {
+            color: #1d4e89;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .btn {
+            background: #1d4e89;
+            color: white;
+            border: none;
+            padding: 1rem 1.8rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 40px;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            box-shadow: 0 12px 28px -12px #1d4e89b3;
+        }
+
+        .btn:hover {
+            background: #0f3b66;
+            transform: scale(1.01);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #1d4e89;
+            border: 1.5px solid #dbe4f0;
+            box-shadow: none;
+            margin-top: 0.8rem;
+        }
+
+        .btn-secondary:hover {
+            background: #f2f8ff;
+            transform: none;
+        }
+
+        .footer-links {
+            margin-top: 2.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .footer-links a {
+            color: #4e6285;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .footer-links a:hover {
+            color: #1d4e89;
+        }
+
+        hr {
+            border: none;
+            border-top: 1.5px solid #e2eaf2;
+            margin: 1.2rem 0 0.8rem;
+        }
+
+        .driver-extra {
+            transition: all 0.2s;
+        }
+
+        @media (max-width: 500px) {
+            .signup-card { padding: 2rem 1.5rem; }
+            .role-cards { flex-direction: column; }
+            .double-group { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="signup-container">
+    <div class="signup-card">
+        <!-- Header with step tracker (now only 2 steps) -->
+        <div class="signup-header">
+            <div class="brand-area">
+                              <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="EasyGo">
+
+            </div>
+            <div class="steps" id="stepIndicator">
+                <span class="step-badge" id="step1Badge">1</span>
+                <span class="step-line"></span>
+                <span class="step-badge" id="step2Badge">2</span>
+                <!-- step line and badge 3 removed -->
+            </div>
+        </div>
+
+        <!-- STEP 1 – Role selection (Client / Driver) -->
+        <div id="step1" class="step-pane">
+            <div class="selector-title"><i class="fa-regular fa-hand-point-right" style="margin-right: 10px;"></i>First, tell us your role</div>
+            <div class="role-cards">
+                <div class="role-card selected" data-role="client" id="roleClient">
+                    <i class="fas fa-user"></i>
+                    <h3>Client</h3>
+                    <p>I need rides</p>
+                </div>
+                <div class="role-card" data-role="driver" id="roleDriver">
+                    <i class="fas fa-car"></i>
+                    <h3>Driver</h3>
+                    <p>I offer rides</p>
+                </div>
+            </div>
+            <button class="btn" id="gotoStep2Btn">Continue with email <i class="fa-solid fa-arrow-right"></i></button>
+            <div class="footer-links" style="justify-content: center; margin-top: 1.5rem;">
+                <a href="index.html"><i class="fa-solid fa-chevron-left"></i> Back home</a>
+            </div>
+        </div>
+
+        <!-- STEP 2 – Account credentials + final details (merged) -->
+        <div id="step2" class="step-pane hidden">
+            <div class="selector-title"><i class="fa-regular fa-envelope" style="margin-right: 10px;"></i>Complete your profile</div>
+            <form id="step2Form">
+                <div class="input-group">
+                    <div class="input-label"><i class="fa-regular fa-user"></i> Full name</div>
+                    <input type="text" class="input-field" id="fullName" placeholder="e.g., Thabo Nkosi" autocomplete="name">
+                </div>
+                <div class="double-group">
+                    <div class="input-group">
+                        <div class="input-label"><i class="fa-regular fa-envelope"></i> Email</div>
+                        <input type="email" class="input-field" id="email" placeholder="Enter your email" autocomplete="email">
+                        <div class="hint">must be a valid email</div>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-label"><i class="fa-regular fa-phone"></i> Phone</div>
+                        <input type="tel" class="input-field" id="phone" placeholder="+27 71 234 5678" autocomplete="tel">
+                    </div>
+                </div>
+                <div class="double-group">
+                    <div class="input-group">
+                        <div class="input-label"><i class="fa-regular fa-lock"></i> Password</div>
+                        <input type="password" class="input-field" id="password" placeholder="min 8 characters">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-label"><i class="fa-regular fa-lock"></i> Confirm</div>
+                        <input type="password" class="input-field" id="confirmPassword" placeholder="re-enter">
+                    </div>
+                </div>
+
+                <!-- City field (previously step3) -->
+                <div class="input-group">
+                    <div class="input-label"><i class="fa-regular fa-building"></i> City</div>
+                    <select class="input-field" id="city">
+                        <option value="" disabled selected>Select your city</option>
+                        <option value="Johannesburg">Johannesburg</option>
+                        <option value="Cape Town">Cape Town</option>
+                        <option value="Durban">Durban</option>
+                        <option value="Pretoria">Pretoria</option>
+                        <option value="Port Elizabeth">Port Elizabeth</option>
+                    </select>
+                </div>
+
+                <!-- Driver extra fields -->
+                <div id="driverExtraFields" class="driver-extra" style="display: none;">
+                    <div class="double-group">
+                        <div class="input-group">
+                            <div class="input-label"><i class="fa-regular fa-car"></i> Vehicle model</div>
+                            <input type="text" class="input-field" id="vehicle" placeholder="Toyota Corolla">
+                        </div>
+                        <div class="input-group">
+                            <div class="input-label"><i class="fa-regular fa-id-card"></i> License plate</div>
+                            <input type="text" class="input-field" id="license" placeholder="GP 123-456">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-row">
+                    <input type="checkbox" id="termsCheckbox">
+                    <label for="termsCheckbox">I agree to the <a href="#">Terms</a> and <a href="#">Privacy</a></label>
+                </div>
+            </form>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.8rem;">
+                <button class="btn btn-secondary" id="backToStep1Btn" style="flex:1;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                <button class="btn" id="finishSignupBtn" style="flex:2;">Create account <i class="fa-regular fa-circle-check"></i></button>
+            </div>
+
+            <hr>
+            <div style="text-align: center; font-size: 0.9rem;">
+                Already registered? <a href="login.html" style="color:#1d4e89; font-weight:600; text-decoration: none;">Log in</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // DOM elements
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+
+        const step1Badge = document.getElementById('step1Badge');
+        const step2Badge = document.getElementById('step2Badge');
+
+        const roleClient = document.getElementById('roleClient');
+        const roleDriver = document.getElementById('roleDriver');
+        const gotoStep2Btn = document.getElementById('gotoStep2Btn');
+        const backToStep1Btn = document.getElementById('backToStep1Btn');
+        const finishSignupBtn = document.getElementById('finishSignupBtn');
+
+        const driverExtra = document.getElementById('driverExtraFields');
+
+        // Input fields
+        const fullName = document.getElementById('fullName');
+        const email = document.getElementById('email');
+        const phone = document.getElementById('phone');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const city = document.getElementById('city');
+        const vehicle = document.getElementById('vehicle');
+        const license = document.getElementById('license');
+        const termsCheckbox = document.getElementById('termsCheckbox');
+
+        // State
+        let selectedRole = 'client';   // default client
+
+        // Function to update step display (only 2 steps)
+        function showStep(step) {
+            step1.classList.add('hidden');
+            step2.classList.add('hidden');
+            
+            if (step === 1) step1.classList.remove('hidden');
+            if (step === 2) step2.classList.remove('hidden');
+
+            // Update badges for two steps
+            step1Badge.classList.remove('active', 'completed');
+            step2Badge.classList.remove('active', 'completed');
+
+            if (step === 1) {
+                step1Badge.classList.add('active');
+                step1Badge.textContent = '1';
+                step2Badge.textContent = '2';
+            } else if (step === 2) {
+                step1Badge.classList.add('completed');
+                step1Badge.innerHTML = '<i class="fa-solid fa-check" style="font-size:0.8rem;"></i>';
+                step2Badge.classList.add('active');
+                step2Badge.textContent = '2';
+            }
+        }
+
+        // Set role function (client/driver)
+        function setRole(role) {
+            selectedRole = role;
+            if (role === 'client') {
+                roleClient.classList.add('selected');
+                roleDriver.classList.remove('selected');
+                driverExtra.style.display = 'none';
+            } else {
+                roleDriver.classList.add('selected');
+                roleClient.classList.remove('selected');
+                driverExtra.style.display = 'block';
+            }
+        }
+
+        // Role click handlers
+        roleClient.addEventListener('click', () => setRole('client'));
+        roleDriver.addEventListener('click', () => setRole('driver'));
+
+        // Validation for final signup (all required fields)
+        function isFormValid() {
+            if (!fullName.value.trim()) { alert('Please enter your full name'); return false; }
+            if (!email.value.trim() || !email.value.includes('@')) { alert('A valid email is required'); return false; }
+            if (!phone.value.trim()) { alert('Phone number is required'); return false; }
+            if (!password.value || password.value.length < 8) { alert('Password must be at least 8 characters'); return false; }
+            if (password.value !== confirmPassword.value) { alert('Passwords do not match'); return false; }
+            if (!city.value) { alert('Please select your city'); return false; }
+            if (selectedRole === 'driver') {
+                if (!vehicle.value.trim()) { alert('Vehicle model is required for drivers'); return false; }
+                if (!license.value.trim()) { alert('License plate is required for drivers'); return false; }
+            }
+            if (!termsCheckbox.checked) { alert('You must agree to the Terms and Privacy policy'); return false; }
+            return true;
+        }
+
+        // Navigation
+        gotoStep2Btn.addEventListener('click', () => {
+            // Optional: you could validate role selection, but it's always selected
+            showStep(2);
+        });
+
+        backToStep1Btn.addEventListener('click', () => {
+            showStep(1);
+        });
+
+        // Final signup (now from step 2)
+        finishSignupBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            if (!isFormValid()) return;
+
+            const userData = {
+                name: fullName.value.trim(),
+                email: email.value.trim(),
+                phone: phone.value.trim(),
+                city: city.value,
+                password: password.value,
+                role: selectedRole
+            };
+
+            if (selectedRole === 'driver') {
+                userData.vehicle = vehicle.value.trim();
+                userData.license = license.value.trim();
+            }
+
+            // TODO: Call production signup (Firebase) here
+            // signup(userData) from auth.js
+            signup(userData);
+        });
+
+        // Default to step 1 with client selected
+        setRole('client');
+        showStep(1);
+    })();
+</script>
+</body>
+</html>

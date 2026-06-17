@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Trip - EasyGo Driver</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .trip-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+        
+        .trip-main {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+        }
+        
+        .trip-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .trip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .trip-status {
+            background: #28a745;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .progress-section {
+            margin-bottom: 30px;
+        }
+        
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 15px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .trip-timeline {
+            margin: 30px 0;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .trip-timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #667eea;
+            z-index: 1;
+        }
+        
+        .timeline-item.completed::before {
+            background: #28a745;
+            border-color: #28a745;
+        }
+        
+        .timeline-item.active::before {
+            background: #667eea;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+        
+        .timeline-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            margin: 5px 0;
+        }
+        
+        .timeline-address {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .rider-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .rider-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .rider-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .rider-info h3 {
+            margin: 0 0 5px 0;
+        }
+        
+        .rider-rating {
+            color: #ffc107;
+        }
+        
+        .rider-contact {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .contact-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .contact-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .trip-details-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+        }
+        
+        .detail-content {
+            flex: 1;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .fare-breakdown {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .fare-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .fare-row.total {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 18px;
+            color: #28a745;
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .emergency-btn {
+            background: #dc3545;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .emergency-btn:hover {
+            background: #c82333;
+        }
+        
+        .complete-btn {
+            background: #28a745;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .complete-btn:hover {
+            background: #218838;
+        }
+        
+        .navigation-card {
+            background: #667eea;
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .navigation-card h3 {
+            margin-bottom: 15px;
+        }
+        
+        .nav-btn {
+            background: white;
+            color: #667eea;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .nav-btn:hover {
+            background: #f0f0f0;
+            transform: scale(1.02);
+        }
+        
+        .rating-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .rating-modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .rating-stars {
+            font-size: 50px;
+            color: #ffc107;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        
+        .rating-stars i {
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .rating-stars i:hover {
+            transform: scale(1.2);
+        }
+        
+        .feedback-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 20px 0;
+            resize: vertical;
+        }
+        
+        @media (max-width: 968px) {
+            .trip-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                              <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="EasyGo">
+
+            </div>
+            <div class="user-info">
+                <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="User" class="user-avatar" id="userAvatar">
+                <div class="user-details">
+                    <h4 class="user-name" id="userName">Sipho Dlamini</h4>
+                    <p id="userRole">Driver since 2024</p>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="driver-dashboard.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/dashboard.png" alt="Dashboard">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-available-rides.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Available Rides">
+                    <span>Available Rides</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-current-trip.html" class="nav-link active">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/road.png" alt="Current Trip">
+                    <span>Current Trip</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-earnings.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/money.png" alt="Earnings">
+                    <span>Earnings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-profile.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/user.png" alt="Profile">
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-vehicle.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Vehicle">
+                    <span>Vehicle</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-settings.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/settings.png" alt="Settings">
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-support.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/support.png" alt="Support">
+                    <span>Support</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="javascript:void(0)" class="nav-link" onclick="logout()">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/exit.png" alt="Logout">
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="trip-header">
+                <h1>Current Trip</h1>
+                <span class="trip-status" id="tripStatus">In Progress</span>
+            </div>
+            
+            <div class="trip-container">
+                <div class="trip-main">
+                    <!-- Progress Section -->
+                    <div class="progress-section">
+                        <div class="progress-stats">
+                            <span>Time Elapsed: <span id="timeElapsed">15 min</span></span>
+                            <span>Est. Arrival: <span id="estArrival">20 min</span></span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="tripProgress" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trip Timeline -->
+                    <div class="trip-timeline">
+                        <div class="timeline-item completed" id="pickupTimeline">
+                            <span class="timeline-time">10:30 AM</span>
+                            <div class="timeline-title">Pickup</div>
+                            <div class="timeline-address">Sandton City, Sandton Dr</div>
+                        </div>
+                        
+                        <div class="timeline-item active" id="currentTimeline">
+                            <span class="timeline-time">10:45 AM</span>
+                            <div class="timeline-title">Current Location</div>
+                            <div class="timeline-address">M1 Highway, Johannesburg</div>
+                        </div>
+                        
+                        <div class="timeline-item" id="dropoffTimeline">
+                            <span class="timeline-time">Est. 11:05 AM</span>
+                            <div class="timeline-title">Dropoff</div>
+                            <div class="timeline-address">OR Tambo Airport</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rider Information -->
+                    <div class="rider-card">
+                        <div class="rider-header">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Rider" class="rider-avatar" id="riderAvatar">
+                            <div class="rider-info">
+                                <h3 id="riderName">Thabo Nkosi</h3>
+                                <div class="rider-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span id="riderRating">4.9</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="rider-contact">
+                            <button class="contact-btn" onclick="callRider()">
+                                <i class="fas fa-phone"></i> Call
+                            </button>
+                            <button class="contact-btn" onclick="messageRider()">
+                                <i class="fas fa-envelope"></i> Message
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="emergency-btn" onclick="emergency()">
+                            <i class="fas fa-exclamation-triangle"></i> Emergency
+                        </button>
+                        <button class="complete-btn" onclick="completeTrip()">
+                            <i class="fas fa-check-circle"></i> Complete Trip
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="trip-sidebar">
+                    <!-- Navigation Card -->
+                    <div class="navigation-card">
+                        <h3><i class="fas fa-map"></i> Navigation</h3>
+                        <p id="nextInstruction">Continue on M1 for 15 km</p>
+                        <button class="nav-btn" onclick="openNavigation()">
+                            <i class="fas fa-directions"></i> Open in Maps
+                        </button>
+                    </div>
+                    
+                    <!-- Trip Details -->
+                    <div class="trip-details-card">
+                        <h3>Trip Details</h3>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="detail-content">
+                                <div class="detail-label">Pickup Location</div>
+                                <div class="detail-value" id="pickupLocation">Sandton City</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-flag-checkered"></i>
+                            </div>
+                            <div class="detail-content">
+                                <div class="detail-label">Dropoff Location</div>
+                                <div class="detail-value" id="dropoffLocation">OR Tambo Airport</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div class="detail-content">
+                                <div class="detail-label">Distance</div>
+                                <div class="detail-value" id="tripDistance">25 km</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="detail-content">
+                                <div class="detail-label">Duration</div>
+                                <div class="detail-value" id="tripDuration">35 min</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="detail-content">
+                                <div class="detail-label">Payment Method</div>
+                                <div class="detail-value" id="paymentMethod">Credit Card</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fare Breakdown -->
+                    <div class="fare-breakdown">
+                        <h3>Fare Breakdown</h3>
+                        
+                        <div class="fare-row">
+                            <span>Base Fare</span>
+                            <span>R 120</span>
+                        </div>
+                        
+                        <div class="fare-row">
+                            <span>Distance (25 km @ R5/km)</span>
+                            <span>R 125</span>
+                        </div>
+                        
+                        <div class="fare-row">
+                            <span>Time (35 min @ R1/min)</span>
+                            <span>R 35</span>
+                        </div>
+                        
+                        <div class="fare-row">
+                            <span>Surge (1.2x)</span>
+                            <span>R 10</span>
+                        </div>
+                        
+                        <div class="fare-row total">
+                            <span>Total Fare</span>
+                            <span>R 290</span>
+                        </div>
+                        
+                        <div class="fare-row">
+                            <span>Your Earnings (75%)</span>
+                            <span class="text-success">R 217.50</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Rating Modal -->
+    <div class="rating-modal" id="ratingModal">
+        <div class="modal-content">
+            <h2>Rate Your Rider</h2>
+            <p>How was your trip with <span id="modalRiderName">Thabo</span>?</p>
+            
+            <div class="rating-stars" id="ratingStars">
+                <i class="far fa-star" data-rating="1"></i>
+                <i class="far fa-star" data-rating="2"></i>
+                <i class="far fa-star" data-rating="3"></i>
+                <i class="far fa-star" data-rating="4"></i>
+                <i class="far fa-star" data-rating="5"></i>
+            </div>
+            
+            <textarea class="feedback-input" placeholder="Leave feedback (optional)" rows="4"></textarea>
+            
+            <button class="btn btn-primary" onclick="submitRating()" style="width: 100%;">
+                Submit Rating
+            </button>
+        </div>
+    </div>
+    
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script>
+        let currentRide = null;
+        let progressInterval = null;
+        let currentRating = 0;
+        
+        function loadUserData() {
+            const user = getCurrentUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userRole').textContent = 'Driver since 2024';
+            }
+        }
+        
+        function loadCurrentRide() {
+            // Try to get ride from session storage
+            const savedRide = sessionStorage.getItem('currentRide');
+            if (savedRide) {
+                currentRide = JSON.parse(savedRide);
+                displayRideDetails();
+                startProgressSimulation();
+            } else {
+                // Use default ride for demo
+                currentRide = {
+                    id: 1,
+                    riderName: 'Thabo Nkosi',
+                    riderAvatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+                    riderRating: 4.9,
+                    pickup: 'Sandton City',
+                    pickupAddress: 'Sandton Dr, Sandton',
+                    dropoff: 'OR Tambo Airport',
+                    dropoffAddress: 'Johannesburg',
+                    distance: 25,
+                    duration: 35,
+                    fare: 290,
+                    paymentMethod: 'Credit Card'
+                };
+                displayRideDetails();
+                startProgressSimulation();
+            }
+        }
+        
+        function displayRideDetails() {
+            if (!currentRide) return;
+            
+            document.getElementById('riderName').textContent = currentRide.riderName;
+            document.getElementById('riderAvatar').src = currentRide.riderAvatar;
+            document.getElementById('riderRating').textContent = currentRide.riderRating;
+            document.getElementById('pickupLocation').textContent = currentRide.pickup;
+            document.getElementById('dropoffLocation').textContent = currentRide.dropoff;
+            document.getElementById('tripDistance').textContent = currentRide.distance + ' km';
+            document.getElementById('tripDuration').textContent = currentRide.duration + ' min';
+            document.getElementById('paymentMethod').textContent = currentRide.paymentMethod;
+            document.getElementById('modalRiderName').textContent = currentRide.riderName.split(' ')[0];
+        }
+        
+        function startProgressSimulation() {
+            let progress = 60; // Starting at 60% as shown in demo
+            let elapsed = 15;
+            const totalDuration = currentRide ? currentRide.duration : 35;
+            
+            progressInterval = setInterval(() => {
+                progress += 2;
+                elapsed += 0.5;
+                
+                if (progress <= 100) {
+                    document.getElementById('tripProgress').style.width = progress + '%';
+                    document.getElementById('timeElapsed').textContent = Math.floor(elapsed) + ' min';
+                    document.getElementById('estArrival').textContent = Math.max(0, totalDuration - Math.floor(elapsed)) + ' min';
+                    
+                    // Update timeline based on progress
+                    if (progress >= 30 && progress < 70) {
+                        // Still in current location
+                    } else if (progress >= 70) {
+                        document.getElementById('currentTimeline').classList.remove('active');
+                        document.getElementById('dropoffTimeline').classList.add('active');
+                        document.getElementById('nextInstruction').textContent = 'Approaching destination';
+                    }
+                } else {
+                    clearInterval(progressInterval);
+                }
+            }, 5000);
+        }
+        
+        function callRider() {
+            if (currentRide) {
+                alert(`Calling ${currentRide.riderName}... (Demo: Phone integration would open here)`);
+            }
+        }
+        
+        function messageRider() {
+            if (currentRide) {
+                alert(`Messaging ${currentRide.riderName}... (Demo: Chat would open here)`);
+            }
+        }
+        
+        function openNavigation() {
+            if (currentRide) {
+                const destination = encodeURIComponent(currentRide.dropoffAddress);
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}`, '_blank');
+            }
+        }
+        
+        function emergency() {
+            if (confirm('Emergency assistance requested. Contact EasyGo support?')) {
+                alert('Emergency services have been notified. Help is on the way.');
+                // In production, this would trigger actual emergency protocols
+            }
+        }
+        
+        function completeTrip() {
+            if (confirm('Complete this trip?')) {
+                clearInterval(progressInterval);
+                document.getElementById('ratingModal').classList.add('active');
+            }
+        }
+        
+        // Rating functionality
+        document.querySelectorAll('#ratingStars i').forEach(star => {
+            star.addEventListener('mouseenter', function() {
+                const rating = parseInt(this.dataset.rating);
+                highlightStars(rating);
+            });
+            
+            star.addEventListener('mouseleave', function() {
+                highlightStars(currentRating);
+            });
+            
+            star.addEventListener('click', function() {
+                currentRating = parseInt(this.dataset.rating);
+                highlightStars(currentRating);
+            });
+        });
+        
+        function highlightStars(rating) {
+            document.querySelectorAll('#ratingStars i').forEach((star, index) => {
+                if (index < rating) {
+                    star.className = 'fas fa-star';
+                } else {
+                    star.className = 'far fa-star';
+                }
+            });
+        }
+        
+        function submitRating() {
+            const feedback = document.querySelector('.feedback-input').value;
+            
+            if (currentRating === 0) {
+                alert('Please select a rating');
+                return;
+            }
+            
+            alert(`Thank you for rating ${currentRide.riderName} ${currentRating} stars!\nFeedback: ${feedback || 'No feedback provided'}`);
+            
+            // Clear session storage
+            sessionStorage.removeItem('currentRide');
+            
+            // Redirect to dashboard
+            window.location.href = 'driver-dashboard.html';
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData();
+            loadCurrentRide();
+        });
+    </script>
+</body>
+</html>

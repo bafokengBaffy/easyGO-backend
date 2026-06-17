@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGo - My Vehicles</title>
+    <!-- Using same CSS architecture as dashboard -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Page specific styles – exactly matching dashboard aesthetic (gradients, cards, hover) */
+        .vehicle-header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .vehicle-header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .vehicle-header p {
+            color: #666;
+        }
+        
+        .add-vehicle-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .add-vehicle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .vehicle-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .stat-icon i {
+            font-size: 30px;
+            color: white;
+        }
+        
+        .stat-info h3 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .stat-info p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .vehicle-filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        
+        .filter-btn {
+            padding: 10px 25px;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            background: white;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-btn i {
+            color: #667eea;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .filter-btn:hover i,
+        .filter-btn.active i {
+            color: white;
+        }
+        
+        /* Vehicle grid with real images from Unsplash / placeholder images */
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .vehicle-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .vehicle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .vehicle-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        /* specific vehicle background images (high-quality real vehicles) */
+        .vehicle-bg-1 { background-image: url('https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=400&h=250&fit=crop'); } /* yamaha blue */
+        .vehicle-bg-2 { background-image: url('https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=400&h=250&fit=crop'); } /* vespa white */
+        .vehicle-bg-3 { background-image: url('https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=400&h=250&fit=crop'); } /* toyota silver */
+        .vehicle-bg-4 { background-image: url('https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&h=250&fit=crop'); } /* honda crv black */
+        .vehicle-bg-5 { background-image: url('https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=400&h=250&fit=crop'); } /* ford transit white */
+        .vehicle-bg-6 { background-image: url('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&h=250&fit=crop'); } /* mercedes black */
+        
+        .vehicle-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-maintenance {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .vehicle-type-badge {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .vehicle-content {
+            padding: 20px;
+        }
+        
+        .vehicle-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .vehicle-title h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .vehicle-rating {
+            color: #ffc107;
+            font-weight: 600;
+        }
+        
+        .vehicle-specs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 15px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        
+        .spec-item {
+            text-align: center;
+        }
+        
+        .spec-item i {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .spec-item span {
+            display: block;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .spec-item strong {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .vehicle-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-tag {
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .feature-tag i {
+            color: #667eea;
+            font-size: 10px;
+        }
+        
+        .vehicle-footer {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .vehicle-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-size: 13px;
+        }
+        
+        .vehicle-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .vehicle-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .vehicle-btn.secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .vehicle-btn.secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        /* Maintenance Section */
+        .maintenance-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-header h2 {
+            font-size: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-header h2 i {
+            color: #667eea;
+        }
+        
+        .schedule-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .schedule-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .maintenance-list {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .maintenance-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .maintenance-item:hover {
+            background: #f0f0f0;
+            transform: translateX(5px);
+        }
+        
+        .maintenance-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .maintenance-icon i {
+            color: white;
+            font-size: 20px;
+        }
+        
+        .maintenance-info {
+            flex: 1;
+        }
+        
+        .maintenance-info h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .maintenance-info p {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .maintenance-status {
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-upcoming {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-overdue {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .maintenance-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .maintenance-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .maintenance-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* Modal styles (same as before) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .modal-header h3 {
+            font-size: 24px;
+            color: #333;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            color: #dc3545;
+        }
+        
+        .vehicle-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .type-option {
+            text-align: center;
+            padding: 20px 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .type-option:hover,
+        .type-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .type-option i {
+            font-size: 40px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .type-option span {
+            display: block;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .features-checkbox {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .feature-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .feature-checkbox:hover {
+            background: #f0f4ff;
+        }
+        
+        .feature-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1100;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .vehicle-header { flex-direction: column; text-align: center; }
+            .vehicle-filters { justify-content: center; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle Button (same as dashboard) -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar (identical to driver dashboard) -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                              <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="EasyGo">
+
+            </div>
+            <div class="user-info">
+                <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="User" class="user-avatar" id="userAvatar">
+                <div class="user-details">
+                    <h4 class="user-name" id="userName">Sipho Dlamini</h4>
+                    <p>Driver since 2024</p>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="driver-dashboard.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/dashboard.png" alt="Dashboard">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-available-rides.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Available Rides">
+                    <span>Available Rides</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-current-trip.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/road.png" alt="Current Trip">
+                    <span>Current Trip</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-earnings.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/money.png" alt="Earnings">
+                    <span>Earnings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-profile.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/user.png" alt="Profile">
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-vehicle.html" class="nav-link active">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Vehicle">
+                    <span>Vehicle</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-settings.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/settings.png" alt="Settings">
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-support.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/support.png" alt="Support">
+                    <span>Support</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="javascript:void(0)" class="nav-link" onclick="logout()">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/exit.png" alt="Logout">
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Vehicle Header with Add button -->
+            <div class="vehicle-header">
+                <div>
+                    <h1>My Vehicles</h1>
+                    <p>Manage your vehicle fleet and maintenance</p>
+                </div>
+                <button class="add-vehicle-btn" onclick="openAddVehicleModal()">
+                    <i class="fas fa-plus"></i> Add New Vehicle
+                </button>
+            </div>
+            
+            <!-- Stats cards (same interaction) -->
+            <div class="vehicle-stats">
+                <div class="stat-card" onclick="filterVehicles('all')">
+                    <div class="stat-icon"><i class="fas fa-car"></i></div>
+                    <div class="stat-info"><h3>6</h3><p>Total Vehicles</p></div>
+                </div>
+                <div class="stat-card" onclick="filterVehicles('active')">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info"><h3>4</h3><p>Active Vehicles</p></div>
+                </div>
+                <div class="stat-card" onclick="filterVehicles('maintenance')">
+                    <div class="stat-icon"><i class="fas fa-tools"></i></div>
+                    <div class="stat-info"><h3>1</h3><p>In Maintenance</p></div>
+                </div>
+                <div class="stat-card" onclick="filterVehicles('inactive')">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info"><h3>1</h3><p>Inactive</p></div>
+                </div>
+            </div>
+            
+            <!-- Filter buttons -->
+            <div class="vehicle-filters">
+                <button class="filter-btn active" onclick="filterVehicles('all')"><i class="fas fa-car"></i> All Vehicles</button>
+                <button class="filter-btn" onclick="filterVehicles('bike')"><i class="fas fa-motorcycle"></i> Bikes</button>
+                <button class="filter-btn" onclick="filterVehicles('car')"><i class="fas fa-car"></i> Cars</button>
+                <button class="filter-btn" onclick="filterVehicles('suv')"><i class="fas fa-truck"></i> SUVs</button>
+                <button class="filter-btn" onclick="filterVehicles('van')"><i class="fas fa-shuttle-van"></i> Vans</button>
+                <button class="filter-btn" onclick="filterVehicles('luxury')"><i class="fas fa-crown"></i> Luxury</button>
+            </div>
+            
+            <!-- Vehicle grid with REAL images (using background classes) -->
+            <div class="vehicle-grid" id="vehicleGrid">
+                <!-- Bike 1 - Yamaha R6 -->
+                <div class="vehicle-card" data-type="bike" data-status="active" onclick="viewVehicleDetails('Yamaha R6')">
+                    <div class="vehicle-image vehicle-bg-1">
+                        <span class="vehicle-badge badge-active">Active</span>
+                        <span class="vehicle-type-badge"><i class="fas fa-motorcycle"></i> Sport Bike</span>
+                    </div>
+                    <div class="vehicle-content">
+                        <div class="vehicle-title"><h3>Yamaha R6</h3><span class="vehicle-rating"><i class="fas fa-star"></i> 4.9</span></div>
+                        <div class="vehicle-specs">
+                            <div class="spec-item"><i class="fas fa-hashtag"></i><span>Plate</span><strong>BIKE-01</strong></div>
+                            <div class="spec-item"><i class="fas fa-calendar"></i><span>Year</span><strong>2023</strong></div>
+                            <div class="spec-item"><i class="fas fa-palette"></i><span>Color</span><strong>Blue</strong></div>
+                        </div>
+                        <div class="vehicle-features">
+                            <span class="feature-tag"><i class="fas fa-helmet-safety"></i> Helmet</span>
+                            <span class="feature-tag"><i class="fas fa-shield-alt"></i> ABS</span>
+                            <span class="feature-tag"><i class="fas fa-bolt"></i> 600cc</span>
+                        </div>
+                        <div class="vehicle-footer" onclick="event.stopPropagation()">
+                            <button class="vehicle-btn primary" onclick="viewVehicleDetails('Yamaha R6')"><i class="fas fa-eye"></i> View</button>
+                            <button class="vehicle-btn secondary" onclick="editVehicle('Yamaha R6')"><i class="fas fa-edit"></i> Edit</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Bike 2 - Vespa Primavera -->
+                <div class="vehicle-card" data-type="bike" data-status="active" onclick="viewVehicleDetails('Vespa Primavera')">
+                    <div class="vehicle-image vehicle-bg-2">
+                        <span class="vehicle-badge badge-active">Active</span>
+                        <span class="vehicle-type-badge"><i class="fas fa-motorcycle"></i> Scooter</span>
+                    </div>
+                    <div class="vehicle-content">
+                        <div class="vehicle-title"><h3>Vespa Primavera</h3><span class="vehicle-rating"><i class="fas fa-star"></i> 4.8</span></div>
+                        <div class="vehicle-specs">
+                            <div class="spec-item"><i class="fas fa-hashtag"></i><span>Plate</span><strong>SCOOT-02</strong></div>
+                            <div class="spec-item"><i class="fas fa-calendar"></i><span>Year</span><strong>2024</strong></div>
+                            <div class="spec-item"><i class="fas fa-palette"></i><span>Color</span><strong>White</strong></div>
+                        </div>
+                        <div class="vehicle-features">
+                            <span class="feature-tag"><i class="fas fa-helmet-safety"></i> Helmet</span>
+                            <span class="feature-tag"><i class="fas fa-box"></i> Storage</span>
+                            <span class="feature-tag"><i class="fas fa-mobile-alt"></i> Phone Mount</span>
+                        </div>
+                        <div class="vehicle-footer" onclick="event.stopPropagation()">
+                            <button class="vehicle-btn primary" onclick="viewVehicleDetails('Vespa Primavera')"><i class="fas fa-eye"></i> View</button>
+                            <button class="vehicle-btn secondary" onclick="editVehicle('Vespa Primavera')"><i class="fas fa-edit"></i> Edit</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Car - Toyota Corolla -->
+                <div class="vehicle-card" data-type="car" data-status="active" onclick="viewVehicleDetails('Toyota Corolla')">
+                    <div class="vehicle-image vehicle-bg-3">
+                        <span class="vehicle-badge badge-active">Active</span>
+                        <span class="vehicle-type-badge"><i class="fas fa-car"></i> Sedan</span>
+                    </div>
+                    <div class="vehicle-content">
+                        <div class="vehicle-title"><h3>Toyota Corolla</h3><span class="vehicle-rating"><i class="fas fa-star"></i> 4.8</span></div>
+                        <div class="vehicle-specs">
+                            <div class="spec-item"><i class="fas fa-hashtag"></i><span>Plate</span><strong>CAR-123</strong></div>
+                            <div class="spec-item"><i class="fas fa-calendar"></i><span>Year</span><strong>2022</strong></div>
+                            <div class="spec-item"><i class="fas fa-palette"></i><span>Color</span><strong>Silver</strong></div>
+                        </div>
+                        <div class="vehicle-features">
+                            <span class="feature-tag"><i class="fas fa-snowflake"></i> AC</span>
+                            <span class="feature-tag"><i class="fas fa-usb"></i> USB</span>
+                            <span class="feature-tag"><i class="fas fa-shield-alt"></i> Airbags</span>
+                            <span class="feature-tag"><i class="fas fa-wifi"></i> WiFi</span>
+                        </div>
+                        <div class="vehicle-footer" onclick="event.stopPropagation()">
+                            <button class="vehicle-btn primary" onclick="viewVehicleDetails('Toyota Corolla')"><i class="fas fa-eye"></i> View</button>
+                            <button class="vehicle-btn secondary" onclick="editVehicle('Toyota Corolla')"><i class="fas fa-edit"></i> Edit</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- SUV - Honda CR-V -->
+                <div class="vehicle-card" data-type="suv" data-status="active" onclick="viewVehicleDetails('Honda CR-V')">
+                    <div class="vehicle-image vehicle-bg-4">
+                        <span class="vehicle-badge badge-active">Active</span>
+                        <span class="vehicle-type-badge"><i class="fas fa-truck"></i> SUV</span>
+                    </div>
+                    <div class="vehicle-content">
+                        <div class="vehicle-title"><h3>Honda CR-V</h3><span class="vehicle-rating"><i class="fas fa-star"></i> 4.9</span></div>
+                        <div class="vehicle-specs">
+                            <div class="spec-item"><i class="fas fa-hashtag"></i><span>Plate</span><strong>SUV-456</strong></div>
+                            <div class="spec-item"><i class="fas fa-calendar"></i><span>Year</span><strong>2023</strong></div>
+                            <div class="spec-item"><i class="fas fa-palette"></i><span>Color</span><strong>Black</strong></div>
+                        </div>
+                        <div class="vehicle-features">
+                            <span class="feature-tag"><i class="fas fa-snowflake"></i> AC</span>
+                            <span class="feature-tag"><i class="fas fa-wheelchair"></i> 7 Seats</span>
+                            <span class="feature-tag"><i class="fas fa-box"></i> Cargo</span>
+                            <span class="feature-tag"><i class="fas fa-gps"></i> GPS</span>
+                        </div>
+                        <div class="vehicle-footer" onclick="event.stopPropagation()">
+                            <button class="vehicle-btn primary" onclick="viewVehicleDetails('Honda CR-V')"><i class="fas fa-eye"></i> View</button>
+                            <button class="vehicle-btn secondary" onclick="editVehicle('Honda CR-V')"><i class="fas fa-edit"></i> Edit</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Van - Ford Transit (maintenance) -->
+                <div class="vehicle-card" data-type="van" data-status="maintenance" onclick="viewVehicleDetails('Ford Transit')">
+                    <div class="vehicle-image vehicle-bg-5">
+                        <span class="vehicle-badge badge-maintenance">Maintenance</span>
+                        <span class="vehicle-type-badge"><i class="fas fa-shuttle-van"></i> Cargo Van</span>
+                    </div>
+                    <div class="vehicle-content">
+                        <div class="vehicle-title"><h3>Ford Transit</h3><span class="vehicle-rating"><i class="fas fa-star"></i> 4.7</span></div>
+                        <div class="vehicle-specs">
+                            <div class="spec-item"><i class="fas fa-hashtag"></i><span>Plate</span><strong>VAN-789</strong></div>
+                            <div class="spec-item"><i class="fas fa-calendar"></i><span>Year</span><strong>2021</strong></div>
+                            <div class="spec-item"><i class="fas fa-palette"></i><span>Color</span><strong>White</strong></div>
+                        </div>
+                        <div class="vehicle-features">
+                            <span class="feature-tag"><i class="fas fa-box"></i> Cargo</span>
+                            <span class="feature-tag"><i class="fas fa-snowflake"></i> AC</span>
+                            <span class="feature-tag"><i class="fas fa-tachometer-alt"></i> Diesel</span>
+                        </div>
+                        <div class="vehicle-footer" onclick="event.stopPropagation()">
+                            <button class="vehicle-btn primary" onclick="viewVehicleDetails('Ford Transit')"><i class="fas fa-eye"></i> View</button>
+                            <button class="vehicle-btn secondary" onclick="editVehicle('Ford Transit')"><i class="fas fa-edit"></i> Edit</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Luxury - Mercedes S-Class (inactive) -->
+                <div class="vehicle-card" data-type="luxury" data-status="inactive" onclick="viewVehicleDetails('Mercedes S-Class')">
+                    <div class="vehicle-image vehicle-bg-6">
+                        <span class="vehicle-badge badge-inactive">Inactive</span>
+                        <span class="vehicle-type-badge"><i class="fas fa-crown"></i> Luxury</span>
+                    </div>
+                    <div class="vehicle-content">
+                        <div class="vehicle-title"><h3>Mercedes S-Class</h3><span class="vehicle-rating"><i class="fas fa-star"></i> 5.0</span></div>
+                        <div class="vehicle-specs">
+                            <div class="spec-item"><i class="fas fa-hashtag"></i><span>Plate</span><strong>LUX-001</strong></div>
+                            <div class="spec-item"><i class="fas fa-calendar"></i><span>Year</span><strong>2024</strong></div>
+                            <div class="spec-item"><i class="fas fa-palette"></i><span>Color</span><strong>Black</strong></div>
+                        </div>
+                        <div class="vehicle-features">
+                            <span class="feature-tag"><i class="fas fa-couch"></i> Leather</span>
+                            <span class="feature-tag"><i class="fas fa-wine-bottle"></i> Minibar</span>
+                            <span class="feature-tag"><i class="fas fa-massage"></i> Massage</span>
+                            <span class="feature-tag"><i class="fas fa-tv"></i> TV</span>
+                        </div>
+                        <div class="vehicle-footer" onclick="event.stopPropagation()">
+                            <button class="vehicle-btn primary" onclick="viewVehicleDetails('Mercedes S-Class')"><i class="fas fa-eye"></i> View</button>
+                            <button class="vehicle-btn secondary" onclick="editVehicle('Mercedes S-Class')"><i class="fas fa-edit"></i> Edit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Maintenance Section (identical to previous but with images) -->
+            <div class="maintenance-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tools"></i> Upcoming Maintenance</h2>
+                    <button class="schedule-btn" onclick="scheduleMaintenance()"><i class="fas fa-calendar-plus"></i> Schedule</button>
+                </div>
+                <div class="maintenance-list">
+                    <div class="maintenance-item">
+                        <div class="maintenance-icon"><i class="fas fa-oil-can"></i></div>
+                        <div class="maintenance-info"><h4>Oil Change - Toyota Corolla</h4><p>Due in 500 km • Last service: 2 months ago</p></div>
+                        <span class="maintenance-status status-upcoming">Upcoming</span>
+                        <div class="maintenance-actions"><button class="maintenance-btn" onclick="markMaintenanceComplete(this)" title="Mark as Complete"><i class="fas fa-check"></i></button></div>
+                    </div>
+                    <div class="maintenance-item">
+                        <div class="maintenance-icon"><i class="fas fa-car-battery"></i></div>
+                        <div class="maintenance-info"><h4>Battery Check - Honda CR-V</h4><p>Due in 3 days • Battery warranty expiring</p></div>
+                        <span class="maintenance-status status-upcoming">Upcoming</span>
+                        <div class="maintenance-actions"><button class="maintenance-btn" onclick="markMaintenanceComplete(this)" title="Mark as Complete"><i class="fas fa-check"></i></button></div>
+                    </div>
+                    <div class="maintenance-item">
+                        <div class="maintenance-icon"><i class="fas fa-tire"></i></div>
+                        <div class="maintenance-info"><h4>Tire Rotation - Ford Transit</h4><p>Overdue by 2 weeks • All tires need rotation</p></div>
+                        <span class="maintenance-status status-overdue">Overdue</span>
+                        <div class="maintenance-actions"><button class="maintenance-btn" onclick="markMaintenanceComplete(this)" title="Mark as Complete"><i class="fas fa-check"></i></button></div>
+                    </div>
+                    <div class="maintenance-item">
+                        <div class="maintenance-icon"><i class="fas fa-brake-warning"></i></div>
+                        <div class="maintenance-info"><h4>Brake Inspection - Yamaha R6</h4><p>Completed yesterday • All good</p></div>
+                        <span class="maintenance-status status-completed">Completed</span>
+                        <div class="maintenance-actions"><button class="maintenance-btn" disabled><i class="fas fa-check"></i></button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Vehicle Modal -->
+    <div class="modal" id="addVehicleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Vehicle</h3>
+                <button class="close-modal" onclick="closeModal('addVehicleModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4 style="margin-bottom: 15px;">Select Vehicle Type</h4>
+                <div class="vehicle-type-grid">
+                    <div class="type-option" onclick="selectVehicleType('bike')" id="type-bike"><i class="fas fa-motorcycle"></i><span>Bike</span></div>
+                    <div class="type-option" onclick="selectVehicleType('car')" id="type-car"><i class="fas fa-car"></i><span>Car</span></div>
+                    <div class="type-option" onclick="selectVehicleType('suv')" id="type-suv"><i class="fas fa-truck"></i><span>SUV</span></div>
+                    <div class="type-option" onclick="selectVehicleType('van')" id="type-van"><i class="fas fa-shuttle-van"></i><span>Van</span></div>
+                    <div class="type-option" onclick="selectVehicleType('luxury')" id="type-luxury"><i class="fas fa-crown"></i><span>Luxury</span></div>
+                </div>
+                <form id="addVehicleForm" onsubmit="event.preventDefault(); saveVehicle()">
+                    <div class="form-group"><label>Vehicle Model</label><input type="text" id="vehicleModel" placeholder="e.g., Toyota Camry" required></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>License Plate</label><input type="text" id="licensePlate" placeholder="ABC-123" required></div>
+                        <div class="form-group"><label>Year</label><select id="vehicleYear" required><option value="">Select Year</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option></select></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Color</label><input type="text" id="vehicleColor" placeholder="e.g., Black" required></div>
+                        <div class="form-group"><label>Fuel Type</label><select id="fuelType" required><option value="">Select Fuel</option><option value="petrol">Petrol</option><option value="diesel">Diesel</option><option value="electric">Electric</option><option value="hybrid">Hybrid</option></select></div>
+                    </div>
+                    <div class="form-group"><label>Seating Capacity</label><input type="number" id="seatingCapacity" min="1" max="50" value="4" required></div>
+                    <h4 style="margin: 20px 0 15px;">Features & Amenities</h4>
+                    <div class="features-checkbox">
+                        <label class="feature-checkbox"><input type="checkbox" value="AC"> <i class="fas fa-snowflake"></i> AC</label>
+                        <label class="feature-checkbox"><input type="checkbox" value="WiFi"> <i class="fas fa-wifi"></i> WiFi</label>
+                        <label class="feature-checkbox"><input type="checkbox" value="USB"> <i class="fas fa-usb"></i> USB</label>
+                        <label class="feature-checkbox"><input type="checkbox" value="GPS"> <i class="fas fa-map-marker-alt"></i> GPS</label>
+                        <label class="feature-checkbox"><input type="checkbox" value="Bluetooth"> <i class="fas fa-bluetooth"></i> Bluetooth</label>
+                        <label class="feature-checkbox"><input type="checkbox" value="Child Seat"> <i class="fas fa-child"></i> Child Seat</label>
+                        <label class="feature-checkbox"><input type="checkbox" value="Pet Friendly"> <i class="fas fa-dog"></i> Pet Friendly</label>
+                        <label class="feature-checkbox"><input type="checkbox" value="Wheelchair"> <i class="fas fa-wheelchair"></i> Wheelchair</label>
+                    </div>
+                    <div class="form-group"><label>Additional Notes</label><textarea id="vehicleNotes" rows="3" placeholder="Any special information..."></textarea></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('addVehicleModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Vehicle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script>
+        function loadUserData() {
+            const user = getCurrentUser ? getCurrentUser() : { name: 'Sipho Dlamini' };
+            if (user) {
+                document.getElementById('userName').textContent = user.name || 'Sipho Dlamini';
+                if (user.name && user.name.includes('Sipho')) {
+                    document.getElementById('userAvatar').src = 'https://randomuser.me/api/portraits/men/2.jpg';
+                } else {
+                    document.getElementById('userAvatar').src = 'https://randomuser.me/api/portraits/women/3.jpg';
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+
+        let selectedType = null;
+
+        function filterVehicles(type) {
+            event.preventDefault();
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const vehicles = document.querySelectorAll('.vehicle-card');
+            vehicles.forEach(vehicle => {
+                if (type === 'all' || vehicle.dataset.type === type || 
+                    (type === 'active' && vehicle.dataset.status === 'active') ||
+                    (type === 'maintenance' && vehicle.dataset.status === 'maintenance') ||
+                    (type === 'inactive' && vehicle.dataset.status === 'inactive')) {
+                    vehicle.style.display = 'block';
+                } else {
+                    vehicle.style.display = 'none';
+                }
+            });
+        }
+
+        function viewVehicleDetails(model) { showNotification(`Viewing details for ${model}`); }
+        function editVehicle(model) { showNotification(`Editing ${model}`); }
+        function openAddVehicleModal() { document.getElementById('addVehicleModal').classList.add('active'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
+
+        function selectVehicleType(type) {
+            document.querySelectorAll('.type-option').forEach(opt => opt.classList.remove('selected'));
+            document.getElementById(`type-${type}`).classList.add('selected');
+            selectedType = type;
+        }
+
+        function saveVehicle() {
+            const model = document.getElementById('vehicleModel').value;
+            const plate = document.getElementById('licensePlate').value;
+            if (!model || !plate || !selectedType) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            showNotification(`Vehicle ${model} added successfully!`, 'success');
+            closeModal('addVehicleModal');
+            document.getElementById('addVehicleForm').reset();
+            document.querySelectorAll('.type-option').forEach(opt => opt.classList.remove('selected'));
+            selectedType = null;
+        }
+
+        function scheduleMaintenance() { showNotification('Opening maintenance scheduler'); }
+
+        function markMaintenanceComplete(button) {
+            const item = button.closest('.maintenance-item');
+            const status = item.querySelector('.maintenance-status');
+            if (status.classList.contains('status-completed')) {
+                showNotification('Already completed', 'warning');
+                return;
+            }
+            status.className = 'maintenance-status status-completed';
+            status.textContent = 'Completed';
+            button.disabled = true;
+            showNotification('Maintenance marked as complete', 'success');
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = 'toast';
+            let bgColor = '#28a745';
+            if (type === 'error') bgColor = '#dc3545';
+            if (type === 'warning') bgColor = '#ffc107';
+            notification.style.backgroundColor = bgColor;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData();
+            // re-attach any event needed
+        });
+
+        // dummy logout to prevent errors
+        window.logout = function() { window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>

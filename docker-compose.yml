@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  easygo-db:
+    build: .
+    container_name: easygo_production_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME:-easygo_prod}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./scripts:/scripts
+    networks:
+      - easygo-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+networks:
+  easygo-net:

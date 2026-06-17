@@ -1,0 +1,1294 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGo - Trips Management</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Page Specific Styles */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-title h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .page-title p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px 15px;
+            min-width: 300px;
+        }
+        
+        .search-box i {
+            color: #999;
+            margin-right: 10px;
+        }
+        
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+        
+        .filter-btn {
+            background: white;
+            color: #667eea;
+            border: 1px solid #667eea;
+            border-radius: 8px;
+            padding: 8px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        
+        .filter-btn:hover {
+            background: #667eea10;
+        }
+        
+        .export-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        
+        .export-btn:hover {
+            background: #218838;
+        }
+        
+        .add-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        
+        .add-btn:hover {
+            background: #5a67d8;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .stat-card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat-trend-up {
+            color: #28a745;
+            font-size: 12px;
+        }
+        
+        .stat-trend-down {
+            color: #dc3545;
+            font-size: 12px;
+        }
+        
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .filter-section.show {
+            display: block;
+        }
+        
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-group label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .filter-group input, .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .apply-filter-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            cursor: pointer;
+        }
+        
+        .clear-filter-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            cursor: pointer;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+        }
+        
+        .summary-card h4 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .summary-card .amount {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .table-header h2 {
+            font-size: 20px;
+            color: #333;
+        }
+        
+        .table-tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .table-tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            color: #666;
+            font-weight: 600;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .table-tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 15px 10px;
+            background: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-in-progress {
+            background: #cce5ff;
+            color: #004085;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-scheduled {
+            background: #fff3cd;
+            color: #856404;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .trip-route {
+            max-width: 200px;
+        }
+        
+        .route-points {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .route-start, .route-end {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+        }
+        
+        .route-start i {
+            color: #28a745;
+            font-size: 10px;
+        }
+        
+        .route-end i {
+            color: #dc3545;
+            font-size: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+        
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+        
+        .action-btn.view {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .action-btn.track {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .action-btn.cancel {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .page-item {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .page-item.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .trip-distance {
+            background: #e9ecef;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        
+        .fare-amount {
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .modal-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .modal-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-card h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .trip-timeline {
+            margin: 20px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: #e9ecef;
+        }
+        
+        .timeline-item:last-child::before {
+            height: 20px;
+        }
+        
+        .timeline-time {
+            min-width: 80px;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-content i {
+            width: 20px;
+            color: #6c757d;
+        }
+        
+        .map-preview {
+            background: #f8f9fa;
+            height: 200px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            color: #666;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .modal-actions .cancel {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .modal-actions .save {
+            background: #667eea;
+            color: white;
+        }
+        
+        .rating-display {
+            color: #ffc107;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                                <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="EasyGo">
+
+            </div>
+            <div class="user-info">
+                <img src="https://randomuser.me/api/portraits/men/5.jpg" alt="Admin" class="user-avatar" id="userAvatar">
+                <div class="user-details">
+                    <h4 class="user-name" id="userName">Bongani Mkhize</h4>
+                    <p>Operations Manager</p>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="admin-panel.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/dashboard.png" alt="Dashboard">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-users.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/user-group-man-man.png" alt="Users">
+                    <span>Users</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-drivers.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/driver.png" alt="Drivers">
+                    <span>Drivers</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-trips.html" class="nav-link active">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Trips">
+                    <span>Trips</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-payments.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/money.png" alt="Payments">
+                    <span>Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-reports.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/analytics.png" alt="Reports">
+                    <span>Reports</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-verification.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/approval.png" alt="Verification">
+                    <span>Verification</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-support.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/support.png" alt="Support">
+                    <span>Support</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-promotions.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/discount.png" alt="Promotions">
+                    <span>Promotions</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-fleet.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/truck.png" alt="Fleet">
+                    <span>Fleet</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-zones.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/map.png" alt="Zones">
+                    <span>Zones</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-audit.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/activity-log.png" alt="Audit">
+                    <span>Audit Logs</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-incidents.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/emergency-button.png" alt="Incidents">
+                    <span>Incidents</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-reviews.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/star.png" alt="Reviews">
+                    <span>Reviews</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-admins.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/admin-settings-male.png" alt="Admins">
+                    <span>Admin Users</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-settings.html" class="nav-link ">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/settings.png" alt="Settings">
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="javascript:void(0)" class="nav-link" onclick="logout()">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/exit.png" alt="Logout">
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <h1>Trips Management</h1>
+                    <p>Monitor and manage all trips, track live journeys, and view analytics</p>
+                </div>
+                <div class="action-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by trip ID, passenger, driver...">
+                    </div>
+                    <button class="filter-btn" id="filterBtn">
+                        <i class="fas fa-filter"></i>
+                        Filter
+                    </button>
+                    <button class="export-btn" id="exportBtn">
+                        <i class="fas fa-download"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <h4>Today's Trips</h4>
+                    <div class="amount" id="todayTrips">156</div>
+                    <small>↑ 12% from yesterday</small>
+                </div>
+                <div class="summary-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                    <h4>Total Revenue</h4>
+                    <div class="amount" id="totalRevenue">R45,678</div>
+                    <small>Today</small>
+                </div>
+                <div class="summary-card" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+                    <h4>Avg. Trip Value</h4>
+                    <div class="amount" id="avgTrip">R185</div>
+                    <small>Per trip</small>
+                </div>
+                <div class="summary-card" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);">
+                    <h4>Live Trips</h4>
+                    <div class="amount" id="liveTrips">23</div>
+                    <small>Currently active</small>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>Total Trips</h3>
+                    <div class="stat-number" id="totalTrips">12,345</div>
+                    <span class="stat-trend-up"><i class="fas fa-arrow-up"></i> 15% from last month</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Completed</h3>
+                    <div class="stat-number" id="completedTrips">11,234</div>
+                    <span class="stat-trend-up">91% success rate</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Cancelled</h3>
+                    <div class="stat-number" id="cancelledTrips">876</div>
+                    <span class="stat-trend-down">7% cancellation rate</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg. Rating</h3>
+                    <div class="stat-number" id="avgRating">4.8</div>
+                    <span class="rating-stars">★★★★★</span>
+                </div>
+            </div>
+            
+            <!-- Filter Section -->
+            <div class="filter-section" id="filterSection">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Date Range</label>
+                        <input type="date" id="startDate">
+                        <input type="date" id="endDate" style="margin-top:5px;">
+                    </div>
+                    <div class="filter-group">
+                        <label>Trip Status</label>
+                        <select id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="completed">Completed</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="scheduled">Scheduled</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Payment Method</label>
+                        <select id="paymentFilter">
+                            <option value="">All Methods</option>
+                            <option value="card">Card</option>
+                            <option value="cash">Cash</option>
+                            <option value="wallet">Wallet</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Min Fare</label>
+                        <input type="number" id="minFare" placeholder="Min amount">
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="clear-filter-btn" id="clearFilter">Clear</button>
+                    <button class="apply-filter-btn" id="applyFilter">Apply Filters</button>
+                </div>
+            </div>
+            
+            <!-- Data Table -->
+            <div class="data-table">
+                <div class="table-header">
+                    <h2>Trip History</h2>
+                </div>
+                
+                <div class="table-tabs">
+                    <div class="table-tab active" data-tab="all">All Trips</div>
+                    <div class="table-tab" data-tab="in-progress">Live Now</div>
+                    <div class="table-tab" data-tab="completed">Completed</div>
+                    <div class="table-tab" data-tab="scheduled">Scheduled</div>
+                </div>
+                
+                <table id="tripsTable">
+                    <thead>
+                        <tr>
+                            <th>Trip ID</th>
+                            <th>Route</th>
+                            <th>Passenger</th>
+                            <th>Driver</th>
+                            <th>Fare</th>
+                            <th>Status</th>
+                            <th>Date/Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+                
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <div class="page-item" id="prevPage"><i class="fas fa-chevron-left"></i></div>
+                    <div class="page-item active" id="page1">1</div>
+                    <div class="page-item" id="page2">2</div>
+                    <div class="page-item" id="page3">3</div>
+                    <div class="page-item" id="nextPage"><i class="fas fa-chevron-right"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Trip Details Modal -->
+    <div class="modal-overlay" id="tripModal">
+        <div class="modal-card">
+            <h2>Trip Details</h2>
+            <div class="trip-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-time" id="pickupTime">14:30</div>
+                    <div class="timeline-content">
+                        <i class="fas fa-circle text-success"></i>
+                        <strong>Pickup</strong><br>
+                        <span id="pickupAddress">12 Main Street, Sandton</span>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-time" id="dropoffTime">15:15</div>
+                    <div class="timeline-content">
+                        <i class="fas fa-flag-checkered text-danger"></i>
+                        <strong>Dropoff</strong><br>
+                        <span id="dropoffAddress">45 Oxford Road, Rosebank</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="trip-info" style="margin: 20px 0;">
+                <p><strong>Distance:</strong> <span id="tripDistance">12.5 km</span></p>
+                <p><strong>Duration:</strong> <span id="tripDuration">45 min</span></p>
+                <p><strong>Fare:</strong> <span id="tripFare">R185.00</span></p>
+                <p><strong>Payment Method:</strong> <span id="paymentMethod">Card</span></p>
+                <p><strong>Rating:</strong> <span id="tripRating" class="rating-display">★★★★★</span></p>
+            </div>
+            
+            <div class="map-preview">
+                <i class="fas fa-map-marked-alt fa-3x" style="color: #667eea; margin-right: 10px;"></i>
+                <span>Map view would be displayed here</span>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="cancel" onclick="closeTripModal()">Close</button>
+                <button class="save" onclick="viewReceipt()">View Receipt</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cancel Trip Modal -->
+    <div class="modal-overlay" id="cancelModal">
+        <div class="modal-card">
+            <h2>Cancel Trip</h2>
+            <div class="modal-field">
+                <label>Cancellation Reason</label>
+                <select id="cancelReason">
+                    <option value="driver-issue">Driver Issue</option>
+                    <option value="passenger-request">Passenger Request</option>
+                    <option value="vehicle-problem">Vehicle Problem</option>
+                    <option value="weather">Weather Conditions</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="modal-field">
+                <label>Additional Notes</label>
+                <textarea id="cancelNotes" placeholder="Enter any additional details..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="cancel" onclick="closeCancelModal()">Back</button>
+                <button class="danger" onclick="confirmCancel()">Confirm Cancellation</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script>
+        // Sample trips data
+        const trips = [
+            {
+                id: 'TR001',
+                passenger: 'John Doe',
+                passengerAvatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+                driver: 'Thabo Ndlovu',
+                driverAvatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+                pickup: '12 Main Street, Sandton',
+                dropoff: '45 Oxford Road, Rosebank',
+                distance: '12.5 km',
+                duration: '45 min',
+                fare: 185.00,
+                status: 'completed',
+                paymentMethod: 'card',
+                rating: 5,
+                date: '2026-02-16',
+                time: '14:30'
+            },
+            {
+                id: 'TR002',
+                passenger: 'Jane Smith',
+                passengerAvatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+                driver: 'Lerato Mokoena',
+                driverAvatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+                pickup: '78 Beach Road, Camps Bay',
+                dropoff: 'Airport Terminal A',
+                distance: '25.3 km',
+                duration: '35 min',
+                fare: 320.00,
+                status: 'in-progress',
+                paymentMethod: 'wallet',
+                rating: 0,
+                date: '2026-02-16',
+                time: '15:45'
+            },
+            {
+                id: 'TR003',
+                passenger: 'Bob Johnson',
+                passengerAvatar: 'https://randomuser.me/api/portraits/men/3.jpg',
+                driver: 'Sipho Dlamini',
+                driverAvatar: 'https://randomuser.me/api/portraits/men/67.jpg',
+                pickup: '23 Church Street, Pretoria',
+                dropoff: '15 Mall of Africa',
+                distance: '8.2 km',
+                duration: '20 min',
+                fare: 95.00,
+                status: 'scheduled',
+                paymentMethod: 'cash',
+                rating: 0,
+                date: '2026-02-17',
+                time: '09:00'
+            },
+            {
+                id: 'TR004',
+                passenger: 'Alice Brown',
+                passengerAvatar: 'https://randomuser.me/api/portraits/women/4.jpg',
+                driver: 'Zola Khumalo',
+                driverAvatar: 'https://randomuser.me/api/portraits/women/68.jpg',
+                pickup: '5 Green Point',
+                dropoff: 'V&A Waterfront',
+                distance: '6.7 km',
+                duration: '15 min',
+                fare: 78.50,
+                status: 'cancelled',
+                paymentMethod: 'card',
+                rating: 0,
+                date: '2026-02-16',
+                time: '11:20'
+            },
+            {
+                id: 'TR005',
+                passenger: 'Charlie Wilson',
+                passengerAvatar: 'https://randomuser.me/api/portraits/men/5.jpg',
+                driver: 'Jabulani Nkosi',
+                driverAvatar: 'https://randomuser.me/api/portraits/men/52.jpg',
+                pickup: '34 Durban CBD',
+                dropoff: 'Umhlanga Ridge',
+                distance: '15.8 km',
+                duration: '25 min',
+                fare: 210.00,
+                status: 'completed',
+                paymentMethod: 'wallet',
+                rating: 4,
+                date: '2026-02-16',
+                time: '10:15'
+            }
+        ];
+        
+        let currentTab = 'all';
+        let filteredTrips = [...trips];
+        let currentPage = 1;
+        const rowsPerPage = 5;
+        
+        // DOM Elements
+        const tableBody = document.getElementById('tableBody');
+        const searchInput = document.getElementById('searchInput');
+        const filterBtn = document.getElementById('filterBtn');
+        const filterSection = document.getElementById('filterSection');
+        const exportBtn = document.getElementById('exportBtn');
+        
+        // Modal elements
+        const tripModal = document.getElementById('tripModal');
+        const cancelModal = document.getElementById('cancelModal');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTable();
+            updateStats();
+            
+            // Tab switching
+            document.querySelectorAll('.table-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.table-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTab = this.dataset.tab;
+                    filterTrips();
+                });
+            });
+            
+            // Search functionality
+            searchInput.addEventListener('input', function() {
+                filterTrips();
+            });
+            
+            // Filter toggle
+            filterBtn.addEventListener('click', function() {
+                filterSection.classList.toggle('show');
+            });
+            
+            // Apply filters
+            document.getElementById('applyFilter').addEventListener('click', function() {
+                applyFilters();
+            });
+            
+            // Clear filters
+            document.getElementById('clearFilter').addEventListener('click', function() {
+                document.getElementById('startDate').value = '';
+                document.getElementById('endDate').value = '';
+                document.getElementById('statusFilter').value = '';
+                document.getElementById('paymentFilter').value = '';
+                document.getElementById('minFare').value = '';
+                filterTrips();
+            });
+            
+            // Export
+            exportBtn.addEventListener('click', exportToCSV);
+            
+            // Pagination
+            document.getElementById('prevPage').addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+            
+            document.getElementById('nextPage').addEventListener('click', function() {
+                const maxPage = Math.ceil(filteredTrips.length / rowsPerPage);
+                if (currentPage < maxPage) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+        });
+        
+        function filterTrips() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            filteredTrips = trips.filter(trip => {
+                const matchesSearch = searchTerm === '' || 
+                    trip.id.toLowerCase().includes(searchTerm) ||
+                    trip.passenger.toLowerCase().includes(searchTerm) ||
+                    trip.driver.toLowerCase().includes(searchTerm);
+                
+                const matchesTab = currentTab === 'all' || trip.status === currentTab;
+                
+                return matchesSearch && matchesTab;
+            });
+            
+            currentPage = 1;
+            renderTable();
+        }
+        
+        function applyFilters() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const status = document.getElementById('statusFilter').value;
+            const payment = document.getElementById('paymentFilter').value;
+            const minFare = document.getElementById('minFare').value;
+            
+            filteredTrips = trips.filter(trip => {
+                let matches = true;
+                
+                if (startDate && trip.date < startDate) matches = false;
+                if (endDate && trip.date > endDate) matches = false;
+                if (status && trip.status !== status) matches = false;
+                if (payment && trip.paymentMethod !== payment) matches = false;
+                if (minFare && trip.fare < parseFloat(minFare)) matches = false;
+                
+                return matches;
+            });
+            
+            currentPage = 1;
+            renderTable();
+            filterSection.classList.remove('show');
+        }
+        
+        function renderTable() {
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageData = filteredTrips.slice(start, end);
+            
+            if (pageData.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px;">No trips found</td></tr>';
+            } else {
+                tableBody.innerHTML = pageData.map(trip => {
+                    let statusClass = 'status-' + trip.status;
+                    let stars = '★'.repeat(trip.rating) + '☆'.repeat(5 - trip.rating);
+                    
+                    return `
+                        <tr>
+                            <td><strong>${trip.id}</strong></td>
+                            <td class="trip-route">
+                                <div class="route-points">
+                                    <div class="route-start">
+                                        <i class="fas fa-circle" style="color: #28a745;"></i>
+                                        <span>${trip.pickup.substring(0, 20)}...</span>
+                                    </div>
+                                    <div class="route-end">
+                                        <i class="fas fa-flag-checkered" style="color: #dc3545;"></i>
+                                        <span>${trip.dropoff.substring(0, 20)}...</span>
+                                    </div>
+                                </div>
+                                <span class="trip-distance">${trip.distance}</span>
+                            </td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <img src="${trip.passengerAvatar}" style="width: 30px; height: 30px; border-radius: 50%;">
+                                    ${trip.passenger}
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <img src="${trip.driverAvatar}" style="width: 30px; height: 30px; border-radius: 50%;">
+                                    ${trip.driver}
+                                </div>
+                            </td>
+                            <td class="fare-amount">R${trip.fare.toFixed(2)}</td>
+                            <td><span class="${statusClass}">${trip.status.replace('-', ' ').toUpperCase()}</span></td>
+                            <td>${trip.date}<br><small>${trip.time}</small></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn view" onclick="viewTrip('${trip.id}')"><i class="fas fa-eye"></i></button>
+                                    ${trip.status === 'in-progress' ? 
+                                        `<button class="action-btn track" onclick="trackTrip('${trip.id}')"><i class="fas fa-map-marker-alt"></i></button>` : ''}
+                                    ${trip.status === 'scheduled' ? 
+                                        `<button class="action-btn cancel" onclick="openCancelModal('${trip.id}')"><i class="fas fa-times"></i></button>` : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            updatePagination();
+        }
+        
+        function updateStats() {
+            const total = trips.length;
+            const completed = trips.filter(t => t.status === 'completed').length;
+            const cancelled = trips.filter(t => t.status === 'cancelled').length;
+            const avgRating = (trips.filter(t => t.rating > 0).reduce((sum, t) => sum + t.rating, 0) / trips.filter(t => t.rating > 0).length).toFixed(1);
+            const liveTrips = trips.filter(t => t.status === 'in-progress').length;
+            const todayTrips = trips.filter(t => t.date === '2026-02-16').length;
+            const totalRevenue = trips.filter(t => t.status === 'completed').reduce((sum, t) => sum + t.fare, 0);
+            
+            document.getElementById('totalTrips').textContent = total;
+            document.getElementById('completedTrips').textContent = completed;
+            document.getElementById('cancelledTrips').textContent = cancelled;
+            document.getElementById('avgRating').textContent = avgRating || '4.8';
+            document.getElementById('todayTrips').textContent = todayTrips;
+            document.getElementById('totalRevenue').textContent = `R${totalRevenue}`;
+            document.getElementById('avgTrip').textContent = `R${(totalRevenue / completed).toFixed(0) || 185}`;
+            document.getElementById('liveTrips').textContent = liveTrips;
+        }
+        
+        function updatePagination() {
+            const maxPage = Math.ceil(filteredTrips.length / rowsPerPage);
+            
+            document.getElementById('page1').classList.remove('active');
+            document.getElementById('page2').classList.remove('active');
+            document.getElementById('page3').classList.remove('active');
+            
+            if (currentPage === 1) document.getElementById('page1').classList.add('active');
+            if (currentPage === 2) document.getElementById('page2').classList.add('active');
+            if (currentPage === 3) document.getElementById('page3').classList.add('active');
+            
+            document.getElementById('page2').style.display = maxPage >= 2 ? 'block' : 'none';
+            document.getElementById('page3').style.display = maxPage >= 3 ? 'block' : 'none';
+        }
+        
+        // Trip functions
+        function viewTrip(id) {
+            const trip = trips.find(t => t.id === id);
+            if (trip) {
+                document.getElementById('pickupTime').textContent = trip.time;
+                document.getElementById('pickupAddress').textContent = trip.pickup;
+                document.getElementById('dropoffAddress').textContent = trip.dropoff;
+                document.getElementById('tripDistance').textContent = trip.distance;
+                document.getElementById('tripDuration').textContent = trip.duration;
+                document.getElementById('tripFare').textContent = `R${trip.fare.toFixed(2)}`;
+                document.getElementById('paymentMethod').textContent = trip.paymentMethod.charAt(0).toUpperCase() + trip.paymentMethod.slice(1);
+                document.getElementById('tripRating').innerHTML = '★'.repeat(trip.rating) + '☆'.repeat(5 - trip.rating);
+                tripModal.classList.add('show');
+            }
+        }
+        
+        function trackTrip(id) {
+            alert(`Live tracking for trip ${id} would open here with real-time map`);
+        }
+        
+        function openCancelModal(id) {
+            cancelModal.classList.add('show');
+        }
+        
+        function closeTripModal() {
+            tripModal.classList.remove('show');
+        }
+        
+        function closeCancelModal() {
+            cancelModal.classList.remove('show');
+        }
+        
+        function confirmCancel() {
+            const reason = document.getElementById('cancelReason').value;
+            const notes = document.getElementById('cancelNotes').value;
+            alert(`Trip cancelled successfully. Reason: ${reason}${notes ? ' - ' + notes : ''}`);
+            closeCancelModal();
+        }
+        
+        function viewReceipt() {
+            alert('Receipt would be displayed/printed here');
+        }
+        
+        function exportToCSV() {
+            let csv = 'Trip ID,Passenger,Driver,Pickup,Dropoff,Distance,Fare,Status,Payment Method,Date,Time\n';
+            
+            filteredTrips.forEach(t => {
+                csv += `${t.id},${t.passenger},${t.driver},${t.pickup},${t.dropoff},${t.distance},${t.fare},${t.status},${t.paymentMethod},${t.date},${t.time}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'trips_export.csv';
+            a.click();
+        }
+        
+        // Original functions
+        window.showAddModal = function() {
+            alert('Add new trip functionality - To be implemented');
+        };
+        
+        window.logout = function() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'login.html';
+            }
+        };
+    </script>
+</body>
+</html>

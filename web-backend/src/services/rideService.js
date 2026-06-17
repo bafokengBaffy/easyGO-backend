@@ -1,17 +1,21 @@
-const { Ride } = require('../models');
-const ApiError = require('../utils/apiError');
+const BaseService = require('./base.service');
+const rideRepository = require('../repositories/ride.repository');
 
-const createRide = async (payload) => Ride.create(payload);
-const listRides = async () => Ride.findAll({ order: [['created_at', 'DESC']] });
-const getRideById = async (id) => {
-  const ride = await Ride.findByPk(id);
-  if (!ride) throw new ApiError(404, 'Ride not found.');
-  return ride;
-};
-const updateRideStatus = async (id, status) => {
-  const ride = await getRideById(id);
-  await ride.update({ status });
-  return ride;
-};
+class RideService extends BaseService {
+  constructor() {
+    super(rideRepository);
+  }
 
-module.exports = { createRide, listRides, getRideById, updateRideStatus };
+  async getRiderHistory(riderId) {
+    return await this.repository.findAll({ where: { rider_id: riderId } });
+  }
+
+  async updateRideStatus(rideId, status) {
+    return await this.update(rideId, { 
+      status,
+      status_updated_at: new Date()
+    });
+  }
+}
+
+module.exports = new RideService();

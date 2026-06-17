@@ -1,0 +1,937 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>easyGo · supercharged prototype</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- RESET / GLOBAL ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Inter", system-ui, sans-serif;
+      background-color: #ffffff;
+      color: #111111;
+      line-height: 1.5;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ---------- brand variables (yellow dominant) ---------- */
+    :root {
+      --gold: #F5C400;        /* pure bright yellow */
+      --black-dark: #111111;
+      --black-medium: #1A1A1A;
+      --white: #FFFFFF;
+      --off-white: #F5F5F5;
+      --shadow-sm: 0 15px 35px -8px rgba(0,0,0,0.08);
+      --shadow-hover: 0 25px 45px -12px rgba(0,0,0,0.25);
+      --transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    /* --- FAST color animation: YELLOW ⇄ LIGHT PINK --- */
+    @keyframes fastYellowPink {
+      0% { background-color: #F5C400; }      /* full yellow */
+      25% { background-color: #FFD966; }      /* light yellow */
+      50% { background-color: #FFB6C1; }      /* light pink */
+      75% { background-color: #FFCC99; }      /* peachy pink */
+      100% { background-color: #F5C400; }     /* back to yellow */
+    }
+
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- navbar (glass) with proper logo fit ---------- */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,0.03);
+      box-shadow: 0 4px 25px rgba(0,0,0,0.02);
+    }
+    .navbar-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 80px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.9rem;
+      letter-spacing: -0.02em;
+      color: var(--black-dark);
+      line-height: 1;
+    }
+    .logo-img-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      overflow: hidden;
+      background-color: var(--gold);
+      flex-shrink: 0;
+    }
+    .logo-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .logo-img-wrapper i {
+      font-size: 2.2rem;
+      color: #111;
+      display: none;
+    }
+    .logo span {
+      white-space: nowrap;
+    }
+    .logo:hover {
+      opacity: 0.9;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      font-weight: 500;
+    }
+    .nav-links a {
+      position: relative;
+      color: var(--black-dark);
+      font-size: 1.05rem;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 0%;
+      height: 2.5px;
+      background: var(--gold);
+      transition: width 0.2s ease;
+    }
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+    .nav-buttons {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .btn {
+      padding: 0.6rem 1.8rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      background: transparent;
+    }
+    .btn-outline {
+      border-color: var(--black-dark);
+      color: var(--black-dark);
+    }
+    .btn-outline:hover {
+      background: var(--black-dark);
+      color: white;
+    }
+
+    /* ---------- HERO with FAST yellow/pink color animation ---------- */
+    .hero {
+      background: #F5C400;
+      animation: fastYellowPink 3s ease infinite;
+      color: #111;
+      padding: 6rem 0 10rem 0;
+      clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
+      position: relative;
+      transition: background-color 0.1s;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.1);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.4) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      animation: fadeUp 0.6s ease forwards;
+      position: relative;
+      z-index: 2;
+    }
+    .hero h1 {
+      font-size: clamp(2.8rem, 8vw, 5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+      color: #111;
+      text-shadow: 0 2px 10px rgba(255,255,255,0.5);
+    }
+    .hero .highlight {
+      color: #111;
+      background: rgba(255,255,240,0.3);
+      padding: 0 8px;
+      border-radius: 20px;
+    }
+    .hero p {
+      font-size: 1.3rem;
+      opacity: 1;
+      margin-bottom: 2rem;
+      font-weight: 500;
+      color: #111;
+      text-shadow: 0 1px 4px rgba(255,255,255,0.5);
+    }
+    .cta-duo {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .cta-btn {
+      padding: 1rem 3rem;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      transition: 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.35);
+    }
+    .cta-rider {
+      background: #111;
+      color: #F5C400;
+      border-color: #111;
+    }
+    .cta-rider:hover {
+      background: transparent;
+      color: #111;
+      border-color: #111;
+      transform: scale(1.03);
+    }
+    .cta-driver {
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(10px);
+      border: 2px solid #111;
+      color: #111;
+    }
+    .cta-driver:hover {
+      background: #111;
+      color: #F5C400;
+      border-color: #111;
+      transform: scale(1.03);
+    }
+
+    /* features, stats, etc (keep as before) */
+    .features {
+      padding: 6rem 0;
+      background: var(--off-white);
+    }
+    .section-title {
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .section-sub {
+      text-align: center;
+      color: #4a4a4a;
+      font-size: 1.2rem;
+      max-width: 680px;
+      margin: 0 auto 4rem auto;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2.5rem;
+    }
+    .feature-card {
+      background: white;
+      padding: 2.8rem 1.8rem;
+      border-radius: 32px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-hover);
+    }
+    .feature-icon {
+      width: 100px;
+      height: 100px;
+      background: #111;
+      border-radius: 50%;
+      margin: 0 auto 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.15s;
+      box-shadow: 0 8px 0 var(--gold);
+    }
+    .feature-card:hover .feature-icon {
+      background: var(--gold);
+      box-shadow: 0 8px 0 #111;
+    }
+    .feature-icon i {
+      font-size: 3rem;
+      color: white;
+    }
+    .feature-card h3 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    .stats {
+      background: #111;
+      color: white;
+      padding: 5rem 0;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 3rem;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 4.2rem;
+      font-weight: 800;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .how-it-works {
+      padding: 6rem 0;
+      background: white;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2.5rem;
+      margin-top: 2rem;
+    }
+    .step {
+      background: var(--off-white);
+      border-radius: 40px;
+      padding: 3rem 2rem;
+      text-align: center;
+      transition: 0.15s;
+    }
+    .step:hover {
+      background: #111;
+      color: white;
+      transform: scale(1.01);
+    }
+    .step:hover .step-number {
+      background: var(--gold);
+      color: #111;
+    }
+    .step-number {
+      width: 70px;
+      height: 70px;
+      background: #111;
+      color: white;
+      font-size: 2.2rem;
+      font-weight: 800;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      transition: 0.15s;
+    }
+
+    .cities {
+      padding: 5rem 0;
+      background: var(--off-white);
+    }
+    .city-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem 1.5rem;
+      max-width: 900px;
+      margin: 3rem auto 0;
+    }
+    .city-tag {
+      padding: 0.8rem 2rem;
+      background: white;
+      border-radius: 60px;
+      font-weight: 600;
+      color: #111;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      transition: all 0.12s;
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+    .city-tag:hover {
+      background: var(--gold);
+      color: #111;
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -12px rgba(245,196,0,0.4);
+    }
+
+    footer {
+      background: #0a0a0a;
+      color: #ddd;
+      padding: 4rem 0 2rem;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 2.5rem;
+    }
+    .footer-col h4 {
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      font-size: 1.3rem;
+    }
+    .footer-col ul {
+      list-style: none;
+    }
+    .footer-col li {
+      margin-bottom: 0.8rem;
+    }
+    .footer-col a {
+      color: #b0b0b0;
+      transition: 0.15s;
+    }
+    .footer-col a:hover {
+      color: var(--gold);
+      padding-left: 4px;
+    }
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 2.2rem;
+      margin: 3rem 0 2rem;
+      font-size: 1.8rem;
+    }
+    .social-links a {
+      color: #aaa;
+      transition: 0.15s;
+    }
+    .social-links a:hover {
+      color: var(--gold);
+      transform: translateY(-5px);
+    }
+    .footer-bottom {
+      text-align: center;
+      border-top: 1px solid #222;
+      padding-top: 2rem;
+      color: #777;
+    }
+
+    /* ========== NEW FEATURE 1: REAL-TIME TOGGLE PRICING CARD (INTERACTIVE) ========= */
+    .price-toggler {
+      background: white;
+      border-radius: 48px;
+      padding: 3rem 2rem;
+      margin: 3rem auto;
+      box-shadow: var(--shadow-hover);
+      max-width: 700px;
+      border: 2px dashed var(--gold);
+    }
+    .toggle-switch {
+      display: flex;
+      background: #eee;
+      border-radius: 60px;
+      padding: 0.4rem;
+      width: fit-content;
+      margin: 2rem auto 1.5rem;
+    }
+    .toggle-option {
+      padding: 0.8rem 2.2rem;
+      border-radius: 60px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.1s;
+      background: transparent;
+    }
+    .toggle-option.active {
+      background: var(--gold);
+      color: #111;
+      box-shadow: 0 6px 14px rgba(245,196,0,0.4);
+    }
+    .price-big {
+      font-size: 4rem;
+      font-weight: 800;
+      color: #111;
+      line-height: 1;
+    }
+    .price-note {
+      color: #666;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    /* ========== NEW FEATURE 2: DRIVER / RIDER QUICK BAR (PROGRESS + TOGGLE) ========= */
+    .quick-progress {
+      background: #111;
+      color: white;
+      padding: 2.5rem;
+      border-radius: 80px;
+      margin: 4rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-around;
+    }
+    .progress-circle {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: conic-gradient(var(--gold) 0deg 180deg, #333 180deg 360deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: black;
+      background-color: var(--gold); /* fallback */
+    }
+    .driver-toggle-badge {
+      background: var(--gold);
+      color: #111;
+      border-radius: 60px;
+      padding: 0.8rem 2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .driver-toggle-badge.off {
+      background: #444;
+      color: #ccc;
+    }
+
+    /* ========== NEW FEATURE 3: INTERACTIVE CITY SLIDER (REAL DATA) ========= */
+    .city-slider {
+      background: linear-gradient(145deg, #fff9e6, #fff0d4);
+      border-radius: 60px;
+      padding: 2.5rem;
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      border: 2px solid var(--gold);
+      margin: 3rem 0;
+    }
+    .city-slider-item {
+      background: white;
+      border-radius: 50px;
+      padding: 1rem 2rem;
+      box-shadow: 0 8px 0 #111;
+      font-weight: 600;
+      transition: 0.1s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .city-slider-item.active-city {
+      background: var(--gold);
+      transform: translateY(-5px);
+      box-shadow: 0 13px 0 #111;
+    }
+    .city-stats-live {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    /* responsiveness */
+    @media (max-width: 800px) {
+      .navbar-container { flex-wrap: wrap; height: auto; padding: 1rem 0; }
+      .nav-links { order: 3; width: 100%; justify-content: center; margin-top: 0.8rem; gap: 1.5rem; }
+      .hero { clip-path: polygon(0 0, 100% 0, 100% 96%, 0 100%); padding: 5rem 0 8rem; }
+      .cta-duo { flex-direction: column; align-items: center; width: 100%; }
+      .cta-btn { width: 100%; justify-content: center; }
+    }
+    @media (max-width: 500px) {
+      .section-title { font-size: 2.2rem; }
+      .logo { font-size: 1.5rem; }
+      .logo-img-wrapper { width: 40px; height: 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========= -->
+  <nav class="navbar">
+    <div class="container navbar-container">
+      <a href="index.html" class="logo">
+        <div >
+          <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="easyGo logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <i class="fas fa-car" style="display: none; font-size: 2rem; color: #111;"></i>
+        </div>
+      
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#cities">Cities</a>
+        <a href="#">Safety</a>
+      </div>
+      <div class="nav-buttons">
+        <a href="login.html" class="btn btn-outline"><i class="far fa-user"></i> Log in</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== HERO with FAST yellow ⇄ pink ========= -->
+  <section class="hero">
+    <div class="container hero-content">
+      <h1><span class="">Move</span> with <br><img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 250px; height: 100px;" alt="easyGo"><span class=""></span></h1>
+      <p>South Africa's smart transportation — safe, reliable, and effortlessly premium.</p>
+      <div class="cta-duo">
+        <!-- these buttons store role and redirect to signup page step2 -->
+        <button onclick="handleUser('rider')" class="cta-btn cta-rider">
+          <i class="fas fa-user-plus"></i> Sign up as Client
+        </button>
+        <button onclick="handleUser('driver')" class="cta-btn cta-driver">
+          <i class="fas fa-car"></i> Register as Driver
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== EXISTING FEATURES SECTION (slightly enhanced) ========= -->
+  <section id="features" class="features">
+    <div class="container">
+      <h2 class="section-title">Designed around you</h2>
+      <p class="section-sub">Every feature built with safety, speed, and South Africa in mind.</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+          <h3>Safe rides</h3>
+          <p>Background‑checked drivers · 24/7 support · share trip status</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-clock"></i></div>
+          <h3>Always on time</h3>
+          <p>Real‑time ETA · intelligent routing · live map</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-wallet"></i></div>
+          <h3>Fair prices</h3>
+          <p>Upfront fares · no surge surprises · wallet & cash</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-headset"></i></div>
+          <h3>24/7 Concierge</h3>
+          <p>We're always awake. Chat or call, anytime.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== STATS ========= -->
+  <div class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div><div class="stat-number">65k+</div><div>happy clients</div></div>
+        <div><div class="stat-number">3.2k+</div><div>active drivers</div></div>
+        <div><div class="stat-number">210k+</div><div>trips completed</div></div>
+        <div><div class="stat-number">18</div><div>cities in SA</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== HOW IT WORKS ========= -->
+  <section id="how-it-works" class="how-it-works">
+    <div class="container">
+      <h2 class="section-title">Three moves ahead</h2>
+      <p class="section-sub">From download to destination in minutes.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Create account</h3>
+          <p>client or driver – sign up in under 2 minutes.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Choose your path</h3>
+          <p>Request a ride or start earning immediately.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Enjoy the journey</h3>
+          <p>Travel smooth, arrive happy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CITIES ========= -->
+  <section id="cities" class="cities">
+    <div class="container">
+      <h2 class="section-title">We cover the nation</h2>
+      <p class="section-sub">From Gauteng to the Cape – we're everywhere you need.</p>
+      <div class="city-cloud">
+        <span class="city-tag">Johannesburg</span>
+        <span class="city-tag">Cape Town</span>
+        <span class="city-tag">Durban</span>
+        <span class="city-tag">Pretoria</span>
+        <span class="city-tag">Port Elizabeth</span>
+        <span class="city-tag">Bloemfontein</span>
+        <span class="city-tag">East London</span>
+        <span class="city-tag">Pietermaritzburg</span>
+        <span class="city-tag">Polokwane</span>
+        <span class="city-tag">Nelspruit</span>
+        <span class="city-tag">Rustenburg</span>
+        <span class="city-tag">Kimberley</span>
+        <span class="city-tag">George</span>
+        <span class="city-tag">Stellenbosch</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER (with extra signup button) ========= -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>easyGo</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Press</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Safety</h4>
+          <ul>
+            <li><a href="#">Guidelines</a></li>
+            <li><a href="#">Driver safety</a></li>
+            <li><a href="#">client safety</a></li>
+            <li><a href="#">Emergency</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Help center</a></li>
+            <li><a href="#">Report issue</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Cookies</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- prominent sign-up button in footer -->
+      <div style="text-align: center; margin: 2.5rem 0 1.5rem;">
+        <a href="signup.html" class="btn" style="background: var(--gold); color:#111; padding: 1rem 3.5rem; font-size:1.3rem; box-shadow:0 8px 0 #111;"><i class="fas fa-pen"></i> Sign up now – it's free</a>
+      </div>
+
+      <div class="social-links">
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2025 easyGo (Pty) Ltd. · operating throughout South Africa</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      // ----- HERO BUTTONS: store role and go to signup step2 -----
+      window.handleUser = function(type) {
+        // store both keys to work with the signup page (it reads selectedUserType)
+        localStorage.setItem('selectedUserType', type === 'rider' ? 'client' : 'driver'); // signup uses 'client' for rider
+        localStorage.setItem('easygo_user_type', type);
+        localStorage.setItem('skipToStep', '2');
+        window.location.href = 'signup.html'; // go to the professional sign‑up page
+      };
+
+      // ----- NEW FEATURE 1: Price toggler (rider/driver) -----
+      const toggleOptions = document.querySelectorAll('.toggle-option');
+      const dynamicPrice = document.getElementById('dynamicPrice');
+      const priceNote = document.getElementById('priceNote');
+      let currentView = 'rider'; // 'rider' or 'driver'
+
+      function updatePrice() {
+        if (currentView === 'rider') {
+          if (dynamicPrice) dynamicPrice.innerText = 'R 89';
+          if (priceNote) priceNote.innerText = 'average trip · Johannesburg';
+        } else {
+          if (dynamicPrice) dynamicPrice.innerText = 'R 63';
+          if (priceNote) priceNote.innerText = 'estimated driver payout (70%)';
+        }
+      }
+      
+      if (toggleOptions.length > 0) {
+        toggleOptions.forEach(opt => {
+          opt.addEventListener('click', function() {
+            toggleOptions.forEach(o => o.classList.remove('active'));
+            this.classList.add('active');
+            currentView = this.dataset.view;
+            updatePrice();
+          });
+        });
+      }
+      
+      // simulate surge
+      document.getElementById('simulateTripBtn')?.addEventListener('click', function() {
+        if (currentView === 'rider') {
+          if (dynamicPrice) dynamicPrice.innerText = 'R 145';
+          if (priceNote) priceNote.innerText = 'surge pricing · 2.3x multiplier';
+        } else {
+          if (dynamicPrice) dynamicPrice.innerText = 'R 101';
+          if (priceNote) priceNote.innerText = 'surge earnings (higher)';
+        }
+        setTimeout(() => updatePrice(), 2000); // revert after 2s
+      });
+
+      // ----- NEW FEATURE 2: availability toggle and progress circle (animated) -----
+      const toggleBtn = document.getElementById('availabilityToggle');
+      const toggleStatus = document.getElementById('toggleStatus');
+      const onlineCountSpan = document.getElementById('onlineCount');
+      const progressCircle = document.getElementById('progressCircle');
+      let available = true;
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+          available = !available;
+          if (available) {
+            toggleBtn.classList.remove('off');
+            toggleBtn.innerHTML = '<i class="fas fa-toggle-on" style="font-size:2rem;"></i><span id="toggleStatus">You\'re available</span>';
+            if (toggleStatus) toggleStatus.innerText = "You're available";
+            if (onlineCountSpan) onlineCountSpan.innerText = '164'; // more online
+            if (progressCircle) {
+              progressCircle.style.background = 'conic-gradient(#F5C400 0deg 290deg, #333 290deg 360deg)';
+              progressCircle.innerText = '91%';
+            }
+          } else {
+            toggleBtn.classList.add('off');
+            toggleBtn.innerHTML = '<i class="fas fa-toggle-off" style="font-size:2rem;"></i><span id="toggleStatus">Unavailable</span>';
+            if (toggleStatus) toggleStatus.innerText = "Unavailable";
+            if (onlineCountSpan) onlineCountSpan.innerText = '147';
+            if (progressCircle) {
+              progressCircle.style.background = 'conic-gradient(#F5C400 0deg 210deg, #333 210deg 360deg)';
+              progressCircle.innerText = '67%';
+            }
+          }
+        });
+      }
+
+      // ----- NEW FEATURE 3: city slider interactive (live counts) -----
+      const cityItems = document.querySelectorAll('.city-slider-item');
+      cityItems.forEach(item => {
+        item.addEventListener('click', function() {
+          cityItems.forEach(ci => ci.classList.remove('active-city'));
+          this.classList.add('active-city');
+          // update live stats shown (just demo, change numbers)
+          const countSpan = this.querySelector('.city-stats-live');
+          if (countSpan) {
+            // simulate increment
+            let old = parseInt(countSpan.innerText) || 0;
+            old = old + 3; // fake increase
+            countSpan.innerText = old;
+          }
+          // optionally change driver online count
+          if (this.dataset.city === 'jhb' && onlineCountSpan) onlineCountSpan.innerText = '187';
+          else if (this.dataset.city === 'cpt' && onlineCountSpan) onlineCountSpan.innerText = '134';
+          else if (this.dataset.city === 'dur' && onlineCountSpan) onlineCountSpan.innerText = '93';
+          else if (this.dataset.city === 'pret' && onlineCountSpan) onlineCountSpan.innerText = '76';
+        });
+      });
+
+      // smooth scroll for anchor links (from old)
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          const href = this.getAttribute('href');
+          if (href === "#") return;
+          const target = document.querySelector(href);
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+
+      // image fallback
+      document.querySelectorAll('.logo-img-wrapper img').forEach(img => {
+        img.addEventListener('error', function() {
+          this.style.display = 'none';
+          const icon = this.nextElementSibling;
+          if (icon && icon.classList.contains('fa-car')) {
+            icon.style.display = 'flex';
+          }
+        });
+      });
+
+      // extra: set default active price view
+      updatePrice();
+
+      // any leftover localstorage keys just in case (but signup page handles)
+    })();
+  </script>
+  <!-- add empty style for off class -->
+  <style>
+    .driver-toggle-badge.off { background: #444; color: #ccc; }
+    .driver-toggle-badge { transition: 0.1s; user-select: none; }
+    .city-slider-item { transition: 0.15s; }
+  </style>
+</body>
+</html>

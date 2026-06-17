@@ -1,0 +1,60 @@
+.rider-layout {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 24px;
+}
+
+.booking-card {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.booking-inputs {
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 24px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 15px;
+}
+
+.pickup-icon { color: #F5C400; }
+.dropoff-icon { color: #ef4444; }
+
+.veh-option {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.veh-option.active {
+    border-color: #F5C400;
+    background: #fefce8;
+}
+
+.confirm-btn {
+    width: 100%;
+    background: #000;
+    color: #F5C400; /* Gold text on black for premium look */
+    padding: 18px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.confirm-btn:hover {
+    background: #1e293b;
+    transform: translateY(-2px);
+}

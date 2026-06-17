@@ -1,34 +1,61 @@
-const { verifyAccessToken } = require('../utils/jwt');
-const { admin, isFirebaseEnabled } = require('../config/firebase');
+﻿const jwt = require('jsonwebtoken');
+const { AuthenticationError } = require('../utils/apiError');
 const { User } = require('../models');
+const config = require('../config');
+const logger = require('../utils/logger');
 
-module.exports = async (req, res, next) => {
+const auth = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization || '';
-    const [, token] = authHeader.split(' ');
-
-    if (!token) {
-      return res.status(401).json({ success: false, message: 'Missing access token.' });
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new AuthenticationError('No token provided');
     }
-
-    try {
-      req.user = verifyAccessToken(token);
-      return next();
-    } catch (jwtErr) {
-      if (!isFirebaseEnabled) throw jwtErr;
+    
+    const token = authHeader.split(' ')[1];
+    
+    const decoded = jwt.verify(token, config.JWT.secret);
+    
+    const user = await User.findByPk(decoded.id, {
+      attributes: { exclude: ['password_hash'] }
+    });
+    
+    if (!user) {
+      throw new AuthenticationError('User not found');
     }
-
-    const decoded = await admin.auth().verifyIdToken(token);
-    const localUser = decoded?.uid ? await User.findOne({ where: { firebase_uid: decoded.uid } }) : null;
-    req.user = {
-      id: localUser?.id || decoded.uid,
-      email: decoded.email,
-      role: decoded.role || localUser?.role || 'rider',
-      firebase_uid: decoded.uid,
-      authProvider: 'firebase',
-    };
-    return next();
+    
+    if (!user.is_active) {
+      throw new AuthenticationError('Account is deactivated');
+    }
+    
+    req.user = user;
+    req.userId = user.id;
+    
+    next();
   } catch (error) {
-    return res.status(401).json({ success: false, message: 'Invalid or expired token.' });
+    next(error);
   }
 };
+
+const optionalAuth = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      const decoded = jwt.verify(token, config.JWT.secret);
+      const user = await User.findByPk(decoded.id);
+      
+      if (user && user.is_active) {
+        req.user = user;
+        req.userId = user.id;
+      }
+    }
+    
+    next();
+  } catch (error) {
+    next();
+  }
+};
+
+module.exports = { auth, optionalAuth };

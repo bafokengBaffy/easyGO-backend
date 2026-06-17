@@ -1,0 +1,71 @@
+.dashboard-container {
+    padding: 24px;
+    background: #f8fafd;
+    min-height: 100vh;
+}
+
+.status-toggle-btn {
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.status-toggle-btn.offline {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.status-toggle-btn.online {
+    background: #F5C400; /* Gold */
+    color: #000;
+    animation: pulse-gold 2s infinite;
+}
+
+.fare-tag {
+    background: #fef9c3;
+    color: #854d0e;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+}
+
+.action-btn.accept {
+    background: #F5C400;
+    color: #000;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+@keyframes pulse-gold {
+    0% { box-shadow: 0 0 0 0 rgba(245, 196, 0, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(245, 196, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 196, 0, 0); }
+}
+
+.pulse-indicator {
+    color: #F5C400;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px !important;
+    color: #94a3b8;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: block;
+}

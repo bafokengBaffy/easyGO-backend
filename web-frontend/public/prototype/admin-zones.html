@@ -1,0 +1,1506 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGo - Zones & Pricing Center</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places,drawing,geometry"></script>
+    <style>
+        /* Page Specific Styles */
+        :root {
+            --primary: #1d4e89;
+            --primary-light: #e8f0fe;
+            --success: #00a86b;
+            --warning: #f9a826;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --purple: #8b5cf6;
+            --gray-bg: #f8fafd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-bg);
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+            transition: margin-left 0.3s;
+        }
+
+        .main-content.expanded {
+            margin-left: 70px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-title h1 {
+            font-size: 32px;
+            color: #1a2639;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .page-title p {
+            color: #5f6b7a;
+            font-size: 15px;
+        }
+        
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            padding: 10px 20px;
+            min-width: 350px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        
+        .search-box i {
+            color: #94a3b8;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+        
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+            background: transparent;
+        }
+
+        .filter-dropdown {
+            position: relative;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2d3f59;
+        }
+
+        .filter-btn i {
+            color: var(--primary);
+        }
+        
+        .add-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, #2a5f9e 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 6px 12px -8px var(--primary);
+            transition: all 0.2s;
+        }
+        
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px -10px var(--primary);
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f9;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(29,78,137,0.08);
+        }
+        
+        .stat-card h3 {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-trend {
+            font-size: 13px;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-trend.down {
+            color: #ef4444;
+        }
+
+        /* Map Preview - Google Maps */
+        .map-preview {
+            background: white;
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #edf2f9;
+            position: relative;
+        }
+
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .map-btn {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 40px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .map-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .map-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        #googleMap {
+            height: 400px;
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 50px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 12px;
+        }
+
+        .zone-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #64748b;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            border: 1px solid #edf2f9;
+            margin-bottom: 30px;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .table-header h2 {
+            font-size: 20px;
+            color: #1a2639;
+            font-weight: 600;
+        }
+
+        .table-tabs {
+            display: flex;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 50px;
+        }
+
+        .tab-btn {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #475569;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 16px 12px;
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #eef2f6;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .zone-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .zone-color {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+        }
+        
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            letter-spacing: 0.2px;
+        }
+        
+        .status-active {
+            background: #e3f9ed;
+            color: #00a86b;
+        }
+        
+        .status-peak {
+            background: #fff4e0;
+            color: #f9a826;
+        }
+
+        .status-low {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .badge {
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #475569;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .price-tag {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 16px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .action-btn.edit {
+            background: #e8f0fe;
+            color: var(--primary);
+        }
+
+        .action-btn.price {
+            background: #f1f5f9;
+            color: #334155;
+        }
+        
+        .action-btn.schedule {
+            background: #e8f0fe;
+            color: var(--primary);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 30px;
+        }
+        
+        .page-item {
+            padding: 10px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 40px;
+            cursor: pointer;
+            color: #475569;
+            font-weight: 500;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .page-item:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .page-item.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Pricing Cards */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            border: 1px solid #edf2f9;
+        }
+
+        .pricing-card h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .rate-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eef2f6;
+        }
+
+        .rate-label {
+            color: #64748b;
+        }
+
+        .rate-value {
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h3 {
+            font-size: 22px;
+            color: #1a2639;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #334155;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            font-family: inherit;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Alert */
+        .alert {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 16px 24px;
+            border-radius: 50px;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 2500;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .alert.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .alert.success i {
+            color: var(--success);
+        }
+
+        .alert.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .alert.warning i {
+            color: var(--warning);
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                            <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="EasyGo">
+
+            </div>
+            <div class="user-info">
+                <img src="https://randomuser.me/api/portraits/men/5.jpg" alt="Admin" class="user-avatar" id="userAvatar">
+                <div class="user-details">
+                    <h4 class="user-name" id="userName">Bongani Mkhize</h4>
+                    <p>Operations Manager</p>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="admin-panel.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/dashboard.png" alt="Dashboard">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-users.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/user-group-man-man.png" alt="Users">
+                    <span>Users</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-drivers.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/driver.png" alt="Drivers">
+                    <span>Drivers</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-trips.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Trips">
+                    <span>Trips</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-payments.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/money.png" alt="Payments">
+                    <span>Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-reports.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/analytics.png" alt="Reports">
+                    <span>Reports</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-verification.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/approval.png" alt="Verification">
+                    <span>Verification</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-support.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/support.png" alt="Support">
+                    <span>Support</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-promotions.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/discount.png" alt="Promotions">
+                    <span>Promotions</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-fleet.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/truck.png" alt="Fleet">
+                    <span>Fleet</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-zones.html" class="nav-link active">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/map.png" alt="Zones">
+                    <span>Zones</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-audit.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/activity-log.png" alt="Audit">
+                    <span>Audit Logs</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-incidents.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/emergency-button.png" alt="Incidents">
+                    <span>Incidents</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-reviews.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/star.png" alt="Reviews">
+                    <span>Reviews</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-admins.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/admin-settings-male.png" alt="Admins">
+                    <span>Admin Users</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="admin-settings.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/settings.png" alt="Settings">
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="javascript:void(0)" class="nav-link" onclick="logout()">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/exit.png" alt="Logout">
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <h1>Zones & Pricing Center</h1>
+                    <p>Manage service zones, pricing rules, and surge multipliers</p>
+                </div>
+                <div class="action-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search zones, cities, or pricing rules...">
+                    </div>
+                    <div class="filter-dropdown">
+                        <button class="filter-btn" onclick="toggleFilter()">
+                            <i class="fas fa-filter"></i>
+                            Filter
+                        </button>
+                    </div>
+                    <button class="add-btn" onclick="showAddZoneModal()">
+                        <i class="fas fa-plus"></i>
+                        Create Zone
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>Active Zones</h3>
+                    <div class="stat-number">24</div>
+                    <div class="stat-trend"><i class="fas fa-arrow-up"></i> +3 this month</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Cities Covered</h3>
+                    <div class="stat-number">15</div>
+                    <div class="stat-trend"><i class="fas fa-check-circle"></i> Major metros</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg. Base Fare</h3>
+                    <div class="stat-number">R45.50</div>
+                    <div class="stat-trend"><i class="fas fa-chart-line"></i> +5.2% vs last month</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Surge Hours</h3>
+                    <div class="stat-number">156</div>
+                    <div class="stat-trend warning"><i class="fas fa-clock"></i> Peak: 4-7PM</div>
+                </div>
+            </div>
+
+            <!-- Google Maps Preview -->
+            <div class="map-preview">
+                <div class="map-header">
+                    <h3>Service Zones Map</h3>
+                    <div class="map-controls">
+                        <button class="map-btn active" onclick="setMapType('roadmap')">
+                            <i class="fas fa-road"></i> Roadmap
+                        </button>
+                        <button class="map-btn" onclick="setMapType('satellite')">
+                            <i class="fas fa-satellite"></i> Satellite
+                        </button>
+                        <button class="map-btn" onclick="toggleZoneDrawing()">
+                            <i class="fas fa-draw-polygon"></i> Draw Zone
+                        </button>
+                        <button class="map-btn" onclick="clearZones()">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Google Maps Container -->
+                <div id="googleMap"></div>
+                
+                <!-- Map Legend -->
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-dot" style="background: #1d4e89;"></div>
+                        <span>CBD Zones (R35-40 base)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-dot" style="background: #00a86b;"></div>
+                        <span>Suburban Zones (R30-34 base)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-dot" style="background: #f9a826;"></div>
+                        <span>Airport Zones (R50+ base)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-dot" style="background: #8b5cf6;"></div>
+                        <span>Township Zones (R25-30 base)</span>
+                    </div>
+                </div>
+                
+                <div class="zone-stats">
+                    <span><i class="fas fa-circle" style="color: #1d4e89;"></i> CBD: 8 zones</span>
+                    <span><i class="fas fa-circle" style="color: #00a86b;"></i> Suburban: 10 zones</span>
+                    <span><i class="fas fa-circle" style="color: #f9a826;"></i> Airport: 2 zones</span>
+                    <span><i class="fas fa-circle" style="color: #8b5cf6;"></i> Township: 4 zones</span>
+                </div>
+            </div>
+
+            <!-- Pricing Cards -->
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Standard Rates</h3>
+                    <div class="rate-row">
+                        <span class="rate-label">Base fare</span>
+                        <span class="rate-value">R35.00</span>
+                    </div>
+                    <div class="rate-row">
+                        <span class="rate-label">Per km</span>
+                        <span class="rate-value">R12.50</span>
+                    </div>
+                    <div class="rate-row">
+                        <span class="rate-label">Per minute</span>
+                        <span class="rate-value">R2.50</span>
+                    </div>
+                    <div class="rate-row">
+                        <span class="rate-label">Minimum fare</span>
+                        <span class="rate-value">R45.00</span>
+                    </div>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Surge Multipliers</h3>
+                    <div class="rate-row">
+                        <span class="rate-label">Light (1.2x)</span>
+                        <span class="rate-value">4PM - 6PM</span>
+                    </div>
+                    <div class="rate-row">
+                        <span class="rate-label">Medium (1.5x)</span>
+                        <span class="rate-value">Fri/Sat nights</span>
+                    </div>
+                    <div class="rate-row">
+                        <span class="rate-label">Heavy (2.0x)</span>
+                        <span class="rate-value">Public holidays</span>
+                    </div>
+                    <div class="rate-row">
+                        <span class="rate-label">Event (2.5x)</span>
+                        <span class="rate-value">Concerts/stadium</span>
+                    </div>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Special Zones</h3>
+                    <div class="rate-row">
+                        <span class="rate-label">Airport fee</span>
+                        <span class="rate-value">+R25.00</span>
+                    </div>
+                    <div class="rate-row">
+                        <span class="rate-label">Township rate</span>
+                        <span class="rate-value">R8.50/km</span>
+                    </div>
+                    <div class="rate-row">
+                        <span class="rate-label">CBD congestion</span>
+                        <span class="rate-value">+R5.00</span>
+                    </div>
+                    <div class="rate-row">
+                        <span class="rate-label">Late night (11PM-5AM)</span>
+                        <span class="rate-value">1.75x</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Table -->
+            <div class="data-table">
+                <div class="table-header">
+                    <h2>Zone Management</h2>
+                    <div class="table-tabs">
+                        <button class="tab-btn active" onclick="filterTable('all')">All Zones</button>
+                        <button class="tab-btn" onclick="filterTable('active')">Active</button>
+                        <button class="tab-btn" onclick="filterTable('peak')">Peak Hours</button>
+                        <button class="tab-btn" onclick="filterTable('low')">Low Demand</button>
+                    </div>
+                </div>
+                
+                <table id="zonesTable">
+                    <thead>
+                        <tr>
+                            <th>Zone</th>
+                            <th>City</th>
+                            <th>Base Fare</th>
+                            <th>Per km</th>
+                            <th>Per min</th>
+                            <th>Status</th>
+                            <th>Demand</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+                
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <div class="page-item" onclick="changePage(1)">1</div>
+                    <div class="page-item active" onclick="changePage(2)">2</div>
+                    <div class="page-item" onclick="changePage(3)">3</div>
+                </div>
+            </div>
+
+            <!-- Surge Schedule -->
+            <div class="data-table" style="margin-top: 20px;">
+                <div class="table-header">
+                    <h2>Upcoming Surge Events</h2>
+                    <a href="#" style="color: var(--primary); text-decoration: none;">Configure Schedule →</a>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Zone</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Multiplier</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🏈 Soccer Match</td>
+                            <td>FNB Stadium</td>
+                            <td>Feb 20, 2026</td>
+                            <td>6PM - 10PM</td>
+                            <td><span class="badge" style="background: #f9a826; color: white;">2.0x</span></td>
+                            <td><span class="status-badge status-peak">Confirmed</span></td>
+                        </tr>
+                        <tr>
+                            <td>🎤 Concert: Black Coffee</td>
+                            <td>Ticketpro Dome</td>
+                            <td>Feb 22, 2026</td>
+                            <td>7PM - 11PM</td>
+                            <td><span class="badge" style="background: #f9a826; color: white;">2.5x</span></td>
+                            <td><span class="status-badge status-peak">Confirmed</span></td>
+                        </tr>
+                        <tr>
+                            <td>🏢 Rush Hour</td>
+                            <td>CBD</td>
+                            <td>Every weekday</td>
+                            <td>4PM - 6PM</td>
+                            <td><span class="badge" style="background: #1d4e89; color: white;">1.2x</span></td>
+                            <td><span class="status-badge status-active">Recurring</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Zone Modal -->
+    <div class="modal" id="zoneModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Zone</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <form id="zoneForm" onsubmit="event.preventDefault(); saveZone();">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Zone Name</label>
+                        <input type="text" id="zoneName" placeholder="e.g., Sandton CBD" required>
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <select id="zoneCity" required>
+                            <option value="">Select city</option>
+                            <option value="Johannesburg">Johannesburg</option>
+                            <option value="Cape Town">Cape Town</option>
+                            <option value="Durban">Durban</option>
+                            <option value="Pretoria">Pretoria</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Base Fare (R)</label>
+                        <input type="number" id="baseFare" step="0.5" value="35.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Per km (R)</label>
+                        <input type="number" id="perKm" step="0.5" value="12.50" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Per minute (R)</label>
+                        <input type="number" id="perMin" step="0.5" value="2.50" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum fare (R)</label>
+                        <input type="number" id="minFare" step="0.5" value="45.00" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Zone Color (for map)</label>
+                    <select id="zoneColor">
+                        <option value="#1d4e89">Blue (CBD)</option>
+                        <option value="#00a86b">Green (Suburban)</option>
+                        <option value="#f9a826">Orange (Airport)</option>
+                        <option value="#8b5cf6">Purple (Township)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Draw on map or enter coordinates</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="zoneCoordinates" placeholder="Click on map to draw" readonly>
+                        <button type="button" class="map-btn" onclick="startDrawing()">Draw</button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="add-btn" style="width: 100%;">Create Zone</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alertContainer"></div>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script>
+        // Mock Zones Data
+        const zonesData = [
+            {
+                id: 'ZN001',
+                name: 'Johannesburg CBD',
+                city: 'Johannesburg',
+                baseFare: 35.00,
+                perKm: 12.50,
+                perMin: 2.50,
+                minFare: 45.00,
+                status: 'active',
+                demand: 'peak',
+                color: '#1d4e89',
+                bounds: null
+            },
+            {
+                id: 'ZN002',
+                name: 'Sandton',
+                city: 'Johannesburg',
+                baseFare: 40.00,
+                perKm: 14.00,
+                perMin: 3.00,
+                minFare: 50.00,
+                status: 'active',
+                demand: 'peak',
+                color: '#1d4e89',
+                bounds: null
+            },
+            {
+                id: 'ZN003',
+                name: 'OR Tambo Airport',
+                city: 'Johannesburg',
+                baseFare: 50.00,
+                perKm: 15.00,
+                perMin: 3.50,
+                minFare: 65.00,
+                status: 'active',
+                demand: 'peak',
+                color: '#f9a826',
+                bounds: null
+            },
+            {
+                id: 'ZN004',
+                name: 'Soweto',
+                city: 'Johannesburg',
+                baseFare: 30.00,
+                perKm: 8.50,
+                perMin: 2.00,
+                minFare: 35.00,
+                status: 'active',
+                demand: 'low',
+                color: '#8b5cf6',
+                bounds: null
+            },
+            {
+                id: 'ZN005',
+                name: 'Cape Town CBD',
+                city: 'Cape Town',
+                baseFare: 38.00,
+                perKm: 13.00,
+                perMin: 2.80,
+                minFare: 48.00,
+                status: 'active',
+                demand: 'peak',
+                color: '#1d4e89',
+                bounds: null
+            },
+            {
+                id: 'ZN006',
+                name: 'Durban Beachfront',
+                city: 'Durban',
+                baseFare: 32.00,
+                perKm: 11.00,
+                perMin: 2.20,
+                minFare: 42.00,
+                status: 'active',
+                demand: 'peak',
+                color: '#00a86b',
+                bounds: null
+            },
+            {
+                id: 'ZN007',
+                name: 'Pretoria East',
+                city: 'Pretoria',
+                baseFare: 34.00,
+                perKm: 12.00,
+                perMin: 2.40,
+                minFare: 44.00,
+                status: 'inactive',
+                demand: 'low',
+                color: '#00a86b',
+                bounds: null
+            }
+        ];
+
+        // Google Maps Variables
+        let map;
+        let drawingManager;
+        let selectedZone = null;
+        let mapType = 'roadmap';
+        let zones = [];
+
+        // Initialize Google Maps
+        function initMap() {
+            // Default center: Johannesburg
+            const defaultCenter = { lat: -26.2041, lng: 28.0473 };
+            
+            // Create map
+            map = new google.maps.Map(document.getElementById('googleMap'), {
+                center: defaultCenter,
+                zoom: 11,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                styles: [
+                    {
+                        featureType: "poi",
+                        elementType: "labels",
+                        stylers: [{ visibility: "off" }]
+                    }
+                ]
+            });
+
+            // Initialize drawing manager
+            drawingManager = new google.maps.drawing.DrawingManager({
+                drawingMode: null,
+                drawingControl: false,
+                polygonOptions: {
+                    fillColor: '#1d4e89',
+                    fillOpacity: 0.3,
+                    strokeWeight: 2,
+                    strokeColor: '#1d4e89',
+                    clickable: true,
+                    editable: true,
+                    zIndex: 1
+                }
+            });
+            drawingManager.setMap(map);
+
+            // Add event listener for polygon completion
+            google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon) {
+                // Get the path coordinates
+                const path = polygon.getPath();
+                const coordinates = [];
+                for (let i = 0; i < path.getLength(); i++) {
+                    const latLng = path.getAt(i);
+                    coordinates.push({
+                        lat: latLng.lat(),
+                        lng: latLng.lng()
+                    });
+                }
+                
+                // Store zone bounds
+                selectedZone = {
+                    type: 'polygon',
+                    coordinates: coordinates,
+                    polygon: polygon
+                };
+                
+                // Update input field
+                document.getElementById('zoneCoordinates').value = 'Polygon drawn with ' + coordinates.length + ' points';
+                
+                // Show success message
+                showAlert('Zone area drawn successfully!', 'success');
+            });
+
+            // Add sample zones
+            addSampleZones();
+        }
+
+        // Add sample zone polygons
+        function addSampleZones() {
+            // Johannesburg CBD zone
+            const jhbCBD = new google.maps.Polygon({
+                paths: [
+                    { lat: -26.195, lng: 28.035 },
+                    { lat: -26.215, lng: 28.045 },
+                    { lat: -26.205, lng: 28.065 },
+                    { lat: -26.185, lng: 28.055 }
+                ],
+                strokeColor: '#1d4e89',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#1d4e89',
+                fillOpacity: 0.2,
+                map: map
+            });
+
+            // Sandton zone
+            const sandton = new google.maps.Polygon({
+                paths: [
+                    { lat: -26.105, lng: 28.045 },
+                    { lat: -26.115, lng: 28.065 },
+                    { lat: -26.095, lng: 28.075 },
+                    { lat: -26.085, lng: 28.055 }
+                ],
+                strokeColor: '#1d4e89',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#1d4e89',
+                fillOpacity: 0.2,
+                map: map
+            });
+
+            // OR Tambo zone
+            const ortambo = new google.maps.Polygon({
+                paths: [
+                    { lat: -26.125, lng: 28.215 },
+                    { lat: -26.145, lng: 28.235 },
+                    { lat: -26.135, lng: 28.255 },
+                    { lat: -26.115, lng: 28.235 }
+                ],
+                strokeColor: '#f9a826',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#f9a826',
+                fillOpacity: 0.2,
+                map: map
+            });
+
+            zones.push(jhbCBD, sandton, ortambo);
+        }
+
+        // Set map type
+        function setMapType(type) {
+            mapType = type;
+            if (type === 'roadmap') {
+                map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+            } else {
+                map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+            }
+            
+            // Update active button
+            document.querySelectorAll('.map-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Toggle zone drawing mode
+        function toggleZoneDrawing() {
+            if (drawingManager.getDrawingMode() === google.maps.drawing.OverlayType.POLYGON) {
+                drawingManager.setDrawingMode(null);
+                showAlert('Drawing mode disabled', 'success');
+            } else {
+                drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+                showAlert('Click on map to draw a zone polygon', 'warning');
+            }
+        }
+
+        // Clear all zones from map
+        function clearZones() {
+            zones.forEach(zone => zone.setMap(null));
+            zones = [];
+            addSampleZones(); // Re-add sample zones
+            showAlert('Map reset to default zones', 'success');
+        }
+
+        // Start drawing from modal
+        function startDrawing() {
+            closeModal();
+            toggleZoneDrawing();
+            showAlert('Draw your zone on the map, then return to form', 'warning');
+        }
+
+        // Table rendering and pagination
+        let currentFilter = 'all';
+        let currentPage = 1;
+        const itemsPerPage = 5;
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            if (!tbody) return;
+
+            let filteredData = zonesData;
+            if (currentFilter !== 'all') {
+                filteredData = zonesData.filter(z => z.status === currentFilter || z.demand === currentFilter);
+            }
+
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedData = filteredData.slice(start, end);
+
+            tbody.innerHTML = paginatedData.map(zone => {
+                const demandColor = zone.demand === 'peak' ? '#f9a826' : zone.demand === 'low' ? '#0369a1' : '#64748b';
+                
+                return `
+                    <tr>
+                        <td>
+                            <div class="zone-info">
+                                <div class="zone-color" style="background: ${zone.color}"></div>
+                                <div>
+                                    <div style="font-weight: 500;">${zone.name}</div>
+                                    <div style="font-size: 12px; color: #64748b;">${zone.id}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${zone.city}</td>
+                        <td><span class="price-tag">R${zone.baseFare.toFixed(2)}</span></td>
+                        <td>R${zone.perKm.toFixed(2)}</td>
+                        <td>R${zone.perMin.toFixed(2)}</td>
+                        <td>
+                            <span class="status-badge status-${zone.status}">
+                                ${zone.status.charAt(0).toUpperCase() + zone.status.slice(1)}
+                            </span>
+                        </td>
+                        <td>
+                            <span style="color: ${demandColor}; font-weight: 500;">
+                                ${zone.demand === 'peak' ? '🔥 Peak' : zone.demand === 'low' ? '● Low' : '● Normal'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit" onclick="editZone('${zone.id}')">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="action-btn price" onclick="adjustPricing('${zone.id}')">
+                                    <i class="fas fa-tag"></i>
+                                </button>
+                                <button class="action-btn schedule" onclick="scheduleSurge('${zone.id}')">
+                                    <i class="fas fa-clock"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter table
+        function filterTable(filter) {
+            currentFilter = filter;
+            currentPage = 1;
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            renderTable();
+        }
+
+        // Change page
+        function changePage(page) {
+            currentPage = page;
+            renderTable();
+            
+            document.querySelectorAll('.page-item').forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Edit zone
+        function editZone(zoneId) {
+            const zone = zonesData.find(z => z.id === zoneId);
+            if (zone) {
+                showAlert(`✏️ Editing ${zone.name} pricing rules`, 'success');
+            }
+        }
+
+        // Adjust pricing
+        function adjustPricing(zoneId) {
+            showAlert('💰 Opening pricing adjustment tool', 'success');
+        }
+
+        // Schedule surge
+        function scheduleSurge(zoneId) {
+            showAlert('⚡ Setting up surge pricing schedule', 'warning');
+        }
+
+        // Show add zone modal
+        function showAddZoneModal() {
+            document.getElementById('zoneModal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('zoneModal').classList.remove('active');
+        }
+
+        // Save zone
+        function saveZone() {
+            const zoneName = document.getElementById('zoneName').value;
+            showAlert(`✅ Zone "${zoneName}" created successfully!`, 'success');
+            closeModal();
+        }
+
+        // Toggle filter
+        function toggleFilter() {
+            showAlert('🔍 Advanced filters: by city, demand, or price range', 'success');
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+            
+            // Load Google Maps API if not already loaded
+            if (typeof google !== 'undefined') {
+                initMap();
+            } else {
+                // If API not loaded, show placeholder
+                document.getElementById('googleMap').innerHTML = `
+                    <div style="height: 100%; display: flex; align-items: center; justify-content: center; background: #e2e8f0;">
+                        <p style="color: #475569;">Loading Google Maps... (API key required)</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+    <!-- Note: Replace YOUR_API_KEY with actual Google Maps API key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places,drawing,geometry&callback=initMap" async defer></script>
+</body>
+</html>

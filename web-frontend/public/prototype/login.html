@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGo - Login</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: #666;
+        }
+        
+        .login-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .login-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .login-tab:hover {
+            background: #f0f0f0;
+        }
+        
+        .login-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .login-form {
+            display: none;
+        }
+        
+        .login-form.active {
+            display: block;
+        }
+        
+        .demo-credentials {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        .demo-credentials p {
+            margin: 5px 0;
+            color: #666;
+        }
+        
+        .demo-credentials strong {
+            color: #333;
+        }
+        
+        .forgot-password {
+            text-align: right;
+            margin: 10px 0;
+        }
+        
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .signup-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-home {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-home a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .back-home a:hover {
+            color: #667eea;
+        }
+    </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="EasyGo">
+                <h1>Welcome Back</h1>
+                <p>Log in to continue your journey</p>
+            </div>
+            
+            <div class="login-tabs">
+                <div class="login-tab active" onclick="switchTab('rider')">client</div>
+                <div class="login-tab" onclick="switchTab('driver')">Driver</div>
+                <div class="login-tab" onclick="switchTab('admin')">Admin</div>
+            </div>
+            
+
+            
+            <!-- Rider Login Form -->
+            <form id="rider-form" class="login-form active" onsubmit="handleLogin(event, 'rider')">
+                <div class="form-group">
+                    <label for="rider-email">Email Address</label>
+                    <input type="email" id="rider-email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="rider-password">Password</label>
+                    <input type="password" id="rider-password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <div class="forgot-password">
+                    <a href="#">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Log In as client</button>
+            </form>
+            
+            <!-- Driver Login Form -->
+            <form id="driver-form" class="login-form" onsubmit="handleLogin(event, 'driver')">
+                <div class="form-group">
+                    <label for="driver-email">Email Address</label>
+                    <input type="email" id="driver-email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="driver-password">Password</label>
+                    <input type="password" id="driver-password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <div class="forgot-password">
+                    <a href="#">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Log In as Driver</button>
+            </form>
+            
+            <!-- Admin Login Form -->
+            <form id="admin-form" class="login-form" onsubmit="handleLogin(event, 'admin')">
+                <div class="form-group">
+                    <label for="admin-email">Email Address</label>
+                    <input type="email" id="admin-email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Log In as Admin</button>
+            </form>
+            
+            <div class="signup-link">
+                <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+            </div>
+            
+            <div class="back-home">
+                <a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets/js/auth.js"></script>
+    <script>
+        function switchTab(tab) {
+            // Remove active class from all tabs
+            var tabs = document.querySelectorAll('.login-tab');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Hide all forms
+            var forms = document.querySelectorAll('.login-form');
+            for (var i = 0; i < forms.length; i++) {
+                forms[i].classList.remove('active');
+            }
+            
+            // Show selected form
+            document.getElementById(tab + '-form').classList.add('active');
+            
+            // No demo credentials in production
+        }
+        
+        function handleLogin(event, role) {
+            event.preventDefault();
+            
+            var email, password;
+            
+            if (role === 'rider') {
+                email = document.getElementById('rider-email').value;
+                password = document.getElementById('rider-password').value;
+            } else if (role === 'driver') {
+                email = document.getElementById('driver-email').value;
+                password = document.getElementById('driver-password').value;
+            } else {
+                email = document.getElementById('admin-email').value;
+                password = document.getElementById('admin-password').value;
+            }
+            
+            // Call the login function from auth.js
+            login(email, password, role);
+        }
+    </script>
+</body>
+</html>

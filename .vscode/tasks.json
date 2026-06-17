@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "DB: Start Container",
+      "type": "shell",
+      "command": "docker-compose -f docker/postgres/docker-compose.yml up -d",
+      "group": "none"
+    },
+    {
+      "label": "DB: Backup Production",
+      "type": "shell",
+      "command": "sh docker/postgres/scripts/backup.sh",
+      "presentation": { "reveal": "always" }
+    },
+    {
+      "label": "DB: Run Migrations",
+      "type": "npm",
+      "script": "migrate",
+      "path": "web-backend/"
+    }
+  ]
+}

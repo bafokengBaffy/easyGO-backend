@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGo - Settings</title>
+    <!-- Core CSS assets (as requested) -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Page specific styles (kept minimal, only settings layout) -->
+    <style>
+        /* Settings page specific styles (complementing main/sidebar/responsive) */
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --danger: #f72585;
+            --gray: #6c757d;
+            --border-color: #e9ecef;
+            --dark: #212529;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            font-size: 32px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .page-header p {
+            color: var(--gray);
+            margin-top: 8px;
+        }
+
+        /* Settings container (two column) */
+        .settings-container {
+            display: flex;
+            gap: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .settings-sidebar {
+            width: 260px;
+            background: #f8fafd;
+            padding: 25px 0;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .settings-nav {
+            list-style: none;
+        }
+        .settings-nav li {
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--dark);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        .settings-nav li i {
+            width: 22px;
+            color: var(--gray);
+            font-size: 18px;
+        }
+        .settings-nav li.active {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.08), rgba(63, 55, 201, 0.08));
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+        .settings-nav li.active i { color: var(--primary); }
+        .settings-nav li:hover { background: rgba(67, 97, 238, 0.05); }
+
+        .settings-content {
+            flex: 1;
+            padding: 30px;
+        }
+        .settings-pane { display: none; }
+        .settings-pane.active { display: block; }
+        .settings-pane h2 {
+            font-size: 22px;
+            margin-bottom: 25px;
+            color: var(--dark);
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* form elements */
+        .settings-form { max-width: 600px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+        .form-group input:focus { outline: none; border-color: var(--primary); }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--secondary); box-shadow: 0 5px 15px rgba(67,97,238,0.4); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--dark);
+        }
+        .btn-outline:hover { background: var(--light); }
+        .btn-danger { background: var(--danger); color: white; }
+
+        .form-divider { margin: 30px 0; border-top: 1px solid var(--border-color); }
+
+        /* toggle switches */
+        .toggle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .toggle-info h4 { font-size: 16px; margin-bottom: 5px; }
+        .toggle-info p { font-size: 14px; color: var(--gray); }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 26px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        /* payment methods */
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        .payment-method i { font-size: 28px; color: var(--primary); }
+        .payment-info { flex: 1; }
+        .payment-info h4 { margin-bottom: 4px; }
+        .payment-info p { font-size: 13px; color: var(--gray); }
+        .badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* toast container reused from dashboard */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .toast {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideIn 0.3s ease;
+            max-width: 350px;
+        }
+        .toast.success { border-left: 4px solid #28a745; }
+        .toast.error { border-left: 4px solid #dc3545; }
+        .toast.info { border-left: 4px solid #17a2b8; }
+        .toast i { font-size: 20px; }
+        .toast.success i { color: #28a745; }
+        .toast-content { flex: 1; }
+        .toast-title { font-weight: bold; margin-bottom: 5px; }
+        .toast-message { font-size: 14px; color: #666; }
+        .toast-close { cursor: pointer; color: #999; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        #loadingSpinner {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            display: none;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 50px; height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
+
+        /* small responsive adjustments within settings container */
+        @media (max-width: 992px) {
+            .settings-container { flex-direction: column; }
+            .settings-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); }
+        }
+        /* general mobile menu is handled by responsive.css, but we ensure main-content spacing */
+        .main-content {
+            margin-left: 280px; /* sidebar width, will be overridden by responsive if needed */
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner"><div class="loading-spinner"></div></div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Menu Toggle Button (for mobile, same as dashboard) -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar (exactly as in dashboard with active settings) -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                             <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="EasyGo">
+
+            </div>
+            <button class="sidebar-close" id="sidebarClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="user-info">
+            <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" class="user-avatar" id="userAvatar">
+            <div class="user-details">
+                <h4 class="user-name" id="userName">Thabo Nkosi</h4>
+                <p class="user-email" id="userEmail">thabo.nkosi@example.com</p>
+                <span class="user-badge" id="userBadge">Premium Member</span>
+            </div>
+        </div>
+        
+        <div class="sidebar-search">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search...">
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="rider-dashboard.html" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+            <li class="nav-item"><a href="ride-booking.html" class="nav-link"><i class="fas fa-car"></i><span>Book a Ride</span><span class="nav-badge">New</span></a></li>
+            <li class="nav-item"><a href="ride-history.html" class="nav-link"><i class="fas fa-history"></i><span>Ride History</span></a></li>
+            <li class="nav-item"><a href="rider-payments.html" class="nav-link"><i class="fas fa-wallet"></i><span>Payments</span></a></li>
+            <li class="nav-item"><a href="profile.html" class="nav-link"><i class="fas fa-user"></i><span>Profile</span></a></li>
+            <li class="nav-item"><a href="rider-notifications.html" class="nav-link"><i class="fas fa-bell"></i><span>Notifications</span><span class="nav-badge notification-dot"></span></a></li>
+            <li class="nav-item"><a href="rider-support.html" class="nav-link"><i class="fas fa-headset"></i><span>Support</span></a></li>
+            <li class="nav-item"><a href="rider-settings.html" class="nav-link active"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+            <li class="nav-item logout-item"><a href="javascript:void(0)" class="nav-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-progress">
+                <div class="progress-info"><span>Ride Points</span><span>750/1000</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>
+            </div>
+            <div class="sidebar-help"><i class="fas fa-question-circle"></i><span>Need Help?</span></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1><i class="fas fa-cog"></i> Settings</h1>
+                <p>Manage your account preferences and application settings</p>
+            </div>
+
+            <!-- Settings card with side navigation and panes -->
+            <div class="settings-container">
+                <!-- Settings navigation tabs (left) -->
+                <div class="settings-sidebar">
+                    <ul class="settings-nav">
+                        <li class="active" data-tab="account"><i class="fas fa-user-circle"></i> Account</li>
+                        <li data-tab="profile"><i class="fas fa-id-card"></i> Profile</li>
+                        <li data-tab="notifications"><i class="fas fa-bell"></i> Notifications</li>
+                        <li data-tab="privacy"><i class="fas fa-lock"></i> Privacy & Security</li>
+                        <li data-tab="payments"><i class="fas fa-credit-card"></i> Payment Methods</li>
+                        <li data-tab="ride"><i class="fas fa-car-side"></i> Ride Preferences</li>
+                        <li data-tab="support"><i class="fas fa-headset"></i> Support & Help</li>
+                    </ul>
+                </div>
+
+                <!-- Settings content panes -->
+                <div class="settings-content">
+                    <!-- Account Pane -->
+                    <div class="settings-pane active" id="pane-account">
+                        <h2>Account Settings</h2>
+                        <div class="settings-form">
+                            <div class="form-group"><label>Email address</label><input type="email" value="thabo.nkosi@example.com" id="accountEmail"></div>
+                            <div class="form-group"><label>Phone number</label><input type="tel" value="+27 78 123 4567" id="accountPhone"></div>
+                            <div class="form-group"><label>Password</label><input type="password" value="********" disabled><small style="color:var(--gray)">Change via security tab</small></div>
+                            <div class="form-group"><label>Account type</label><input type="text" value="Premium Member (until Dec 2025)" disabled></div>
+                            <button class="btn btn-primary" onclick="saveSettings('account')"><i class="fas fa-save"></i> Save changes</button>
+                        </div>
+                    </div>
+
+                    <!-- Profile Pane -->
+                    <div class="settings-pane" id="pane-profile">
+                        <h2>Profile Information</h2>
+                        <div class="settings-form">
+                            <div class="form-group"><label>Full name</label><input type="text" value="Thabo Nkosi" id="profileName"></div>
+                            <div class="form-group"><label>Display name</label><input type="text" value="ThaboN" id="profileDisplay"></div>
+                            <div class="form-group"><label>Date of birth</label><input type="date" value="1990-05-15" id="profileDob"></div>
+                            <div class="form-group"><label>Home address</label><input type="text" value="12 Sandton Drive, Sandton, Johannesburg" id="profileAddress"></div>
+                            <div class="form-group"><label>Bio</label><textarea rows="3" id="profileBio">Frequent rider, love comfort and safety.</textarea></div>
+                            <button class="btn btn-primary" onclick="saveSettings('profile')">Update profile</button>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Pane -->
+                    <div class="settings-pane" id="pane-notifications">
+                        <h2>Notification Preferences</h2>
+                        <div class="toggle-item"><div class="toggle-info"><h4>Push notifications</h4><p>Receive alerts about rides and promotions</p></div><label class="switch"><input type="checkbox" checked id="notifPush"><span class="slider"></span></label></div>
+                        <div class="toggle-item"><div class="toggle-info"><h4>SMS notifications</h4><p>Get ride updates via text message</p></div><label class="switch"><input type="checkbox" id="notifSms"><span class="slider"></span></label></div>
+                        <div class="toggle-item"><div class="toggle-info"><h4>Email newsletters</h4><p>Weekly offers and news</p></div><label class="switch"><input type="checkbox" checked id="notifEmail"><span class="slider"></span></label></div>
+                        <div class="toggle-item"><div class="toggle-info"><h4>Promotional offers</h4><p>Special discounts and deals</p></div><label class="switch"><input type="checkbox" checked id="notifPromo"><span class="slider"></span></label></div>
+                        <button class="btn btn-primary" style="margin-top:20px" onclick="saveSettings('notifications')">Save preferences</button>
+                    </div>
+
+                    <!-- Privacy & Security Pane -->
+                    <div class="settings-pane" id="pane-privacy">
+                        <h2>Privacy & Security</h2>
+                        <div class="settings-form">
+                            <h4 style="margin:20px 0 10px">Change password</h4>
+                            <div class="form-group"><label>Current password</label><input type="password" placeholder="********" id="oldPass"></div>
+                            <div class="form-group"><label>New password</label><input type="password" placeholder="New password" id="newPass"></div>
+                            <div class="form-group"><label>Confirm new password</label><input type="password" placeholder="Confirm" id="confirmPass"></div>
+                            <button class="btn btn-primary" onclick="changePassword()">Update password</button>
+                            <div class="form-divider"></div>
+                            <h4>Two-factor authentication</h4>
+                            <div class="toggle-item"><div class="toggle-info"><p>Enhance account security with 2FA</p></div><label class="switch"><input type="checkbox" id="twofa"><span class="slider"></span></label></div>
+                            <div style="margin-top:25px"><button class="btn btn-danger" onclick="deleteAccount()"><i class="fas fa-trash-alt"></i> Delete account</button></div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Methods Pane -->
+                    <div class="settings-pane" id="pane-payments">
+                        <h2>Payment Methods</h2>
+                        <div class="payment-method"><i class="fab fa-cc-visa"></i><div class="payment-info"><h4>Visa ending in 4242</h4><p>Expires 12/25</p></div><span class="badge">Default</span><i class="fas fa-ellipsis-v" style="cursor:pointer; color:gray"></i></div>
+                        <div class="payment-method"><i class="fab fa-cc-mastercard"></i><div class="payment-info"><h4>Mastercard ending in 7890</h4><p>Expires 08/24</p></div><i class="fas fa-ellipsis-v" style="cursor:pointer; color:gray"></i></div>
+                        <div class="payment-method"><i class="fas fa-mobile-alt"></i><div class="payment-info"><h4>Mobile money</h4><p>MTN Money: 0781234567</p></div><i class="fas fa-ellipsis-v" style="cursor:pointer; color:gray"></i></div>
+                        <button class="btn btn-outline"><i class="fas fa-plus-circle"></i> Add payment method</button>
+                    </div>
+
+                    <!-- Ride Preferences Pane -->
+                    <div class="settings-pane" id="pane-ride">
+                        <h2>Ride Preferences</h2>
+                        <div class="form-group"><label>Preferred car type</label><select id="rideCar"><option>Economy</option><option selected>Comfort</option><option>Premium</option><option>Electric</option></select></div>
+                        <div class="form-group"><label>Default payment method</label><select id="ridePayment"><option>Visa *4242</option><option>Mastercard *7890</option><option>Mobile money</option></select></div>
+                        <div class="toggle-item"><div class="toggle-info"><h4>Quiet mode</h4><p>Drivers will minimize conversation</p></div><label class="switch"><input type="checkbox" id="quietMode"><span class="slider"></span></label></div>
+                        <div class="toggle-item"><div class="toggle-info"><h4>Pet friendly</h4><p>Allow drivers with pet policy</p></div><label class="switch"><input type="checkbox" id="petFriendly"><span class="slider"></span></label></div>
+                        <button class="btn btn-primary" onclick="saveSettings('ride')">Save preferences</button>
+                    </div>
+
+                    <!-- Support Pane -->
+                    <div class="settings-pane" id="pane-support">
+                        <h2>Support & Help</h2>
+                        <p style="margin-bottom:20px">Get help with any issues or questions.</p>
+                        <div class="form-group"><label>Subject</label><input placeholder="e.g., Payment issue" id="supportSubject"></div>
+                        <div class="form-group"><label>Message</label><textarea rows="5" placeholder="Describe your problem..." id="supportMsg"></textarea></div>
+                        <button class="btn btn-primary" onclick="sendSupport()">Send message</button>
+                        <hr style="margin:30px 0">
+                        <h4>Frequently asked questions</h4>
+                        <ul style="margin-top:15px; list-style:none; line-height:2">
+                            <li><i class="fas fa-question-circle" style="color:var(--primary)"></i> How to cancel a ride?</li>
+                            <li><i class="fas fa-question-circle" style="color:var(--primary)"></i> Update payment method</li>
+                            <li><i class="fas fa-question-circle" style="color:var(--primary)"></i> EasyGo safety guidelines</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts: using external auth/sidebar, plus inline functionality for settings -->
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script>
+        (function() {
+            // ---------- SETTINGS TABS ----------
+            const navItems = document.querySelectorAll('.settings-nav li');
+            const panes = document.querySelectorAll('.settings-pane');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    navItems.forEach(n => n.classList.remove('active'));
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    panes.forEach(pane => pane.classList.remove('active'));
+                    const activePane = document.getElementById('pane-' + tabId);
+                    if (activePane) activePane.classList.add('active');
+                });
+            });
+
+            // ---------- USER DATA (from auth, fallback) ----------
+            function getCurrentUser() {
+                // try from auth.js global if exists, else dummy
+                if (typeof window.getCurrentUser === 'function') return window.getCurrentUser();
+                return { name: 'Thabo Nkosi', email: 'thabo.nkosi@example.com' };
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const user = getCurrentUser();
+                document.getElementById('userName').textContent = user.name || 'Thabo Nkosi';
+                document.getElementById('userEmail').textContent = user.email || 'thabo.nkosi@example.com';
+                if (document.getElementById('profileName')) document.getElementById('profileName').value = user.name || 'Thabo Nkosi';
+                if (document.getElementById('accountEmail')) document.getElementById('accountEmail').value = user.email || 'thabo.nkosi@example.com';
+            });
+
+            // ---------- TOAST & LOADING (reused) ----------
+            function showToast(title, message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
+                toast.innerHTML = `<i class="fas fa-${icon}"></i><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-message">${message}</div></div><i class="fas fa-times toast-close" onclick="this.parentElement.remove()"></i>`;
+                container.appendChild(toast);
+                setTimeout(() => { if(toast.parentElement) toast.remove(); }, 4000);
+            }
+            function showLoading() { document.getElementById('loadingSpinner').style.display = 'block'; }
+            function hideLoading() { document.getElementById('loadingSpinner').style.display = 'none'; }
+
+            // ---------- SAVE SETTINGS (dummy) ----------
+            window.saveSettings = function(section) {
+                showLoading();
+                setTimeout(() => { hideLoading(); showToast('Settings saved', `${section} updated successfully.`, 'success'); }, 600);
+            };
+            window.changePassword = function() {
+                const old = document.getElementById('oldPass')?.value;
+                const newp = document.getElementById('newPass')?.value;
+                const conf = document.getElementById('confirmPass')?.value;
+                if (!old || !newp || !conf) { showToast('Error', 'Fill all password fields', 'error'); return; }
+                if (newp !== conf) { showToast('Error', 'New passwords do not match', 'error'); return; }
+                showLoading(); setTimeout(() => { hideLoading(); showToast('Success', 'Password changed', 'success'); }, 600);
+            };
+            window.deleteAccount = function() {
+                if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+                    showLoading(); setTimeout(() => { hideLoading(); showToast('Account deleted', 'Sorry to see you go', 'error'); }, 600);
+                }
+            };
+            window.sendSupport = function() {
+                const subj = document.getElementById('supportSubject')?.value;
+                const msg = document.getElementById('supportMsg')?.value;
+                if (!subj || !msg) { showToast('Error', 'Subject and message required', 'error'); return; }
+                showLoading(); setTimeout(() => { hideLoading(); showToast('Support', 'Message sent, we\'ll reply soon', 'success'); }, 600);
+            };
+
+            // logout (from auth if exists, else local)
+            window.logout = function() {
+                if (typeof window.logout === 'function' && window.logout !== window.logout) {
+                    window.logout();
+                } else {
+                    showLoading();
+                    setTimeout(() => { hideLoading(); showToast('Logged out', 'Redirecting...', 'info'); window.location.href = 'login.html'; }, 800);
+                }
+            };
+        })();
+    </script>
+</body>
+</html>

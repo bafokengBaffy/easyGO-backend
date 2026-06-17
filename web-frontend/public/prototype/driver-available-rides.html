@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Rides - EasyGo Driver</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .filters-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-item label {
+            font-weight: 600;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .filter-item select, .filter-item input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .rides-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .ride-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            border-left: 4px solid #667eea;
+        }
+        
+        .ride-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .ride-card.high-demand {
+            border-left-color: #dc3545;
+        }
+        
+        .ride-card.nearby {
+            border-left-color: #28a745;
+        }
+        
+        .ride-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .rider-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .rider-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .rider-details h4 {
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        .rider-rating {
+            color: #ffc107;
+            font-size: 14px;
+        }
+        
+        .ride-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-nearby {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-high-demand {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .badge-surge {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .ride-details {
+            margin: 15px 0;
+            padding: 10px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .detail-row i {
+            width: 20px;
+            color: #667eea;
+        }
+        
+        .fare-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .fare-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .fare-original {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 14px;
+            margin-left: 5px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-accept {
+            flex: 2;
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-details {
+            flex: 1;
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-view-on-map {
+            background: white;
+            border: 1px solid #667eea;
+            color: #667eea;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-view-on-map:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .stats-banner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .map-preview {
+            height: 200px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .surge-indicator {
+            background: #ff6b6b;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        .no-rides {
+            text-align: center;
+            padding: 50px;
+            background: white;
+            border-radius: 12px;
+            grid-column: 1 / -1;
+        }
+        
+        .no-rides i {
+            font-size: 60px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .no-rides h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .rides-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                              <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="EasyGo">
+
+            </div>
+            <div class="user-info">
+                <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="User" class="user-avatar" id="userAvatar">
+                <div class="user-details">
+                    <h4 class="user-name" id="userName">Sipho Dlamini</h4>
+                    <p id="userRole">Driver since 2024</p>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="driver-dashboard.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/dashboard.png" alt="Dashboard">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-available-rides.html" class="nav-link active">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Available Rides">
+                    <span>Available Rides</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-current-trip.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/road.png" alt="Current Trip">
+                    <span>Current Trip</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-earnings.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/money.png" alt="Earnings">
+                    <span>Earnings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-profile.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/user.png" alt="Profile">
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-vehicle.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/car.png" alt="Vehicle">
+                    <span>Vehicle</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-settings.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/settings.png" alt="Settings">
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="driver-support.html" class="nav-link">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/support.png" alt="Support">
+                    <span>Support</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="javascript:void(0)" class="nav-link" onclick="logout()">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/exit.png" alt="Logout">
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>Available Rides</h1>
+                <div>
+                    <span class="status-badge status-online" id="driverStatus">
+                        <i class="fas fa-circle"></i> Online
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Stats Banner -->
+            <div class="stats-banner">
+                <div class="stat-card">
+                    <div class="stat-value" id="nearbyRides">12</div>
+                    <div class="stat-label">Rides Nearby</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgFare">R 245</div>
+                    <div class="stat-label">Average Fare</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="surgeZones">3</div>
+                    <div class="stat-label">Surge Zones</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="acceptanceRate">92%</div>
+                    <div class="stat-label">Acceptance Rate</div>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="filters-section">
+                <h3><i class="fas fa-filter"></i> Filter Rides</h3>
+                <div class="filter-grid">
+                    <div class="filter-item">
+                        <label>Sort By</label>
+                        <select id="sortBy">
+                            <option value="distance">Distance (Nearest)</option>
+                            <option value="fare">Highest Fare</option>
+                            <option value="rating">Rider Rating</option>
+                            <option value="time">Earliest Pickup</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Max Distance</label>
+                        <select id="maxDistance">
+                            <option value="5">5 km</option>
+                            <option value="10" selected>10 km</option>
+                            <option value="15">15 km</option>
+                            <option value="20">20 km</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Min Fare</label>
+                        <select id="minFare">
+                            <option value="50">R 50+</option>
+                            <option value="100">R 100+</option>
+                            <option value="150">R 150+</option>
+                            <option value="200">R 200+</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Rider Rating</label>
+                        <select id="minRating">
+                            <option value="4">4.0+</option>
+                            <option value="4.5" selected>4.5+</option>
+                            <option value="4.8">4.8+</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map Preview -->
+            <div class="map-preview" id="mapPreview">
+                <img src="https://via.placeholder.com/800x200/667eea/ffffff?text=Live+Ride+Map" alt="Map" class="map-placeholder">
+                <button class="btn-view-on-map" style="position: absolute; bottom: 10px; right: 10px;">
+                    <i class="fas fa-map"></i> View Full Map
+                </button>
+            </div>
+            
+            <!-- Available Rides -->
+            <div class="rides-container" id="ridesContainer">
+                <!-- Ride cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script>
+        // Mock data for available rides
+        const mockRides = [
+            {
+                id: 1,
+                riderName: 'Thabo Nkosi',
+                riderAvatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+                riderRating: 4.9,
+                pickup: 'Sandton City',
+                pickupAddress: 'Sandton Dr, Sandton',
+                dropoff: 'OR Tambo Airport',
+                dropoffAddress: 'Johannesburg',
+                distance: 25,
+                duration: 35,
+                fare: 290,
+                surge: false,
+                nearby: true,
+                highDemand: true,
+                estimatedArrival: '3 min',
+                riderTrips: 245,
+                riderJoined: '2023',
+                rideType: 'Standard',
+                paymentMethod: 'Credit Card'
+            },
+            {
+                id: 2,
+                riderName: 'Nomvula Mkhize',
+                riderAvatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+                riderRating: 4.8,
+                pickup: 'Rosebank Mall',
+                pickupAddress: 'Rosebank, Johannesburg',
+                dropoff: 'Fourways Mall',
+                dropoffAddress: 'Fourways, Sandton',
+                distance: 15,
+                duration: 25,
+                fare: 180,
+                surge: true,
+                surgeMultiplier: 1.5,
+                originalFare: 120,
+                nearby: true,
+                highDemand: false,
+                estimatedArrival: '5 min',
+                riderTrips: 156,
+                riderJoined: '2024',
+                rideType: 'Standard',
+                paymentMethod: 'Cash'
+            },
+            {
+                id: 3,
+                riderName: 'David Smith',
+                riderAvatar: 'https://randomuser.me/api/portraits/men/45.jpg',
+                riderRating: 5.0,
+                pickup: 'Melrose Arch',
+                pickupAddress: 'Melrose, Johannesburg',
+                dropoff: 'Lanseria Airport',
+                dropoffAddress: 'Lanseria',
+                distance: 35,
+                duration: 45,
+                fare: 450,
+                surge: false,
+                nearby: false,
+                highDemand: true,
+                estimatedArrival: '8 min',
+                riderTrips: 512,
+                riderJoined: '2022',
+                rideType: 'Premium',
+                paymentMethod: 'Credit Card'
+            },
+            {
+                id: 4,
+                riderName: 'Zanele Khumalo',
+                riderAvatar: 'https://randomuser.me/api/portraits/women/63.jpg',
+                riderRating: 4.7,
+                pickup: 'Mall of Africa',
+                pickupAddress: 'Midrand',
+                dropoff: 'Waterfall City',
+                dropoffAddress: 'Midrand',
+                distance: 8,
+                duration: 15,
+                fare: 95,
+                surge: false,
+                nearby: true,
+                highDemand: false,
+                estimatedArrival: '2 min',
+                riderTrips: 89,
+                riderJoined: '2024',
+                rideType: 'Standard',
+                paymentMethod: 'EasyGo Wallet'
+            },
+            {
+                id: 5,
+                riderName: 'Sipho Zulu',
+                riderAvatar: 'https://randomuser.me/api/portraits/men/52.jpg',
+                riderRating: 4.6,
+                pickup: 'Montecasino',
+                pickupAddress: 'Fourways',
+                dropoff: 'Nelson Mandela Square',
+                dropoffAddress: 'Sandton',
+                distance: 12,
+                duration: 20,
+                fare: 150,
+                surge: true,
+                surgeMultiplier: 1.3,
+                originalFare: 115,
+                nearby: false,
+                highDemand: true,
+                estimatedArrival: '6 min',
+                riderTrips: 67,
+                riderJoined: '2024',
+                rideType: 'Standard',
+                paymentMethod: 'Cash'
+            },
+            {
+                id: 6,
+                riderName: 'Linda Ngubane',
+                riderAvatar: 'https://randomuser.me/api/portraits/women/22.jpg',
+                riderRating: 4.9,
+                pickup: 'University of Johannesburg',
+                pickupAddress: 'Auckland Park',
+                dropoff: 'Soweto',
+                dropoffAddress: 'Orlando',
+                distance: 18,
+                duration: 30,
+                fare: 210,
+                surge: false,
+                nearby: false,
+                highDemand: false,
+                estimatedArrival: '10 min',
+                riderTrips: 178,
+                riderJoined: '2023',
+                rideType: 'Standard',
+                paymentMethod: 'Credit Card'
+            }
+        ];
+        
+        function loadUserData() {
+            const user = getCurrentUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userRole').textContent = 'Driver since 2024';
+                document.getElementById('driverStatus').innerHTML = '<i class="fas fa-circle"></i> Online';
+            }
+        }
+        
+        function displayRides(rides) {
+            const container = document.getElementById('ridesContainer');
+            
+            if (rides.length === 0) {
+                container.innerHTML = `
+                    <div class="no-rides">
+                        <i class="fas fa-car"></i>
+                        <h3>No rides available</h3>
+                        <p>Check back soon or adjust your filters</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = rides.map(ride => {
+                const rideClass = ride.nearby ? 'nearby' : ride.highDemand ? 'high-demand' : '';
+                const badges = [];
+                if (ride.nearby) badges.push('<span class="ride-badge badge-nearby">Nearby</span>');
+                if (ride.highDemand) badges.push('<span class="ride-badge badge-high-demand">High Demand</span>');
+                if (ride.surge) badges.push('<span class="ride-badge badge-surge">Surge</span>');
+                
+                return `
+                    <div class="ride-card ${rideClass}" data-id="${ride.id}">
+                        <div class="ride-header">
+                            <div class="rider-info">
+                                <img src="${ride.riderAvatar}" alt="${ride.riderName}" class="rider-avatar">
+                                <div class="rider-details">
+                                    <h4>${ride.riderName}</h4>
+                                    <div class="rider-rating">
+                                        <i class="fas fa-star"></i> ${ride.riderRating} 
+                                        <small>(${ride.riderTrips} trips)</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                ${badges.join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="ride-details">
+                            <div class="detail-row">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span><strong>From:</strong> ${ride.pickup}</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-flag-checkered"></i>
+                                <span><strong>To:</strong> ${ride.dropoff}</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-route"></i>
+                                <span>${ride.distance} km · ${ride.duration} min</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-clock"></i>
+                                <span>Pickup in ${ride.estimatedArrival}</span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="fas fa-credit-card"></i>
+                                <span>${ride.paymentMethod}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="fare-section">
+                            <div>
+                                <span class="fare-amount">R ${ride.fare}</span>
+                                ${ride.surge ? `<span class="fare-original">R ${ride.originalFare}</span>` : ''}
+                                ${ride.surge ? '<span class="surge-indicator">SURGE</span>' : ''}
+                            </div>
+                            <span class="ride-type">${ride.rideType}</span>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-accept" onclick="acceptRide(${ride.id})">
+                                <i class="fas fa-check"></i> Accept
+                            </button>
+                            <button class="btn btn-details" onclick="viewRideDetails(${ride.id})">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function acceptRide(rideId) {
+            const ride = mockRides.find(r => r.id === rideId);
+            if (ride && confirm(`Accept ride for ${ride.riderName}?`)) {
+                // Save accepted ride to session storage
+                sessionStorage.setItem('currentRide', JSON.stringify(ride));
+                window.location.href = 'driver-current-trip.html';
+            }
+        }
+        
+        function viewRideDetails(rideId) {
+            const ride = mockRides.find(r => r.id === rideId);
+            if (ride) {
+                alert(`
+Ride Details:
+Rider: ${ride.riderName} (${ride.riderRating} ⭐)
+Pickup: ${ride.pickup} - ${ride.pickupAddress}
+Dropoff: ${ride.dropoff} - ${ride.dropoffAddress}
+Distance: ${ride.distance} km
+Duration: ${ride.duration} min
+Fare: R ${ride.fare}
+Payment: ${ride.paymentMethod}
+Rider since: ${ride.riderJoined}
+                `);
+            }
+        }
+        
+        function applyFilters() {
+            const sortBy = document.getElementById('sortBy').value;
+            const maxDistance = parseInt(document.getElementById('maxDistance').value);
+            const minFare = parseInt(document.getElementById('minFare').value);
+            const minRating = parseFloat(document.getElementById('minRating').value);
+            
+            let filteredRides = mockRides.filter(ride => 
+                ride.distance <= maxDistance && 
+                ride.fare >= minFare && 
+                ride.riderRating >= minRating
+            );
+            
+            // Sort rides
+            filteredRides.sort((a, b) => {
+                switch(sortBy) {
+                    case 'distance':
+                        return a.distance - b.distance;
+                    case 'fare':
+                        return b.fare - a.fare;
+                    case 'rating':
+                        return b.riderRating - a.riderRating;
+                    case 'time':
+                        return parseInt(a.estimatedArrival) - parseInt(b.estimatedArrival);
+                    default:
+                        return 0;
+                }
+            });
+            
+            displayRides(filteredRides);
+        }
+        
+        // Event listeners for filters
+        document.getElementById('sortBy').addEventListener('change', applyFilters);
+        document.getElementById('maxDistance').addEventListener('change', applyFilters);
+        document.getElementById('minFare').addEventListener('change', applyFilters);
+        document.getElementById('minRating').addEventListener('change', applyFilters);
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData();
+            displayRides(mockRides);
+            
+            // Update nearby rides count
+            document.getElementById('nearbyRides').textContent = mockRides.filter(r => r.nearby).length;
+            document.getElementById('surgeZones').textContent = mockRides.filter(r => r.surge).length;
+        });
+    </script>
+</body>
+</html>

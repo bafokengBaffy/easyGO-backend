@@ -1,18 +1,11 @@
-FROM node:20-alpine AS base
-WORKDIR /app
-ENV NODE_ENV=production
+FROM postgres:18-alpine
 
-FROM base AS deps
-COPY web-backend/package*.json ./
-RUN npm ci --omit=dev
+# Install PostGIS extension
+RUN apk add --no-cache postgis
 
-FROM base AS runtime
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-COPY --from=deps /app/node_modules ./node_modules
-COPY web-backend .
-RUN chown -R appuser:appgroup /app
-USER appuser
-EXPOSE 4000
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-    CMD wget -qO- http://127.0.0.1:${PORT:-4000}/health || exit 1
-CMD ["node", "server.js"]
+# Custom configuration mount points
+COPY conf/postgresql.conf /etc/postgresql/postgresql.conf
+COPY init/ /docker-entrypoint-initdb.d/
+
+# Ensure proper permissions
+RUN chown -R postgres:postgres /docker-entrypoint-initdb.d/

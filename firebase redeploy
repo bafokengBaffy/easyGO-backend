@@ -1,0 +1,17 @@
+cd web- frontend 
+npm install
+npm run lint
+
+npm run lint -- --fix
+
+npm run format
+
+npm run type-check
+
+
+npm run clean
+
+npm run build
+
+firebase deploy --only hosting
+

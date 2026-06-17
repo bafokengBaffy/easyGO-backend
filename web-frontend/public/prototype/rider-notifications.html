@@ -1,0 +1,1199 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>EasyGo - Notifications</title>
+        <link rel="stylesheet" href="assets/css/main.css">
+        <link rel="stylesheet" href="assets/css/sidebar.css">
+        <link rel="stylesheet" href="assets/css/responsive.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <style>
+            :root {
+                --primary: #4361ee;
+                --secondary: #3f37c9;
+                --success: #4cc9f0;
+                --danger: #f72585;
+                --warning: #f8961e;
+                --info: #4895ef;
+                --light: #f8f9fa;
+                --dark: #212529;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: #f4f7fc;
+                overflow-x: hidden;
+            }
+
+            .page-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+
+            .page-title h1 {
+                font-size: 32px;
+                color: var(--dark);
+                margin-bottom: 5px;
+            }
+
+            .page-title p {
+                color: #666;
+                font-size: 14px;
+            }
+
+            .notification-actions {
+                display: flex;
+                gap: 15px;
+            }
+
+            .mark-read-btn {
+                background: var(--primary);
+                color: white;
+                border: none;
+                padding: 12px 25px;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.3s;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 600;
+            }
+
+            .mark-read-btn:hover {
+                background: var(--secondary);
+                transform: translateY(-3px);
+            }
+
+            .settings-btn {
+                background: white;
+                color: var(--dark);
+                border: 1px solid #e0e0e0;
+                padding: 12px 25px;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.3s;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 600;
+            }
+
+            .settings-btn:hover {
+                background: #f8f9fa;
+                transform: translateY(-3px);
+            }
+
+            .notification-tabs {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 25px;
+                flex-wrap: wrap;
+            }
+
+            .notification-tab {
+                padding: 10px 25px;
+                border-radius: 30px;
+                cursor: pointer;
+                transition: all 0.3s;
+                font-weight: 600;
+                background: white;
+                border: 1px solid #e0e0e0;
+                color: #666;
+            }
+
+            .notification-tab:hover {
+                background: #f8f9fa;
+                border-color: var(--primary);
+            }
+
+            .notification-tab.active {
+                background: linear-gradient(135deg, var(--primary), var(--secondary));
+                color: white;
+                border-color: transparent;
+            }
+
+            .notification-tab .count {
+                background: rgba(255,255,255,0.2);
+                padding: 2px 8px;
+                border-radius: 15px;
+                margin-left: 8px;
+                font-size: 12px;
+            }
+
+            .notification-tab.active .count {
+                background: rgba(255,255,255,0.3);
+            }
+
+            .notifications-list {
+                background: white;
+                border-radius: 15px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+                overflow: hidden;
+                margin-bottom: 30px;
+            }
+
+            .notification-item {
+                display: flex;
+                align-items: flex-start;
+                padding: 20px;
+                border-bottom: 1px solid #f0f0f0;
+                transition: all 0.3s;
+                cursor: pointer;
+                position: relative;
+            }
+
+            .notification-item:hover {
+                background: #f8f9fa;
+            }
+
+            .notification-item.unread {
+                background: #e8f0fe;
+            }
+
+            .notification-item.unread::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                background: var(--primary);
+            }
+
+            .notification-icon {
+                width: 50px;
+                height: 50px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 15px;
+                flex-shrink: 0;
+            }
+
+            .icon-ride {
+                background: #e3f2fd;
+                color: #1976d2;
+            }
+
+            .icon-promo {
+                background: #fff3e0;
+                color: #f57c00;
+            }
+
+            .icon-payment {
+                background: #e8f5e8;
+                color: #388e3c;
+            }
+
+            .icon-alert {
+                background: #ffebee;
+                color: #d32f2f;
+            }
+
+            .icon-system {
+                background: #f3e5f5;
+                color: #7b1fa2;
+            }
+
+            .notification-content {
+                flex: 1;
+            }
+
+            .notification-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 5px;
+            }
+
+            .notification-title {
+                font-weight: 600;
+                color: var(--dark);
+            }
+
+            .notification-time {
+                font-size: 12px;
+                color: #999;
+            }
+
+            .notification-message {
+                color: #666;
+                font-size: 14px;
+                margin-bottom: 5px;
+                line-height: 1.5;
+            }
+
+            .notification-meta {
+                display: flex;
+                gap: 15px;
+                font-size: 12px;
+                color: #999;
+            }
+
+            .notification-meta i {
+                margin-right: 3px;
+            }
+
+            .notification-actions {
+                display: flex;
+                gap: 10px;
+                margin-left: 15px;
+            }
+
+            .notification-btn {
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #f8f9fa;
+                color: #666;
+                transition: all 0.3s;
+                cursor: pointer;
+                border: none;
+            }
+
+            .notification-btn:hover {
+                background: var(--primary);
+                color: white;
+            }
+
+            .notification-btn.delete:hover {
+                background: var(--danger);
+            }
+
+            .empty-notifications {
+                text-align: center;
+                padding: 60px 20px;
+            }
+
+            .empty-notifications i {
+                font-size: 60px;
+                color: #ccc;
+                margin-bottom: 20px;
+            }
+
+            .empty-notifications h3 {
+                color: #666;
+                margin-bottom: 10px;
+            }
+
+            .empty-notifications p {
+                color: #999;
+            }
+
+            .notification-settings-panel {
+                background: white;
+                border-radius: 15px;
+                padding: 25px;
+                margin-top: 30px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            }
+
+            .settings-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            .settings-header h3 {
+                color: var(--dark);
+            }
+
+            .settings-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+            }
+
+            .setting-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px;
+                background: #f8f9fa;
+                border-radius: 12px;
+            }
+
+            .setting-info h4 {
+                color: var(--dark);
+                margin-bottom: 5px;
+            }
+
+            .setting-info p {
+                color: #666;
+                font-size: 13px;
+            }
+
+            .toggle-switch {
+                width: 50px;
+                height: 26px;
+                background: #ccc;
+                border-radius: 30px;
+                position: relative;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .toggle-switch.active {
+                background: var(--primary);
+            }
+
+            .toggle-slider {
+                width: 22px;
+                height: 22px;
+                background: white;
+                border-radius: 50%;
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                transition: all 0.3s;
+            }
+
+            .toggle-switch.active .toggle-slider {
+                left: 26px;
+            }
+
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 10000;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .modal.show {
+                display: flex;
+                animation: fadeIn 0.3s ease;
+            }
+
+            .modal-content {
+                background: white;
+                border-radius: 20px;
+                padding: 30px;
+                max-width: 500px;
+                width: 90%;
+                max-height: 80vh;
+                overflow-y: auto;
+                animation: slideUp 0.3s ease;
+            }
+
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(50px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .modal-header h2 {
+                color: var(--dark);
+            }
+
+            .modal-close {
+                cursor: pointer;
+                font-size: 24px;
+                color: #999;
+                transition: color 0.3s;
+            }
+
+            .modal-close:hover {
+                color: var(--danger);
+            }
+
+            .notification-detail {
+                margin-bottom: 20px;
+            }
+
+            .detail-label {
+                color: #666;
+                font-size: 14px;
+                margin-bottom: 5px;
+            }
+
+            .detail-value {
+                font-size: 16px;
+                color: var(--dark);
+                line-height: 1.6;
+            }
+
+            .modal-actions {
+                display: flex;
+                gap: 15px;
+                margin-top: 30px;
+            }
+
+            .modal-actions button {
+                flex: 1;
+                padding: 12px;
+                border-radius: 10px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .action-btn {
+                background: var(--primary);
+                color: white;
+                border: none;
+            }
+
+            .action-btn:hover {
+                background: var(--secondary);
+            }
+
+            .delete-btn {
+                background: #f8d7da;
+                color: var(--danger);
+                border: 1px solid #f5c6cb;
+            }
+
+            .delete-btn:hover {
+                background: #f1b0b7;
+            }
+
+            @media (max-width: 768px) {
+                .page-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .notification-actions {
+                    width: 100%;
+                }
+
+                .mark-read-btn, .settings-btn {
+                    flex: 1;
+                }
+
+                .notification-item {
+                    flex-wrap: wrap;
+                }
+
+                .notification-actions {
+                    width: 100%;
+                    justify-content: flex-end;
+                    margin-left: 0;
+                    margin-top: 10px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
+            <div class="loading-spinner"></div>
+        </div>
+
+        <!-- Toast Container -->
+        <div class="toast-container" id="toastContainer"></div>
+
+        <!-- Menu Toggle Button -->
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                                   <img src="assets/images/easy-Go-Upsaceld-noBG.png" style="width: 100px;" alt="EasyGo">
+
+                </div>
+                <button class="sidebar-close" id="sidebarClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="user-info">
+                <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" class="user-avatar" id="userAvatar">
+                <div class="user-details">
+                    <h4 class="user-name" id="userName">Thabo Nkosi</h4>
+                    <p class="user-email" id="userEmail">thabo.nkosi@example.com</p>
+                    <span class="user-badge" id="userBadge">Premium Member</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search...">
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="rider-dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="ride-booking.html" class="nav-link">
+                        <i class="fas fa-car"></i>
+                        <span>Book a Ride</span>
+                        <span class="nav-badge">New</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="ride-history.html" class="nav-link">
+                        <i class="fas fa-history"></i>
+                        <span>Ride History</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="rider-payments.html" class="nav-link">
+                        <i class="fas fa-wallet"></i>
+                        <span>Payments</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="rider-profile.html" class="nav-link">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="rider-notifications.html" class="nav-link active">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                        <span class="nav-badge notification-dot"></span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="rider-support.html" class="nav-link">
+                        <i class="fas fa-headset"></i>
+                        <span>Support</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="rider-settings.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="nav-item logout-item">
+                    <a href="javascript:void(0)" class="nav-link" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-progress">
+                    <div class="progress-info">
+                        <span>Ride Points</span>
+                        <span>750/1000</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                </div>
+                <div class="sidebar-help" onclick="window.location.href='rider-support.html'">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Need Help?</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>Notifications</h1>
+                        <p>Stay updated with your rides, promotions and important alerts</p>
+                    </div>
+                    <div class="notification-actions">
+                        <button class="mark-read-btn" onclick="markAllAsRead()">
+                            <i class="fas fa-check-double"></i> Mark All Read
+                        </button>
+                        <button class="settings-btn" onclick="scrollToSettings()">
+                            <i class="fas fa-cog"></i> Settings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notification Tabs -->
+                <div class="notification-tabs">
+                    <div class="notification-tab active" onclick="switchNotificationTab('all', this)">
+                        All <span class="count" id="allCount">12</span>
+                    </div>
+                    <div class="notification-tab" onclick="switchNotificationTab('unread', this)">
+                        Unread <span class="count" id="unreadCount">5</span>
+                    </div>
+                    <div class="notification-tab" onclick="switchNotificationTab('rides', this)">
+                        Rides <span class="count" id="ridesCount">4</span>
+                    </div>
+                    <div class="notification-tab" onclick="switchNotificationTab('promotions', this)">
+                        Promotions <span class="count" id="promosCount">3</span>
+                    </div>
+                    <div class="notification-tab" onclick="switchNotificationTab('payments', this)">
+                        Payments <span class="count" id="paymentsCount">2</span>
+                    </div>
+                    <div class="notification-tab" onclick="switchNotificationTab('alerts', this)">
+                        Alerts <span class="count" id="alertsCount">3</span>
+                    </div>
+                </div>
+
+                <!-- Notifications List -->
+                <div class="notifications-list" id="notificationsList">
+                    <!-- Notifications will be loaded here -->
+                </div>
+
+                <!-- Notification Settings -->
+                <div class="notification-settings-panel" id="notificationSettings">
+                    <div class="settings-header">
+                        <h3>Notification Preferences</h3>
+                        <button class="edit-btn" onclick="saveNotificationSettings()" style="background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer;">
+                            Save Preferences
+                        </button>
+                    </div>
+
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Ride Updates</h4>
+                                <p>Get notified about ride confirmations, driver arrival, and ride completion</p>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this, 'rides')">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Promotions & Offers</h4>
+                                <p>Receive special discounts, promo codes, and offers</p>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this, 'promos')">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Payment Alerts</h4>
+                                <p>Get notified about payments, receipts, and wallet transactions</p>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this, 'payments')">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Safety Alerts</h4>
+                                <p>Important safety notifications and emergency alerts</p>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this, 'safety')">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Email Notifications</h4>
+                                <p>Receive notifications via email</p>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this, 'email')">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>SMS Alerts</h4>
+                                <p>Get important alerts via SMS</p>
+                            </div>
+                            <div class="toggle-switch" onclick="toggleSetting(this, 'sms')">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Push Notifications</h4>
+                                <p>Receive push notifications on your device</p>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this, 'push')">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Marketing Communications</h4>
+                                <p>Receive news, updates, and marketing materials</p>
+                            </div>
+                            <div class="toggle-switch" onclick="toggleSetting(this, 'marketing')">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Details Modal -->
+        <div class="modal" id="notificationModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Notification Details</h2>
+                    <span class="modal-close" onclick="closeModal()">&times;</span>
+                </div>
+                <div id="notificationDetailsContent">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <script src="assets/js/auth.js"></script>
+        <script src="assets/js/sidebar.js"></script>
+        <script>
+            // Sample notifications data
+            const notifications = [
+                {
+                    id: 1,
+                    type: 'ride',
+                    title: 'Ride Confirmed',
+                    message: 'Your ride to OR Tambo International Airport has been confirmed. Driver Sipho Dlamini will arrive in 10 minutes.',
+                    time: '5 minutes ago',
+                    date: '2024-11-20T09:25:00',
+                    read: false,
+                    icon: 'fa-car',
+                    action: 'View Ride',
+                    actionLink: 'ride-history.html',
+                    metadata: {
+                        rideId: 'RIDE123456',
+                        driver: 'Sipho Dlamini',
+                        eta: '10 min',
+                        amount: 'R 350'
+                    }
+                },
+                {
+                    id: 2,
+                    type: 'promotion',
+                    title: '50% Off Weekend Rides',
+                    message: 'Enjoy 50% off on all rides this weekend! Use code WEEKEND50 at checkout.',
+                    time: '2 hours ago',
+                    date: '2024-11-20T07:30:00',
+                    read: false,
+                    icon: 'fa-gift',
+                    action: 'Claim Offer',
+                    actionLink: '#',
+                    metadata: {
+                        promoCode: 'WEEKEND50',
+                        expiry: '2024-11-24',
+                        discount: '50%'
+                    }
+                },
+                {
+                    id: 3,
+                    type: 'payment',
+                    title: 'Payment Successful',
+                    message: 'Your payment of R 350 for ride to OR Tambo International Airport was successful.',
+                    time: '3 hours ago',
+                    date: '2024-11-20T06:15:00',
+                    read: true,
+                    icon: 'fa-credit-card',
+                    action: 'View Receipt',
+                    actionLink: '#',
+                    metadata: {
+                        amount: 'R 350',
+                        transactionId: 'TXN123456789',
+                        method: 'Visa •••• 4242'
+                    }
+                },
+                {
+                    id: 4,
+                    type: 'alert',
+                    title: 'Safety Reminder',
+                    message: 'Remember to verify your driver and vehicle before starting your ride. Stay safe!',
+                    time: '1 day ago',
+                    date: '2024-11-19T14:20:00',
+                    read: true,
+                    icon: 'fa-shield-alt',
+                    action: 'Learn More',
+                    actionLink: '#',
+                    metadata: {
+                        tip: 'Always check license plate matches app'
+                    }
+                },
+                {
+                    id: 5,
+                    type: 'ride',
+                    title: 'Driver En Route',
+                    message: 'Your driver John Mokoena is on the way. Current ETA: 5 minutes.',
+                    time: '1 day ago',
+                    date: '2024-11-19T18:40:00',
+                    read: false,
+                    icon: 'fa-map-marker-alt',
+                    action: 'Track Driver',
+                    actionLink: 'ride-booking.html',
+                    metadata: {
+                        rideId: 'RIDE123457',
+                        driver: 'John Mokoena',
+                        eta: '5 min',
+                        location: 'Melrose Arch'
+                    }
+                },
+                {
+                    id: 6,
+                    type: 'payment',
+                    title: 'Wallet Credit Added',
+                    message: 'R 500 has been added to your EasyGo wallet.',
+                    time: '2 days ago',
+                    date: '2024-11-18T10:15:00',
+                    read: true,
+                    icon: 'fa-wallet',
+                    action: 'View Wallet',
+                    actionLink: 'rider-payments.html',
+                    metadata: {
+                        amount: 'R 500',
+                        newBalance: 'R 2,450',
+                        method: 'Mastercard •••• 8888'
+                    }
+                },
+                {
+                    id: 7,
+                    type: 'promotion',
+                    title: 'Refer a Friend',
+                    message: 'Refer a friend and both get R 100 off your next ride! Share your referral code now.',
+                    time: '3 days ago',
+                    date: '2024-11-17T09:00:00',
+                    read: false,
+                    icon: 'fa-users',
+                    action: 'Share Code',
+                    actionLink: '#',
+                    metadata: {
+                        referralCode: 'THABO123',
+                        reward: 'R 100'
+                    }
+                },
+                {
+                    id: 8,
+                    type: 'alert',
+                    title: 'App Update Available',
+                    message: 'A new version of EasyGo is available. Update now for the latest features and improvements.',
+                    time: '5 days ago',
+                    date: '2024-11-15T11:30:00',
+                    read: true,
+                    icon: 'fa-download',
+                    action: 'Update Now',
+                    actionLink: '#',
+                    metadata: {
+                        version: '2.1.0',
+                        size: '45 MB'
+                    }
+                },
+                {
+                    id: 9,
+                    type: 'ride',
+                    title: 'Ride Completed',
+                    message: 'Your ride to Fourways Mall has been completed. Please rate your experience.',
+                    time: '1 week ago',
+                    date: '2024-11-13T19:00:00',
+                    read: true,
+                    icon: 'fa-star',
+                    action: 'Rate Ride',
+                    actionLink: 'ride-history.html',
+                    metadata: {
+                        rideId: 'RIDE123458',
+                        driver: 'John Mokoena',
+                        amount: 'R 180',
+                        rating: null
+                    }
+                }
+            ];
+
+            let currentTab = 'all';
+
+            // Initialize page
+            document.addEventListener('DOMContentLoaded', function() {
+                updateNotificationCounts();
+                loadNotifications();
+            });
+
+            // Load notifications
+            function loadNotifications() {
+                const container = document.getElementById('notificationsList');
+                if (!container) return;
+
+                let filteredNotifications = notifications;
+                
+                if (currentTab !== 'all') {
+                    if (currentTab === 'unread') {
+                        filteredNotifications = notifications.filter(n => !n.read);
+                    } else {
+                        filteredNotifications = notifications.filter(n => n.type === currentTab);
+                    }
+                }
+
+                if (filteredNotifications.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-notifications">
+                            <i class="fas fa-bell-slash"></i>
+                            <h3>No notifications</h3>
+                            <p>You're all caught up! Check back later for updates.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = '';
+                filteredNotifications.forEach(notification => {
+                    container.appendChild(createNotificationElement(notification));
+                });
+            }
+
+            // Create notification element
+            function createNotificationElement(notification) {
+                const div = document.createElement('div');
+                div.className = `notification-item ${!notification.read ? 'unread' : ''}`;
+                div.onclick = () => showNotificationDetails(notification);
+
+                const iconClass = `notification-icon icon-${notification.type}`;
+                const iconMap = {
+                    ride: 'fa-car',
+                    promotion: 'fa-gift',
+                    payment: 'fa-credit-card',
+                    alert: 'fa-shield-alt'
+                };
+
+                div.innerHTML = `
+                    <div class="${iconClass}">
+                        <i class="fas ${iconMap[notification.type] || 'fa-bell'}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <span class="notification-title">${notification.title}</span>
+                            <span class="notification-time">${notification.time}</span>
+                        </div>
+                        <div class="notification-message">${notification.message}</div>
+                        <div class="notification-meta">
+                            <span><i class="far fa-clock"></i> ${notification.date}</span>
+                            ${notification.metadata?.amount ? `<span><i class="fas fa-money-bill-wave"></i> ${notification.metadata.amount}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="notification-actions" onclick="event.stopPropagation()">
+                        ${!notification.read ? `
+                            <button class="notification-btn" onclick="markAsRead(${notification.id})" title="Mark as read">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        ` : ''}
+                        <button class="notification-btn delete" onclick="deleteNotification(${notification.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+
+                return div;
+            }
+
+            // Update notification counts
+            function updateNotificationCounts() {
+                document.getElementById('allCount').textContent = notifications.length;
+                document.getElementById('unreadCount').textContent = notifications.filter(n => !n.read).length;
+                document.getElementById('ridesCount').textContent = notifications.filter(n => n.type === 'ride').length;
+                document.getElementById('promosCount').textContent = notifications.filter(n => n.type === 'promotion').length;
+                document.getElementById('paymentsCount').textContent = notifications.filter(n => n.type === 'payment').length;
+                document.getElementById('alertsCount').textContent = notifications.filter(n => n.type === 'alert').length;
+            }
+
+            // Switch notification tab
+            function switchNotificationTab(tab, element) {
+                currentTab = tab;
+
+                document.querySelectorAll('.notification-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                element.classList.add('active');
+
+                loadNotifications();
+            }
+
+            // Mark all as read
+            function markAllAsRead() {
+                notifications.forEach(n => n.read = true);
+                updateNotificationCounts();
+                loadNotifications();
+                showToast('Success', 'All notifications marked as read', 'success');
+            }
+
+            // Mark as read
+            function markAsRead(notificationId) {
+                const notification = notifications.find(n => n.id === notificationId);
+                if (notification) {
+                    notification.read = true;
+                    updateNotificationCounts();
+                    loadNotifications();
+                    showToast('Success', 'Notification marked as read', 'success');
+                }
+            }
+
+            // Delete notification
+            function deleteNotification(notificationId) {
+                if (confirm('Are you sure you want to delete this notification?')) {
+                    const index = notifications.findIndex(n => n.id === notificationId);
+                    if (index !== -1) {
+                        notifications.splice(index, 1);
+                        updateNotificationCounts();
+                        loadNotifications();
+                        showToast('Success', 'Notification deleted', 'success');
+                    }
+                }
+            }
+
+            // Show notification details
+            function showNotificationDetails(notification) {
+                const modal = document.getElementById('notificationModal');
+                const content = document.getElementById('notificationDetailsContent');
+
+                const iconMap = {
+                    ride: 'fa-car',
+                    promotion: 'fa-gift',
+                    payment: 'fa-credit-card',
+                    alert: 'fa-shield-alt'
+                };
+
+                let metadataHTML = '';
+                if (notification.metadata) {
+                    metadataHTML = '<div style="margin: 20px 0;">';
+                    for (const [key, value] of Object.entries(notification.metadata)) {
+                        metadataHTML += `
+                            <div class="detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                <span class="detail-label" style="color: #666;">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                                <span class="detail-value" style="font-weight: 600; color: var(--dark);">${value}</span>
+                            </div>
+                        `;
+                    }
+                    metadataHTML += '</div>';
+                }
+
+                content.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div class="notification-icon icon-${notification.type}" style="margin: 0 auto 15px;">
+                            <i class="fas ${iconMap[notification.type] || 'fa-bell'}"></i>
+                        </div>
+                        <h3 style="color: var(--dark); margin-bottom: 5px;">${notification.title}</h3>
+                        <p style="color: #999; font-size: 14px;">${notification.time}</p>
+                    </div>
+
+                    <div class="notification-detail">
+                        <div class="detail-label">Message</div>
+                        <div class="detail-value">${notification.message}</div>
+                    </div>
+
+                    ${metadataHTML}
+
+                    <div class="modal-actions">
+                        <button class="action-btn" onclick="window.location.href='${notification.actionLink || '#'}'">
+                            <i class="fas fa-eye"></i> ${notification.action || 'View Details'}
+                        </button>
+                        <button class="delete-btn" onclick="deleteNotification(${notification.id}); closeModal();">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                `;
+
+                // Mark as read when viewed
+                if (!notification.read) {
+                    markAsRead(notification.id);
+                }
+
+                modal.classList.add('show');
+            }
+
+            // Close modal
+            function closeModal() {
+                document.getElementById('notificationModal').classList.remove('show');
+            }
+
+            // Toggle setting
+            function toggleSetting(element, setting) {
+                element.classList.toggle('active');
+            }
+
+            // Save notification settings
+            function saveNotificationSettings() {
+                showToast('Success', 'Notification preferences saved!', 'success');
+            }
+
+            // Scroll to settings
+            function scrollToSettings() {
+                document.getElementById('notificationSettings').scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // Show toast
+            function showToast(title, message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
+                
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                const icon = type === 'success' ? 'check-circle' : 
+                            type === 'error' ? 'exclamation-circle' : 
+                            type === 'warning' ? 'exclamation-triangle' : 'info-circle';
+                
+                toast.innerHTML = `
+                    <i class="fas fa-${icon}"></i>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-message">${message}</div>
+                    </div>
+                    <i class="fas fa-times toast-close" onclick="this.parentElement.remove()"></i>
+                `;
+                
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 5000);
+            }
+        </script>
+    </body>
+    </html>

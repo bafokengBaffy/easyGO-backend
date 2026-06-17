@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .sidebar {
+            width: 280px;
+            background: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.05);
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .driver-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .driver-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .driver-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .driver-rating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-size: 0.9em;
+        }
+
+        .driver-rating i {
+            color: #ffd700;
+        }
+
+        .sidebar-menu {
+            padding: 20px;
+        }
+
+        .menu-category {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6c757d;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .menu-category a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-category a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(135deg, #4361ee, #3f37c9);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .menu-category a:hover::before,
+        .menu-category a.active::before {
+            transform: scaleY(1);
+        }
+
+        .menu-category a:hover,
+        .menu-category a.active {
+            background: #f8f9fa;
+            transform: translateX(5px);
+        }
+
+        .menu-category a i {
+            width: 30px;
+            font-size: 1.2em;
+            color: #4361ee;
+            transition: all 0.3s ease;
+        }
+
+        .menu-category a:hover i,
+        .menu-category a.active i {
+            transform: scale(1.2);
+        }
+
+        .menu-badge {
+            margin-left: auto;
+            background: #4361ee;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 50px;
+            font-size: 0.8em;
+            font-weight: 600;
+            animation: bounce 1s infinite;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            margin-top: 20px;
+        }
+
+        .driver-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #4361ee;
+            font-size: 1.2em;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            color: #dc3545;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        .logout-btn:hover i {
+            color: white;
+        }
+
+        .logout-btn i {
+            color: #dc3545;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="driver-avatar">
+                <img src="https://ui-avatars.com/api/?name=Michael+Chen&size=100&background=4361ee&color=fff&bold=true" alt="Driver">
+            </div>
+            <div class="driver-name">Michael Chen</div>
+            <div class="driver-rating">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+                <span>4.92</span>
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-category">
+                <div class="category-title">Main</div>
+                <a href="driver-dashboard.html" class="active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="driver-available-seats.html">
+                    <i class="fas fa-chair"></i>
+                    <span>Available Seats</span>
+                    <span class="menu-badge">3</span>
+                </a>
+                <a href="driver-new-ride.html">
+                    <i class="fas fa-car-side"></i>
+                    <span>New Ride</span>
+                    <span class="menu-badge">2</span>
+                </a>
+                <a href="driver-rides-request.html">
+                    <i class="fas fa-clock"></i>
+                    <span>Ride Requests</span>
+                    <span class="menu-badge">5</span>
+                </a>
+                <a href="driver-upcoming-rides.html">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Upcoming Rides</span>
+                    <span class="menu-badge">3</span>
+                </a>
+                <a href="driver-rides-history.html">
+                    <i class="fas fa-history"></i>
+                    <span>Ride History</span>
+                </a>
+            </div>
+
+            <div class="menu-category">
+                <div class="category-title">Earnings & Stats</div>
+                <a href="driver-earnings.html">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Earnings</span>
+                </a>
+                <a href="driver-payments.html">
+                    <i class="fas fa-wallet"></i>
+                    <span>Payments</span>
+                    <span class="menu-badge">$1,284</span>
+                </a>
+                <a href="driver-incentives.html">
+                    <i class="fas fa-gift"></i>
+                    <span>Incentives</span>
+                    <span class="menu-badge">2</span>
+                </a>
+                <a href="driver-ratings.html">
+                    <i class="fas fa-star"></i>
+                    <span>Ratings</span>
+                </a>
+            </div>
+
+            <div class="menu-category">
+                <div class="category-title">Vehicle & Documents</div>
+                <a href="driver-vehicle.html">
+                    <i class="fas fa-car"></i>
+                    <span>Vehicle Details</span>
+                </a>
+                <a href="driver-maintenance.html">
+                    <i class="fas fa-tools"></i>
+                    <span>Maintenance</span>
+                </a>
+                <a href="driver-documents.html">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Documents</span>
+                    <span class="menu-badge">2</span>
+                </a>
+                <a href="driver-insurance.html">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Insurance</span>
+                </a>
+            </div>
+
+            <div class="menu-category">
+                <div class="category-title">Schedule & Settings</div>
+                <a href="driver-schedule.html">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Schedule</span>
+                </a>
+                <a href="driver-availability.html">
+                    <i class="fas fa-clock"></i>
+                    <span>Availability</span>
+                </a>
+                <a href="driver-notifications.html">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                    <span class="menu-badge">4</span>
+                </a>
+                <a href="driver-settings.html">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="driver-support.html">
+                    <i class="fas fa-headset"></i>
+                    <span>Support</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="driver-stats">
+                <div class="stat-item">
+                    <div class="stat-value">124</div>
+                    <div class="stat-label">Trips</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">6.5h</div>
+                    <div class="stat-label">Online</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">98%</div>
+                    <div class="stat-label">Accept</div>
+                </div>
+            </div>
+            <a href="login.html" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

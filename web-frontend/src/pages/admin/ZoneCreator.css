@@ -1,0 +1,53 @@
+/* EasyGo Gold Theme Styles for Zone Creator */
+
+.zone-creator-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+.admin-controls {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border-top: 4px solid #F5C400; /* EasyGo Gold */
+}
+
+.btn-delete-zone {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 10px;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.btn-delete-zone:hover {
+    background-color: #cc0000;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+.alert.success {
+    background-color: #fff9e6;
+    border: 1px solid #F5C400;
+    color: #856404;
+}
+
+.alert.error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
