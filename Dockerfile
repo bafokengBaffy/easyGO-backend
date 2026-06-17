@@ -4,8 +4,7 @@ FROM postgres:18-alpine
 RUN apk add --no-cache postgis
 
 # Custom configuration mount points
-COPY conf/postgresql.conf /etc/postgresql/postgresql.conf
-COPY init/ /docker-entrypoint-initdb.d/
+COPY postgresql.conf /etc/postgresql/postgresql.conf
 
 # Ensure proper permissions
-RUN chown -R postgres:postgres /docker-entrypoint-initdb.d/
+RUN mkdir -p /docker-entrypoint-initdb.d && chown -R postgres:postgres /docker-entrypoint-initdb.d/
