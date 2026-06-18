@@ -3,10 +3,13 @@ services:
     name: easyGO-backend
     env: docker
     plan: starter
-    rootDir: .
-    dockerfilePath: ./web-backend/Dockerfile
+    rootDir: ./web-backend
+    dockerfilePath: ./Dockerfile
     autoDeploy: true
     healthCheckPath: /health
+    # NOTE: Render deployments require database environment variables to be configured
+    # in the Render dashboard or service settings. If a Postgres container is used,
+    # POSTGRES_PASSWORD must be set to a non-empty value before startup.
     envVars:
       - key: NODE_ENV
         value: production
