@@ -33,7 +33,7 @@ module.exports = {
   ],
   
   // Coverage thresholds
-  coverageThresholds: {
+  coverageThreshold: {
     global: {
       statements: 0,
       branches: 0,
@@ -46,4 +46,15 @@ module.exports = {
   errorOnDeprecated: false,
   bail: 0,
   maxWorkers: '50%'
+  ,
+  reporters: [
+    'default',
+    [
+      'jest-junit',
+      {
+        outputDirectory: 'test-results',
+        outputName: 'junit.xml'
+      }
+    ]
+  ]
 };
