@@ -155,6 +155,14 @@ const config = {
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
   BCRYPT_SALT_ROUNDS: parseIntEnv(process.env.BCRYPT_SALT_ROUNDS, 12),
   
+  // Backwards-compatible JWT object for older tests
+  JWT: {
+    secret: process.env.JWT_SECRET || 'default-jwt-secret-change-me',
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+    refreshSecret: process.env.JWT_REFRESH_SECRET || 'default-refresh-secret-change-me',
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d'
+  },
+
   // ==================== CORS CONFIGURATION ====================
   CORS_ORIGINS: parseArray(process.env.CORS_ORIGINS, ['http://localhost:5173', 'http://localhost:3000']),
   CORS_CREDENTIALS: parseBool(process.env.CORS_CREDENTIALS, true),
