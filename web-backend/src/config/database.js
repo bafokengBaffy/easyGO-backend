@@ -14,7 +14,16 @@ const dbConfig = config.DATABASE;
 let sequelize;
 
 try {
-  if (process.env.DATABASE_URL) {
+  // If SKIP_DB_CHECK=true in CI/local testing, use in-memory SQLite to avoid external DB dependency
+  if (process.env.SKIP_DB_CHECK === 'true') {
+    logger.info('SKIP_DB_CHECK=true — using in-memory SQLite for tests');
+    sequelize = new Sequelize({
+      dialect: 'sqlite',
+      storage: ':memory:',
+      logging: false,
+      define: dbConfig.define,
+    });
+  } else if (process.env.DATABASE_URL) {
     // Use connection string if provided
     sequelize = new Sequelize(process.env.DATABASE_URL, {
       dialect: dbConfig.dialect,
