@@ -500,6 +500,185 @@ class DriverController {
 
     return sendResponse(res, 200, driver, 'Location updated');
   });
+
+  /* ------------------ Minimal stubs for remaining route handlers ------------------ */
+
+  setOnlineStatus = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const { status, location } = req.body || {};
+    const driver = await Driver.findOne({ where: { user_id: userId } });
+    if (!driver) throw new NotFoundError('Driver not found');
+    if (status) driver.status = status;
+    driver.is_online = status === 'online';
+    if (location && location.latitude && location.longitude) {
+      driver.current_lat = location.latitude;
+      driver.current_lng = location.longitude;
+    }
+    await driver.save();
+    return sendResponse(res, 200, driver, 'Online status updated');
+  });
+
+  getStatus = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const driver = await Driver.findOne({ where: { user_id: userId } });
+    if (!driver) return sendResponse(res, 200, null, 'No driver');
+    return sendResponse(res, 200, { is_online: driver.is_online, status: driver.status, lat: driver.current_lat, lng: driver.current_lng }, 'Driver status');
+  });
+
+  getVehicle = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const driver = await Driver.findOne({ where: { user_id: userId } });
+    if (!driver) throw new NotFoundError('Driver not found');
+    const vehicle = await Vehicle.findOne({ where: { driver_id: driver.id } });
+    return sendResponse(res, 200, vehicle || null, 'Vehicle retrieved');
+  });
+
+  uploadVehicleDocuments = asyncHandler(async (req, res) => {
+    // Minimal: attach filenames to vehicle.metadata
+    const userId = req.user?.id;
+    const files = req.files || {};
+    const driver = await Driver.findOne({ where: { user_id: userId } });
+    if (!driver) throw new NotFoundError('Driver not found');
+    const vehicle = await Vehicle.findOne({ where: { driver_id: driver.id } });
+    if (!vehicle) throw new NotFoundError('Vehicle not found');
+    vehicle.metadata = vehicle.metadata || {};
+    vehicle.metadata.documents = vehicle.metadata.documents || {};
+    Object.keys(files).forEach(k => {
+      const f = files[k][0];
+      vehicle.metadata.documents[k] = { filename: f.originalname, uploadedAt: new Date().toISOString() };
+    });
+    await vehicle.save();
+    return sendResponse(res, 200, vehicle.metadata.documents, 'Vehicle documents saved (stub)');
+  });
+
+  getRideHistory = asyncHandler(async (req, res) => this.getTripHistory(req, res));
+
+  getCurrentRide = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const driver = await Driver.findOne({ where: { user_id: userId } });
+    if (!driver) return sendResponse(res, 200, null, 'No driver');
+    const ride = await Ride.findOne({ where: { driver_id: driver.id, status: { [Op.in]: ['accepted', 'in_progress', 'arrived'] } }, order: [['updatedAt', 'DESC']] });
+    return sendResponse(res, 200, ride || null, 'Current ride');
+  });
+
+  cancelRide = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const { rideId } = req.params;
+    const { reason } = req.body || {};
+    const ride = await Ride.findByPk(rideId);
+    if (!ride) throw new NotFoundError('Ride not found');
+    ride.status = 'cancelled';
+    ride.cancel_reason = reason || 'cancelled_by_driver';
+    await ride.save();
+    await auditLogService.log(userId, 'RIDE_CANCELLED', { ride_id: rideId, reason });
+    return sendResponse(res, 200, ride, 'Ride cancelled');
+  });
+
+  getAvailableRides = asyncHandler(async (req, res) => {
+    const { latitude, longitude, radius = 10, limit = 20 } = req.query;
+    const rides = await Ride.findAll({ where: { status: 'requested' }, limit: parseInt(limit, 10), order: [['createdAt', 'DESC']] });
+    return sendResponse(res, 200, rides, 'Available rides (stub)');
+  });
+
+  getMatchingSuggestions = asyncHandler(async (req, res) => {
+    const suggestions = [];
+    return sendResponse(res, 200, suggestions, 'Matching suggestions (stub)');
+  });
+
+  getEarningsDetails = asyncHandler(async (req, res) => {
+    return this.getEarnings(req, res);
+  });
+
+  getPayoutHistory = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const { page = 1, limit = 20 } = req.query;
+    const payments = await Payment.findAndCountAll({ where: { user_id: userId }, limit: parseInt(limit, 10), offset: (parseInt(page, 10) - 1) * parseInt(limit, 10), order: [['createdAt', 'DESC']] });
+    return sendResponse(res, 200, { total: payments.count, payouts: payments.rows }, 'Payout history');
+  });
+
+  getReviews = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const driver = await Driver.findOne({ where: { user_id: userId } });
+    if (!driver) return sendResponse(res, 200, { total: 0, reviews: [] }, 'No driver');
+    const { page = 1, limit = 20 } = req.query;
+    const reviews = await Review.findAndCountAll({ where: { reviewee_id: driver.id }, limit: parseInt(limit, 10), offset: (parseInt(page, 10) - 1) * parseInt(limit, 10), order: [['createdAt', 'DESC']] });
+    return sendResponse(res, 200, { total: reviews.count, reviews: reviews.rows }, 'Reviews retrieved');
+  });
+
+  getDocuments = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const driver = await Driver.findOne({ where: { user_id: userId } });
+    if (!driver) return sendResponse(res, 200, {}, 'No driver');
+    return sendResponse(res, 200, driver.metadata?.documents || {}, 'Documents');
+  });
+
+  uploadDocuments = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const files = req.files || {};
+    const driver = await Driver.findOne({ where: { user_id: userId } });
+    if (!driver) throw new NotFoundError('Driver not found');
+    driver.metadata = driver.metadata || {};
+    driver.metadata.documents = driver.metadata.documents || {};
+    Object.keys(files).forEach(k => {
+      const f = files[k][0];
+      driver.metadata.documents[k] = { filename: f.originalname, uploadedAt: new Date().toISOString() };
+    });
+    await driver.save();
+    return sendResponse(res, 200, driver.metadata.documents, 'Documents uploaded (stub)');
+  });
+
+  deleteDocument = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const { id } = req.params;
+    const driver = await Driver.findOne({ where: { user_id: userId } });
+    if (!driver) throw new NotFoundError('Driver not found');
+    driver.metadata = driver.metadata || {};
+    driver.metadata.documents = driver.metadata.documents || {};
+    if (driver.metadata.documents[id]) delete driver.metadata.documents[id];
+    await driver.save();
+    return sendResponse(res, 200, {}, 'Document deleted');
+  });
+
+  getNotifications = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const notifications = await Notification.findAll({ where: { user_id: userId }, order: [['createdAt', 'DESC']], limit: 100 });
+    return sendResponse(res, 200, notifications, 'Notifications retrieved');
+  });
+
+  markNotificationRead = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const { id } = req.params;
+    const note = await Notification.findOne({ where: { id, user_id: userId } });
+    if (!note) throw new NotFoundError('Notification not found');
+    await note.update({ status: 'read', read_at: new Date() });
+    return sendResponse(res, 200, note, 'Notification marked read');
+  });
+
+  updateSettings = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const { notificationPreferences, ridePreferences, privacySettings } = req.body || {};
+    const user = await User.findByPk(userId);
+    if (!user) throw new NotFoundError('User not found');
+    user.preferences = Object.assign({}, user.preferences || {}, notificationPreferences || {});
+    await user.save();
+    return sendResponse(res, 200, { userPreferences: user.preferences }, 'Settings updated');
+  });
+
+  checkGeofence = asyncHandler(async (req, res) => {
+    const { latitude, longitude } = req.query;
+    if (!latitude || !longitude) throw new BadRequestError('latitude and longitude required');
+    let zone = null;
+    try { zone = await geofenceService.getZoneByCoordinates(parseFloat(latitude), parseFloat(longitude)); } catch (e) { zone = null; }
+    return sendResponse(res, 200, { zone }, 'Geofence checked (stub)');
+  });
+
+  getFleetInfo = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const driver = await Driver.findOne({ where: { user_id: userId } });
+    if (!driver) return sendResponse(res, 200, { fleet: [] }, 'No driver');
+    const vehicles = await Vehicle.findAll({ where: { driver_id: driver.id } });
+    return sendResponse(res, 200, { fleet: vehicles }, 'Fleet info');
+  });
 }
 
 module.exports = new DriverController();
