@@ -8,6 +8,12 @@ const logger = require('../src/utils/logger');
 
 beforeAll(async () => {
   try {
+    // Allow skipping DB sync in CI when a real DB is unavailable
+    if (process.env.SKIP_DB_CHECK === 'true') {
+      logger.info('SKIP_DB_CHECK set — skipping test DB sync');
+      return;
+    }
+
     // Force sync database to ensure a clean schema for tests
     await sequelize.sync({ force: true });
   } catch (error) {

@@ -39,7 +39,7 @@ $gcloud = Get-GcloudCommand
   --memory 512Mi `
   --min-instances 0 `
   --max-instances 1 `
-  --set-env-vars NODE_ENV=production,FIREBASE_USE_ADC=true,FIREBASE_PROJECT_ID=$ProjectId,FIREBASE_DATABASE_URL=https://easygols-default-rtdb.asia-southeast1.firebasedatabase.app
+  --set-env-vars NODE_ENV=production,FIREBASE_USE_ADC=true,FIREBASE_PROJECT_ID=$ProjectId,FIREBASE_DATABASE_URL=https://easygols-default-rtdb.asia-southeast1.firebasedatabase.app,REDIS_HOST=YOUR_REMOTE_IP,REDIS_PASSWORD=YourStrongPasswordHere123!,REDIS_PORT=6379
 
 $url = & $gcloud run services describe $ServiceName --region $Region --format="value(status.url)"
 

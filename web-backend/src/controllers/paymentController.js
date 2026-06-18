@@ -10,8 +10,9 @@ const logger = require('../utils/logger');
 /**
  * Production Payment Controller handling Lesotho Mobile Money
  */
-
-// List all payments (with optional filters)
+const noopResponse = (res, message = 'OK', data = null, status = 200) => {
+  return res.status(status).json(new ApiResponse(status, data, message));
+};
 exports.list = asyncHandler(async (req, res, next) => {
   const { status, provider, ride_id, page = 1, limit = 10 } = req.query;
   const offset = (parseInt(page) - 1) * parseInt(limit);
@@ -240,4 +241,102 @@ exports.deletePayment = asyncHandler(async (req, res, next) => {
   logger.info(`Payment deleted: ${id}`, { paymentId: id, userId: req.user.id });
   
   return res.status(200).json(new ApiResponse(200, null, 'Payment deleted successfully'));
+});
+
+// Wallet balance (minimal stub)
+exports.getWalletBalance = asyncHandler(async (req, res) => {
+  // In production, compute from user wallet model / ledger
+  const balance = 0.0;
+  return res.status(200).json(new ApiResponse(200, { balance, currency: 'USD' }, 'Wallet balance retrieved'));
+});
+
+// Top up wallet (minimal stub)
+exports.topUpWallet = asyncHandler(async (req, res) => {
+  const { amount, method, reference } = req.body;
+  if (!amount || amount <= 0) throw new ApiError(400, 'Invalid top-up amount');
+
+  // Record a payment entry for the top-up (PENDING)
+  const payment = await Payment.create({
+    ride_id: null,
+    amount,
+    provider: method || 'WALLET',
+    status: 'PENDING',
+    transaction_id: `TOPUP-${Date.now()}`,
+    user_id: req.user.id,
+    metadata: { reference }
+  });
+
+  return res.status(201).json(new ApiResponse(201, payment, 'Top-up initiated'));
+});
+
+// Withdraw from wallet (minimal stub)
+exports.withdrawWallet = asyncHandler(async (req, res) => {
+  const { amount, method, destination } = req.body;
+  if (!amount || amount <= 0) throw new ApiError(400, 'Invalid withdraw amount');
+
+  // Create a withdrawal record (PENDING)
+  const withdrawal = await Payment.create({
+    ride_id: null,
+    amount,
+    provider: method || 'BANK',
+    status: 'PENDING',
+    transaction_id: `WD-${Date.now()}`,
+    user_id: req.user.id,
+    metadata: { destination }
+  });
+
+  return res.status(200).json(new ApiResponse(200, withdrawal, 'Withdrawal request submitted'));
+});
+
+// Invoices listing (stub)
+exports.getInvoices = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 20 } = req.query;
+  const offset = (page - 1) * limit;
+  const invoices = await Payment.findAll({ limit: parseInt(limit), offset: parseInt(offset), order: [['created_at', 'DESC']] });
+  return res.status(200).json(new ApiResponse(200, { invoices }, 'Invoices retrieved'));
+});
+
+exports.getInvoiceById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const invoice = await Payment.findByPk(id);
+  if (!invoice) throw new ApiError(404, 'Invoice not found');
+  return res.status(200).json(new ApiResponse(200, invoice, 'Invoice retrieved'));
+});
+
+exports.downloadInvoice = asyncHandler(async (req, res) => {
+  // Minimal: return invoice JSON. PDF generation not implemented here.
+  const invoice = await Payment.findByPk(req.params.id);
+  if (!invoice) throw new ApiError(404, 'Invoice not found');
+  return res.status(200).json(new ApiResponse(200, invoice, 'Invoice download (JSON)'));
+});
+
+// Payment methods (simple stubs)
+exports.getPaymentMethods = asyncHandler(async (req, res) => {
+  return noopResponse(res, 'Payment methods retrieved', []);
+});
+
+exports.addPaymentMethod = asyncHandler(async (req, res) => {
+  const { type, details, default: isDefault } = req.body;
+  // Persisting payment methods is not implemented here; echo back
+  return res.status(201).json(new ApiResponse(201, { type, details, default: !!isDefault }, 'Payment method added'));
+});
+
+exports.removePaymentMethod = asyncHandler(async (req, res) => {
+  // Minimal removal stub
+  return noopResponse(res, 'Payment method removed');
+});
+
+// Stripe webhook stub
+exports.stripeWebhook = asyncHandler(async (req, res) => {
+  // raw body is expected; simply acknowledge
+  logger.info('Received Stripe webhook', { headers: req.headers });
+  return res.status(200).send('ok');
+});
+
+// Payment statistics / insights
+exports.getPaymentStatistics = asyncHandler(async (req, res) => {
+  // Minimal aggregated stats
+  const totalPayments = await Payment.count();
+  const totalAmount = (await Payment.sum('amount')) || 0;
+  return res.status(200).json(new ApiResponse(200, { totalPayments, totalAmount }, 'Payment statistics'));
 });

@@ -1,0 +1,16 @@
+name: Dependency Review
+
+on:
+  schedule:
+    - cron: '0 2 * * 0'
+  workflow_dispatch: {}
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run dependency review
+        uses: github/dependency-review-action@v4

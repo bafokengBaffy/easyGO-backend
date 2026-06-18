@@ -1,12 +1,13 @@
-const walletService = require('../../../src/services/walletService');
-const { User, Wallet, Transaction } = require('../../../src/models');
+const walletService = require('../../src/services/walletService');
+const { User, Wallet, Transaction } = require('../../src/models');
 
 describe('WalletService ACID Transaction Rollback', () => {
   let testUser;
 
   beforeAll(async () => {
     testUser = await User.create({
-      name: 'Rollback Tester',
+      first_name: 'Rollback',
+      last_name: 'Tester',
       email: 'rollback@easygo.com',
       phone: '26659123456',
       password_hash: 'hashed'

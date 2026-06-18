@@ -1,8 +1,8 @@
 const request = require('supertest');
-const app = require('../../../app');
-const { User } = require('../../../src/models');
+const app = require('../../app');
+const { User } = require('../../src/models');
 const jwt = require('jsonwebtoken');
-const config = require('../../../src/config');
+const config = require('../../src/config');
 
 describe('Support API Integration Tests', () => {
   let adminToken;

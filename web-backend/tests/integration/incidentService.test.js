@@ -1,7 +1,7 @@
-const incidentService = require('../../../src/services/incidentService');
-const incidentRepository = require('../../../src/repositories/incident.repository');
+const incidentService = require('../../src/services/incidentService');
+const incidentRepository = require('../../src/repositories/incident.repository');
 
-jest.mock('../../../src/repositories/incident.repository');
+jest.mock('../../src/repositories/incident.repository');
 
 describe('IncidentService Unit Tests', () => {
   afterEach(() => {

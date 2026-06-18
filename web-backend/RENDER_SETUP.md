@@ -75,11 +75,13 @@ JWT_REFRESH_SECRET=your-very-long-refresh-secret-key
 JWT_REFRESH_EXPIRY=30d
 
 # ==================== REDIS CONFIG ====================
-REDIS_URL=redis://default:YOUR_PASSWORD@your-redis-host:6379
-REDIS_PASSWORD=YOUR_PASSWORD
+# For remote connection, use the external IP and password configured on your Redis server
+REDIS_URL=redis://YOUR_REMOTE_IP:6379
+REDIS_HOST=YOUR_REMOTE_IP
+REDIS_PASSWORD=YourStrongPasswordHere123!
 REDIS_PORT=6379
 REDIS_DB=0
-
+REDIS_TLS=false
 # ==================== EMAIL CONFIG ====================
 SENDGRID_API_KEY=SG.your_sendgrid_key
 SENDER_EMAIL=noreply@easygo.local

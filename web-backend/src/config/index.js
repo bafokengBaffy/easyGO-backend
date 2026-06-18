@@ -1,4 +1,4 @@
-﻿/**
+﻿﻿/**
  * Central Configuration Module for EasyGO Backend
  * Loads and validates all environment variables
  * @version 2.0.0
@@ -124,6 +124,10 @@ const config = {
   
   // ==================== REDIS CONFIGURATION ====================
   REDIS_URL: process.env.REDIS_URL,
+  REDIS_HOST: process.env.REDIS_HOST || 'localhost',
+  REDIS_PORT: parseIntEnv(process.env.REDIS_PORT, 6379),
+  REDIS_PASSWORD: process.env.REDIS_PASSWORD,
+  REDIS_TLS: parseBool(process.env.REDIS_TLS, false),
   REDIS: {
     host: process.env.REDIS_HOST || 'localhost',
     port: parseIntEnv(process.env.REDIS_PORT, 6379),

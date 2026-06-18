@@ -136,7 +136,15 @@ done
 
 **Target:** < 200ms response time
 
-### 9. **Database Connection Verification**
+### 9. **Redis Remote Connection Verification**
+
+```bash
+# Verify connectivity to the remote Redis instance
+redis-cli -h YOUR_REMOTE_IP -p 6379 -a YourStrongPasswordHere123! ping
+# Expected: PONG
+```
+
+### 10. Database Connection Verification
 
 ```bash
 # Via psql (if you have access to Render PostgreSQL)
@@ -204,4 +212,3 @@ npm run migrate
 | `/api/v1/users/profile` | GET | ✅ | Get user profile |
 | `/api/v1/users/profile` | PUT | ✅ | Update profile |
 | `/metrics` | GET | ❌ | Prometheus metrics |
-

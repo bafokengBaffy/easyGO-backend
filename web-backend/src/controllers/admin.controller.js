@@ -4,7 +4,22 @@ const logger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 const { ApiResponse } = require('../utils/apiResponse');
 const { ApiError } = require('../utils/apiError');
-const csvStringify = require('csv-stringify/lib/sync');
+let csvStringify;
+try {
+  csvStringify = require('csv-stringify/lib/sync');
+} catch (err) {
+  // Fallback simple CSV serializer if csv-stringify isn't installed
+  csvStringify = (data, opts = {}) => {
+    if (!Array.isArray(data) || data.length === 0) return '';
+    const keys = Object.keys(data[0]);
+    const header = keys.join(',') + '\n';
+    const rows = data.map(r => keys.map(k => {
+      const v = r[k] == null ? '' : String(r[k]).replace(/"/g, '""');
+      return `"${v}"`;
+    }).join(',')).join('\n');
+    return header + rows;
+  };
+}
 const { Op } = require('sequelize');
 
 /**
@@ -331,6 +346,33 @@ class AdminController {
       return res.status(500).json({ status: 'error', message: error.message });
     }
   }
+
+  /**
+   * Get driver performance metrics (stub)
+   */
+  getDriverPerformance = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    // Minimal: aggregate basic driver stats
+    const completedRides = await Ride.count({ where: { driver_id: id, status: 'completed' } });
+    const totalEarnings = await Payment.sum('amount', { where: { driver_id: id, status: 'COMPLETED' } }) || 0;
+    return res.json(new ApiResponse(200, { driverId: id, completedRides, totalEarnings }, 'Driver performance retrieved'));
+  });
+
+  /**
+   * System metrics (stub)
+   */
+  getSystemMetrics = asyncHandler(async (req, res) => {
+    const memory = process.memoryUsage();
+    return res.json(new ApiResponse(200, {
+      cpuUsage: process.cpuUsage(),
+      memory: {
+        heapUsed: memory.heapUsed,
+        rss: memory.rss
+      },
+      uptime: process.uptime()
+    }, 'System metrics retrieved'));
+  });
+
 }
 
 module.exports = new AdminController();

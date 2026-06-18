@@ -1,8 +1,8 @@
-const mpesaService = require('../../../src/services/mpesa.service');
-const { Payment, Ride } = require('../../../src/models');
-const walletService = require('../../../src/services/walletService');
-const socketService = require('../../../src/services/socketService');
-const logger = require('../../../src/utils/logger');
+const mpesaService = require('../src/services/mpesa.service');
+const { Payment, Ride } = require('../src/models');
+const walletService = require('../src/services/walletService');
+const socketService = require('../src/services/socketService');
+const logger = require('../src/utils/logger');
 
 // Mock dependencies
 jest.mock('../../../src/models');

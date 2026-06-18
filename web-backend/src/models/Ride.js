@@ -2,9 +2,9 @@ const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) =>
   sequelize.define('Ride', {
-    id: { type: DataTypes.BIGINT.UNSIGNED, autoIncrement: true, primaryKey: true },
-    rider_id: { type: DataTypes.BIGINT.UNSIGNED, allowNull: false },
-    driver_id: { type: DataTypes.BIGINT.UNSIGNED, allowNull: true },
+    id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
+    rider_id: { type: DataTypes.BIGINT, allowNull: false },
+    driver_id: { type: DataTypes.BIGINT, allowNull: true },
     pickup_address: { type: DataTypes.STRING(255), allowNull: false },
     dropoff_address: { type: DataTypes.STRING(255), allowNull: false },
     pickup_lat: { type: DataTypes.DECIMAL(10, 7), allowNull: true },

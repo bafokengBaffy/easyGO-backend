@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 module.exports = (sequelize) =>
   sequelize.define('Zone', {
-    id: { type: DataTypes.BIGINT.UNSIGNED, autoIncrement: true, primaryKey: true },
+    id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     name: { type: DataTypes.STRING(120), allowNull: false, unique: true },
     city: { type: DataTypes.STRING(120), allowNull: false },
     base_fare: { type: DataTypes.DECIMAL(10, 2), allowNull: false, defaultValue: 1.5 },

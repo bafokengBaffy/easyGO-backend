@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 module.exports = (sequelize) =>
   sequelize.define('Promotion', {
-    id: { type: DataTypes.BIGINT.UNSIGNED, autoIncrement: true, primaryKey: true },
+    id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     code: { type: DataTypes.STRING(64), allowNull: false, unique: true },
     discount_type: { type: DataTypes.ENUM('fixed', 'percent'), allowNull: false, defaultValue: 'percent' },
     discount_value: { type: DataTypes.DECIMAL(10, 2), allowNull: false },

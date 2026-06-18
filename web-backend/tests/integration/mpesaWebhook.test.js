@@ -16,7 +16,8 @@ describe('M-Pesa Webhook Integration Test', () => {
   beforeAll(async () => {
     // Create a real user record
     user = await User.create({
-      name: 'Integration Tester',
+      first_name: 'Integration',
+      last_name: 'Tester',
       email: 'tester@easygo.com',
       phone: '26658123456',
       password_hash: 'hashed_password',

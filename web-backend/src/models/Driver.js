@@ -2,8 +2,8 @@ const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) =>
   sequelize.define('Driver', {
-    id: { type: DataTypes.BIGINT.UNSIGNED, autoIncrement: true, primaryKey: true },
-    user_id: { type: DataTypes.BIGINT.UNSIGNED, allowNull: false, unique: true },
+    id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
+    user_id: { type: DataTypes.BIGINT, allowNull: false, unique: true },
     license_number: { type: DataTypes.STRING(64), allowNull: false },
     verification_status: {
       type: DataTypes.ENUM('pending', 'approved', 'rejected'),

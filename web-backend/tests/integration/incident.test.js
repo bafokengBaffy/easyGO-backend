@@ -1,7 +1,7 @@
 const request = require('supertest');
-const app = require('../../../app');
+const app = require('../../app');
 const jwt = require('jsonwebtoken');
-const config = require('../../../src/config');
+const config = require('../../src/config');
 
 describe('Incident API Integration Tests', () => {
   let userToken;
