@@ -212,7 +212,7 @@ router.get(
 router.get(
   '/drivers/:id',
   validate(adminValidation.getDriverById),
-  driverController.getDriverProfile
+  driverController.getDriverById
 );
 
 /**
