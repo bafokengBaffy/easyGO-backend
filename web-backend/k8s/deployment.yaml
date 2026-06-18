@@ -15,7 +15,9 @@ spec:
     spec:
       containers:
       - name: backend
-        image: ${{ secrets.DOCKERHUB_USERNAME }}/easygo-backend:latest
+        # Replace 'your-dockerhub-username' with your Docker Hub username or use imagePullSecrets
+        image: your-dockerhub-username/easygo-backend:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 4000
         envFrom:

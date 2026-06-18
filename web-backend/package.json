@@ -75,6 +75,7 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
+    "jest-junit": "^13.1.0",
     "@types/jest": "^30.0.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.55.0",
@@ -89,5 +90,18 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  }
+  ,
+  "jest": {
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "test-results",
+          "outputName": "junit.xml"
+        }
+      ]
+    ]
   }
 }
