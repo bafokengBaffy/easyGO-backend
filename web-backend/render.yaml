@@ -3,7 +3,7 @@ services:
     name: easyGO-backend
     env: docker
     plan: starter
-    rootDir: .
+    rootDir: ./web-backend
     dockerfilePath: ./Dockerfile
     autoDeploy: true
     healthCheckPath: /health
@@ -18,3 +18,5 @@ services:
         value: "false"
       - key: FIREBASE_USE_ADC
         value: "false"
+      - key: CORS_ORIGINS
+        value: https://easygols.web.app,https://easygols.firebaseapp.com
