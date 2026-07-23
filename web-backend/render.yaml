@@ -3,7 +3,7 @@ services:
     name: easyGO-backend
     env: docker
     plan: starter
-    rootDir: ./web-backend
+    rootDir: ./web-backend/web-backend
     dockerfilePath: ./Dockerfile
     autoDeploy: true
     healthCheckPath: /health
